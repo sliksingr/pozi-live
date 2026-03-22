@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>POZi — Load Inventory</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#07070f;color:#fff;min-height:100vh;padding:0}
+
+/* HEADER */
+.header{padding:32px 24px 24px;text-align:center;border-bottom:1px solid #1a1a2e}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;letter-spacing:-1px;margin-bottom:4px}
+.logo-i{color:#00c96e}
+.tagline{font-size:11px;color:#333;letter-spacing:2px;text-transform:uppercase}
+
+/* MAIN */
+.main{padding:24px;max-width:500px;margin:0 auto}
+
+/* STATUS CARD */
+.status-card{background:#0f0f1a;border:1px solid #1a1a2e;border-radius:20px;padding:28px;text-align:center;margin-bottom:20px}
+.big-num{font-family:'Syne',sans-serif;font-weight:800;font-size:64px;color:#00c96e;line-height:1}
+.big-label{font-size:11px;color:#333;letter-spacing:2px;text-transform:uppercase;margin-top:4px;margin-bottom:20px}
+.progress-track{background:#1a1a2e;border-radius:20px;height:6px;overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#00c96e,#0055ff);border-radius:20px;width:0%;transition:width 0.4s ease}
+.status-msg{font-size:13px;color:#555;height:18px}
+
+/* LOAD BUTTON */
+.load-btn{width:100%;background:linear-gradient(135deg,#00c96e,#009950);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;padding:18px;border-radius:14px;border:none;cursor:pointer;margin-bottom:20px;transition:all 0.2s;letter-spacing:0.5px}
+.load-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,201,110,0.3)}
+.load-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.load-btn.done{background:linear-gradient(135deg,#00c96e,#0055ff)}
+
+/* STORE CARDS */
+.stores-title{font-size:11px;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.store-card{background:#0f0f1a;border:1px solid #1a1a2e;border-radius:14px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;transition:all 0.3s}
+.store-card.loaded{border-color:#00c96e30;background:#00c96e06}
+.store-card.loading{border-color:#00c96e60;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{border-color:#00c96e40}50%{border-color:#00c96e90}}
+.store-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:#1a1a2e}
+.store-info{flex:1}
+.store-name{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff;margin-bottom:2px}
+.store-loc{font-size:11px;color:#444}
+.store-count{font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#333;text-align:right}
+.store-count.done{color:#00c96e}
+.check{width:22px;height:22px;border-radius:50%;background:#00c96e;display:none;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.store-card.loaded .check{display:flex}
+
+/* PRODUCT PILLS - pop in as they load */
+.products-wrap{margin-top:16px}
+.products-title{font-size:11px;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:#0f0f1a;border:1px solid #1a1a2e;border-radius:20px;padding:5px 12px;font-size:10px;color:#444;opacity:0;transform:scale(0.8);transition:all 0.3s;font-family:'Syne',sans-serif;font-weight:700}
+.pill.popped{opacity:1;transform:scale(1)}
+.pill.ok{background:#00c96e10;border-color:#00c96e25;color:#00c96e}
+.pill.err{background:#ff335510;border-color:#ff335525;color:#ff3355}
+
+/* ERROR BOX */
+.error-box{background:#ff335510;border:1px solid #ff335530;border-radius:12px;padding:14px;margin-top:12px;font-size:12px;color:#ff3355;display:none;font-family:monospace}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">POZ<span class="logo-i">i</span></div>
+  <div class="tagline">Inventory Loader ⚡ Supabase</div>
+</div>
+
+<div class="main">
+
+  <!-- STATUS -->
+  <div class="status-card">
+    <div class="big-num" id="bigNum">0</div>
+    <div class="big-label">Products Loaded</div>
+    <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+    <div class="status-msg" id="statusMsg">Ready to load 150 products</div>
+  </div>
+
+  <button class="load-btn" id="loadBtn" onclick="startLoad()">⚡ Load All 150 Products</button>
+
+  <!-- STORE CARDS -->
+  <div class="stores-title">Stores</div>
+  
+  <div class="store-card" id="card-hfgv">
+    <div class="store-icon">🌲</div>
+    <div class="store-info">
+      <div class="store-name">Hills Flat Lumber</div>
+      <div class="store-loc">Grass Valley CA</div>
+    </div>
+    <div class="store-count" id="cnt-hfgv">40 products</div>
+    <div class="check">✓</div>
+  </div>
+
+  <div class="store-card" id="card-hfcf">
+    <div class="store-icon">🌲</div>
+    <div class="store-info">
+      <div class="store-name">Hills Flat Lumber</div>
+      <div class="store-loc">Colfax CA</div>
+    </div>
+    <div class="store-count" id="cnt-hfcf">24 products</div>
+    <div class="check">✓</div>
+  </div>
+
+  <div class="store-card" id="card-atz">
+    <div class="store-icon">🔨</div>
+    <div class="store-info">
+      <div class="store-name">A to Z Supply</div>
+      <div class="store-loc">Grass Valley CA</div>
+    </div>
+    <div class="store-count" id="cnt-atz">45 products</div>
+    <div class="check">✓</div>
+  </div>
+
+  <div class="store-card" id="card-bnc">
+    <div class="store-icon">🏪</div>
+    <div class="store-info">
+      <div class="store-name">B&amp;C Ace Hardware</div>
+      <div class="store-loc">Grass Valley CA</div>
+    </div>
+    <div class="store-count" id="cnt-bnc">46 products</div>
+    <div class="check">✓</div>
+  </div>
+
+  <!-- PRODUCT PILLS -->
+  <div class="products-wrap">
+    <div class="products-title">Products</div>
+    <div class="pills" id="pills"></div>
+  </div>
+
+  <div class="error-box" id="errBox"></div>
+
+</div>
+
+<script>
+var URL='https://eaagnkwtflsxiclpcaok.supabase.co/rest/v1/inventory';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzgxMjA2MiwiZXhwIjoyMDg5Mzg4MDYyfQ.y59YLEBJQcSldMIB5QzbdqHptlqSAwLoizavyx_y7Y8';
+var records=[{"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-2X4-8-GV", "product_name": "2x4x8 Framing Stud", "category": "Lumber", "quantity": 186}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-2X4-10-GV", "product_name": "2x4x10 Framing Stud", "category": "Lumber", "quantity": 142}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-2X4-12-GV", "product_name": "2x4x12 Framing Stud", "category": "Lumber", "quantity": 98}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-2X6-8-GV", "product_name": "2x6x8 Construction Board", "category": "Lumber", "quantity": 74}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-2X6-12-GV", "product_name": "2x6x12 Construction Board", "category": "Lumber", "quantity": 55}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-4X4-8-GV", "product_name": "4x4x8 Post", "category": "Lumber", "quantity": 44}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-PLY-34-GV", "product_name": "3/4\" Plywood Sheathing 4x8", "category": "Lumber", "quantity": 28}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-PLY-12-GV", "product_name": "1/2\" Plywood 4x8", "category": "Lumber", "quantity": 32}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-OSB-716-GV", "product_name": "7/16\" OSB Sheathing 4x8", "category": "Lumber", "quantity": 61}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-1X6-8-GV", "product_name": "1x6x8 Pine Board", "category": "Lumber", "quantity": 88}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-DECK-GV", "product_name": "5/4x6x16 Deck Board Pressure Treated", "category": "Lumber", "quantity": 112}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "LUM-PT2X4-GV", "product_name": "2x4x8 Pressure Treated Stud", "category": "Lumber", "quantity": 67}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-SCRW-3-GV", "product_name": "3\" Deck Screws 5lb Box", "category": "Hardware", "quantity": 22}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-SCRW-16-GV", "product_name": "16d Framing Nails 5lb Box", "category": "Hardware", "quantity": 34}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-BOLT-12-GV", "product_name": "1/2\" x 6\" Carriage Bolt 25pk", "category": "Hardware", "quantity": 18}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-JOIST-GV", "product_name": "Joist Hanger 2x10 10pk", "category": "Hardware", "quantity": 41}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-HINGE-GV", "product_name": "3.5\" Door Hinge Brass 3pk", "category": "Hardware", "quantity": 27}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-ANCHOR-GV", "product_name": "Concrete Anchor Bolt 3/8\" 50pk", "category": "Hardware", "quantity": 15}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "HW-LBRACKET-GV", "product_name": "L Bracket 4\" Zinc 10pk", "category": "Hardware", "quantity": 33}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "TL-TAPE-25-GV", "product_name": "25ft Stanley Tape Measure", "category": "Tools", "quantity": 12}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "TL-LEVEL-4-GV", "product_name": "4ft Aluminum Level", "category": "Tools", "quantity": 8}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "TL-HAMMER-GV", "product_name": "20oz Framing Hammer", "category": "Tools", "quantity": 9}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "TL-SQUARE-GV", "product_name": "Speed Square 7\"", "category": "Tools", "quantity": 14}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "TL-DRILL-GV", "product_name": "DeWalt 20V Cordless Drill Kit", "category": "Tools", "quantity": 4}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "TL-SAW-GV", "product_name": "7-1/4\" Circular Saw Blade 10pk", "category": "Tools", "quantity": 11}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PT-EXTLAT-GV", "product_name": "Exterior Latex Paint 1gal White", "category": "Paint", "quantity": 19}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PT-PRIMER-GV", "product_name": "Interior/Exterior Primer 1gal", "category": "Paint", "quantity": 14}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PT-STAIN-GV", "product_name": "Deck Stain Semi-Trans 1gal Cedar", "category": "Paint", "quantity": 11}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PT-ROLLER-GV", "product_name": "9\" Paint Roller Cover 6pk", "category": "Paint", "quantity": 23}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "EL-ROMX12-GV", "product_name": "12/2 Romex Wire 250ft", "category": "Electrical", "quantity": 8}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "EL-ROMX14-GV", "product_name": "14/2 Romex Wire 250ft", "category": "Electrical", "quantity": 11}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "EL-OUTLET-GV", "product_name": "15A Duplex Outlet 10pk", "category": "Electrical", "quantity": 16}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "EL-BRKR20-GV", "product_name": "20A Single Pole Breaker", "category": "Electrical", "quantity": 7}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "EL-CONDUIT-GV", "product_name": "1/2\" EMT Conduit 10ft", "category": "Electrical", "quantity": 22}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PL-CPPR12-GV", "product_name": "1/2\" Copper Pipe Type L 10ft", "category": "Plumbing", "quantity": 24}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PL-CPPR34-GV", "product_name": "3/4\" Copper Pipe Type L 10ft", "category": "Plumbing", "quantity": 18}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PL-PVC2-GV", "product_name": "2\" PVC Pipe Schedule 40 10ft", "category": "Plumbing", "quantity": 31}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PL-BALLV-GV", "product_name": "3/4\" Ball Valve Full Port", "category": "Plumbing", "quantity": 13}, {"store_name": "Hills Flat Lumber", "store_location": "Grass Valley CA", "sku": "PL-WAXRING-GV", "product_name": "Toilet Wax Ring with Bolts", "category": "Plumbing", "quantity": 9}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-2X4-8-CF", "product_name": "2x4x8 Framing Stud", "category": "Lumber", "quantity": 144}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-2X4-10-CF", "product_name": "2x4x10 Framing Stud", "category": "Lumber", "quantity": 88}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-2X6-8-CF", "product_name": "2x6x8 Construction Board", "category": "Lumber", "quantity": 52}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-4X4-8-CF", "product_name": "4x4x8 Post", "category": "Lumber", "quantity": 36}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-PLY-34-CF", "product_name": "3/4\" Plywood Sheathing 4x8", "category": "Lumber", "quantity": 3}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-PLY-12-CF", "product_name": "1/2\" Plywood 4x8", "category": "Lumber", "quantity": 21}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-OSB-716-CF", "product_name": "7/16\" OSB Sheathing 4x8", "category": "Lumber", "quantity": 44}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-DECK-CF", "product_name": "5/4x6x16 Deck Board Pressure Treated", "category": "Lumber", "quantity": 78}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "LUM-PT2X4-CF", "product_name": "2x4x8 Pressure Treated Stud", "category": "Lumber", "quantity": 55}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "HW-SCRW-3-CF", "product_name": "3\" Deck Screws 5lb Box", "category": "Hardware", "quantity": 17}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "HW-SCRW-16-CF", "product_name": "16d Framing Nails 5lb Box", "category": "Hardware", "quantity": 28}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "HW-BOLT-12-CF", "product_name": "1/2\" x 6\" Carriage Bolt 25pk", "category": "Hardware", "quantity": 0}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "HW-JOIST-CF", "product_name": "Joist Hanger 2x10 10pk", "category": "Hardware", "quantity": 22}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "HW-ANCHOR-CF", "product_name": "Concrete Anchor Bolt 3/8\" 50pk", "category": "Hardware", "quantity": 8}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "EL-ROMX12-CF", "product_name": "12/2 Romex Wire 250ft", "category": "Electrical", "quantity": 5}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "EL-ROMX14-CF", "product_name": "14/2 Romex Wire 250ft", "category": "Electrical", "quantity": 7}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "EL-OUTLET-CF", "product_name": "15A Duplex Outlet 10pk", "category": "Electrical", "quantity": 12}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "EL-CONDUIT-CF", "product_name": "1/2\" EMT Conduit 10ft", "category": "Electrical", "quantity": 16}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "PL-CPPR12-CF", "product_name": "1/2\" Copper Pipe Type L 10ft", "category": "Plumbing", "quantity": 14}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "PL-PVC2-CF", "product_name": "2\" PVC Pipe Schedule 40 10ft", "category": "Plumbing", "quantity": 19}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "PL-BALLV-CF", "product_name": "3/4\" Ball Valve Full Port", "category": "Plumbing", "quantity": 6}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "PT-EXTLAT-CF", "product_name": "Exterior Latex Paint 1gal White", "category": "Paint", "quantity": 11}, {"store_name": "Hills Flat Lumber", "store_location": "Colfax CA", "sku": "PT-STAIN-CF", "product_name": "Deck Stain Semi-Trans 1gal Cedar", "category": "Paint", "quantity": 7}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-SCRW-WD-GV", "product_name": "Wood Screw Assortment 200pk", "category": "Hardware", "quantity": 28}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-BOLT-AST-GV", "product_name": "Bolt & Nut Assortment Box 150pk", "category": "Hardware", "quantity": 19}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-ANCHOR-GV", "product_name": "Wall Anchor Assortment 50pk", "category": "Hardware", "quantity": 33}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-CHAIN-GV", "product_name": "3/16\" Zinc Chain per foot", "category": "Hardware", "quantity": 200}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-LOCK-GV", "product_name": "Padlock 1-3/4\" Brass", "category": "Hardware", "quantity": 14}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-HASP-GV", "product_name": "Safety Hasp 3\" Zinc", "category": "Hardware", "quantity": 11}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PVC12-GV", "product_name": "1/2\" PVC Pipe Schedule 40 10ft", "category": "Plumbing", "quantity": 44}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PVC34-GV", "product_name": "3/4\" PVC Pipe Schedule 40 10ft", "category": "Plumbing", "quantity": 38}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PVC1-GV", "product_name": "1\" PVC Pipe Schedule 40 10ft", "category": "Plumbing", "quantity": 29}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PVC2-GV", "product_name": "2\" PVC Pipe Schedule 40 10ft", "category": "Plumbing", "quantity": 21}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PVCEL-GV", "product_name": "1/2\" PVC Elbow 90deg 10pk", "category": "Plumbing", "quantity": 55}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PVCTEE-GV", "product_name": "1/2\" PVC Tee Fitting 10pk", "category": "Plumbing", "quantity": 47}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-BALLV12-GV", "product_name": "1/2\" Ball Valve Full Port", "category": "Plumbing", "quantity": 18}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-BALLV34-GV", "product_name": "3/4\" Ball Valve Full Port", "category": "Plumbing", "quantity": 14}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-FAUCET-GV", "product_name": "Two Handle Kitchen Faucet Chrome", "category": "Plumbing", "quantity": 5}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-WAXRING-GV", "product_name": "Toilet Wax Ring with Bolts", "category": "Plumbing", "quantity": 12}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-DRIP12-GV", "product_name": "1/2\" Drip Line 100ft", "category": "Irrigation", "quantity": 22}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-EMITTER-GV", "product_name": "1GPH Drip Emitter 25pk", "category": "Irrigation", "quantity": 48}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-SPKLER-GV", "product_name": "Pop-Up Spray Head 4\" 6pk", "category": "Irrigation", "quantity": 31}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-TIMER-GV", "product_name": "6-Zone Irrigation Timer", "category": "Irrigation", "quantity": 7}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-VALVE-GV", "product_name": "3/4\" Solenoid Valve 24V", "category": "Irrigation", "quantity": 9}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-BACKFLOW-GV", "product_name": "3/4\" Backflow Preventer", "category": "Irrigation", "quantity": 6}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-SOIL-GV", "product_name": "Organic Potting Soil 2cuft", "category": "Garden", "quantity": 41}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-MULCH-GV", "product_name": "Cedar Mulch 2cuft Bag", "category": "Garden", "quantity": 67}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-FERT-GV", "product_name": "All Purpose Fertilizer 5lb", "category": "Garden", "quantity": 28}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-TOMATO-GV", "product_name": "Tomato Cage 4ft 3pk", "category": "Garden", "quantity": 22}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-HOSE-GV", "product_name": "50ft Garden Hose 5/8\"", "category": "Garden", "quantity": 14}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-NOZZLE-GV", "product_name": "8-Pattern Hose Nozzle", "category": "Garden", "quantity": 19}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-HIVEBOX-GV", "product_name": "Langstroth Hive Body 10 Frame", "category": "Beekeeping", "quantity": 8}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-FRAMES-GV", "product_name": "Deep Frames with Wax 10pk", "category": "Beekeeping", "quantity": 14}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-SUIT-GV", "product_name": "Full Beekeeper Suit with Veil", "category": "Beekeeping", "quantity": 3}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-SMOKER-GV", "product_name": "Stainless Steel Bee Smoker", "category": "Beekeeping", "quantity": 5}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-HIVTOOL-GV", "product_name": "Hive Tool J-Hook Steel", "category": "Beekeeping", "quantity": 12}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-FEEDER-GV", "product_name": "Entrance Feeder Boardman Style", "category": "Beekeeping", "quantity": 9}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-FOUNDATION-GV", "product_name": "Beeswax Foundation Sheets 10pk", "category": "Beekeeping", "quantity": 7}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-GLOVES-GV", "product_name": "Leather Beekeeping Gloves", "category": "Beekeeping", "quantity": 6}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-OUTLET-GV", "product_name": "15A Duplex Outlet 10pk", "category": "Electrical", "quantity": 18}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-SWITCH-GV", "product_name": "Single Pole Light Switch 10pk", "category": "Electrical", "quantity": 21}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-WIRENUTS-GV", "product_name": "Wire Nut Assortment 100pk", "category": "Electrical", "quantity": 34}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-CONDUIT12-GV", "product_name": "1/2\" EMT Conduit 10ft", "category": "Electrical", "quantity": 27}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-EXTCORD-GV", "product_name": "25ft Heavy Duty Extension Cord", "category": "Electrical", "quantity": 8}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-PRIMER-GV", "product_name": "Interior/Exterior Primer 1gal", "category": "Paint", "quantity": 11}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-BRUSH-GV", "product_name": "3\" Angle Sash Brush", "category": "Paint", "quantity": 17}, {"store_name": "A to Z Supply", "store_location": "Grass Valley CA", "sku": "ATZ-ROLLER-GV", "product_name": "9\" Paint Roller Cover 6pk", "category": "Paint", "quantity": 14}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SCREW-GV", "product_name": "Wood Screw 1-5/8\" #8 100pk", "category": "Hardware", "quantity": 42}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DRYWALL-GV", "product_name": "Drywall Screw 1-5/8\" 100pk", "category": "Hardware", "quantity": 38}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-NAIL3-GV", "product_name": "3\" Common Nail 1lb Box", "category": "Hardware", "quantity": 29}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-TPNUT-GV", "product_name": "T-Nut 1/4-20 8pk", "category": "Hardware", "quantity": 24}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DRWBLT-GV", "product_name": "Drawer Bolt 2-1/2\" 2pk", "category": "Hardware", "quantity": 18}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-CABHINGG-GV", "product_name": "Cabinet Hinge 35mm Euro 2pk", "category": "Hardware", "quantity": 33}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DSLIDE-GV", "product_name": "Drawer Slide 18\" Full Extension pr", "category": "Hardware", "quantity": 11}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-TAPE25-GV", "product_name": "25ft Tape Measure", "category": "Tools", "quantity": 16}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-LEVEL2-GV", "product_name": "2ft Torpedo Level", "category": "Tools", "quantity": 9}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-PLIERS-GV", "product_name": "Channellock Pliers 10\"", "category": "Tools", "quantity": 7}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SCRWDRV-GV", "product_name": "Screwdriver Set 6pc", "category": "Tools", "quantity": 13}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-UTILKNF-GV", "product_name": "Utility Knife with Blades", "category": "Tools", "quantity": 21}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-WRENCH-GV", "product_name": "Adjustable Wrench 10\"", "category": "Tools", "quantity": 8}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DRILL20V-GV", "product_name": "DeWalt 20V Drill Driver Kit", "category": "Tools", "quantity": 3}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-CIRCULAR-GV", "product_name": "Circular Saw 7-1/4\" Corded", "category": "Tools", "quantity": 2}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-CLARKS-GV", "product_name": "Clark+Kensington Interior 1gal", "category": "Paint", "quantity": 24}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-CLARKEXT-GV", "product_name": "Clark+Kensington Exterior 1gal", "category": "Paint", "quantity": 19}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-PRIMER-GV", "product_name": "Ace Premium Primer 1gal", "category": "Paint", "quantity": 16}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SPRAYPNT-GV", "product_name": "Rust-Oleum Spray Paint 12oz", "category": "Paint", "quantity": 44}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-BRUSHSET-GV", "product_name": "Paint Brush Set 5pc", "category": "Paint", "quantity": 22}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-TEFLON-GV", "product_name": "Teflon Thread Tape 3pk", "category": "Plumbing", "quantity": 48}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-PEXPIPE-GV", "product_name": "1/2\" PEX Tubing 25ft", "category": "Plumbing", "quantity": 17}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SHUTOFF-GV", "product_name": "Angle Stop Shutoff Valve 3/8\"", "category": "Plumbing", "quantity": 14}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-FLAPPER-GV", "product_name": "Toilet Flapper Universal", "category": "Plumbing", "quantity": 23}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-PLUNER-GV", "product_name": "Force Cup Plunger", "category": "Plumbing", "quantity": 11}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DRAINCLN-GV", "product_name": "Drain Snake 25ft", "category": "Plumbing", "quantity": 6}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-GFCI-GV", "product_name": "GFCI Outlet 15A White", "category": "Electrical", "quantity": 18}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DIMMR-GV", "product_name": "Dimmer Switch Single Pole", "category": "Electrical", "quantity": 12}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-LED60-GV", "product_name": "60W LED Bulb A19 4pk", "category": "Electrical", "quantity": 37}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-EXTCRD-GV", "product_name": "50ft 14G Extension Cord Orange", "category": "Electrical", "quantity": 9}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-BATTAA-GV", "product_name": "AA Batteries 24pk Duracell", "category": "Electrical", "quantity": 28}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SMKDET-GV", "product_name": "Smoke Detector Battery 10yr", "category": "Electrical", "quantity": 14}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-GRASS-GV", "product_name": "Lawn Seed Sun & Shade 5lb", "category": "Garden", "quantity": 18}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-FERT-GV", "product_name": "Scotts Lawn Fertilizer 5000sqft", "category": "Garden", "quantity": 13}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-MULCH-GV", "product_name": "Cedar Mulch 2cuft Bag", "category": "Garden", "quantity": 44}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-HOSE50-GV", "product_name": "50ft Flexogen Garden Hose", "category": "Garden", "quantity": 11}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SPRINKR-GV", "product_name": "Oscillating Sprinkler", "category": "Garden", "quantity": 8}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-SHOVEL-GV", "product_name": "Round Point Shovel D-Handle", "category": "Garden", "quantity": 7}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-RAKE-GV", "product_name": "24-Tine Bow Rake", "category": "Garden", "quantity": 6}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DOORKNOB-GV", "product_name": "Entry Door Knob Satin Nickel", "category": "Home", "quantity": 9}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-DEADBLT-GV", "product_name": "Single Cylinder Deadbolt Satin Nickel", "category": "Home", "quantity": 7}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-WSTRIP-GV", "product_name": "Door Weather Strip 7ft", "category": "Home", "quantity": 16}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-CAULK-GV", "product_name": "Paintable Latex Caulk 10oz", "category": "Home", "quantity": 29}, {"store_name": "B&C Ace Hardware", "store_location": "Grass Valley CA", "sku": "BNC-MOUSETRAP-GV", "product_name": "Snap Mouse Trap 4pk", "category": "Home", "quantity": 22}];
+var loaded=0;
+var errors=0;
+
+var storeMap={
+  'Hills Flat Lumber_Grass Valley CA': 'hfgv',
+  'Hills Flat Lumber_Colfax CA': 'hfcf',
+  'A to Z Supply_Grass Valley CA': 'atz',
+  'B&C Ace Hardware_Grass Valley CA': 'bnc'
+};
+var storeCounts={'hfgv':0,'hfcf':0,'atz':0,'bnc':0};
+var storeMax={'hfgv':40,'hfcf':24,'atz':45,'bnc':46};
+
+function setLoading(storeKey){
+  var card=document.getElementById('card-'+storeKey);
+  if(card)card.classList.add('loading');
+}
+function setLoaded(storeKey){
+  var card=document.getElementById('card-'+storeKey);
+  if(card){card.classList.remove('loading');card.classList.add('loaded');}
+}
+function addPill(name, ok){
+  var pills=document.getElementById('pills');
+  var p=document.createElement('div');
+  p.className='pill '+(ok?'ok':'err');
+  p.textContent=name.length>22?name.substring(0,20)+'…':name;
+  pills.appendChild(p);
+  setTimeout(function(){p.classList.add('popped');},30);
+  pills.scrollTop=pills.scrollHeight;
+}
+function updateNum(){
+  document.getElementById('bigNum').textContent=loaded;
+  document.getElementById('fill').style.width=Math.round((loaded/records.length)*100)+'%';
+  document.getElementById('statusMsg').textContent='Loading... '+loaded+' of '+records.length;
+}
+function showError(msg){
+  var box=document.getElementById('errBox');
+  box.style.display='block';
+  box.textContent='Error: '+msg;
+}
+
+var idx=0;
+function loadNext(){
+  if(idx>=records.length){
+    document.getElementById('statusMsg').textContent='✅ Done! '+loaded+' loaded'+(errors?' ('+errors+' errors)':'');
+    document.getElementById('loadBtn').textContent='✅ Inventory Live in Supabase!';
+    document.getElementById('loadBtn').classList.add('done');
+    document.getElementById('loadBtn').disabled=false;
+    // Mark all stores done
+    Object.keys(storeCounts).forEach(function(k){setLoaded(k);});
+    return;
+  }
+  
+  var rec=records[idx];
+  var sk=storeMap[rec.store_name+'_'+rec.store_location]||'bnc';
+  setLoading(sk);
+
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST',URL,true);
+  xhr.setRequestHeader('apikey',KEY);
+  xhr.setRequestHeader('Authorization','Bearer '+KEY);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.setRequestHeader('Prefer','return=minimal');
+  xhr.timeout=8000;
+  
+  xhr.onload=function(){
+    var ok=(xhr.status===201||xhr.status===200||xhr.status===204);
+    if(ok){
+      loaded++;
+      storeCounts[sk]++;
+      var cnt=document.getElementById('cnt-'+sk);
+      if(cnt){cnt.textContent=storeCounts[sk]+' loaded';cnt.className='store-count done';}
+      if(storeCounts[sk]>=storeMax[sk])setLoaded(sk);
+    } else {
+      errors++;
+      showError(xhr.status+' — '+xhr.responseText.substring(0,120));
+    }
+    addPill(rec.product_name, ok);
+    updateNum();
+    idx++;
+    setTimeout(loadNext, ok?60:300);
+  };
+  xhr.ontimeout=function(){
+    errors++;
+    addPill(rec.product_name,false);
+    idx++;
+    setTimeout(loadNext,300);
+  };
+  xhr.onerror=function(){
+    errors++;
+    showError('Network error — check connection');
+    addPill(rec.product_name,false);
+    idx++;
+    setTimeout(loadNext,500);
+  };
+  xhr.send(JSON.stringify(rec));
+}
+
+function startLoad(){
+  document.getElementById('loadBtn').disabled=true;
+  document.getElementById('loadBtn').textContent='Loading...';
+  idx=0;loaded=0;errors=0;
+  document.getElementById('errBox').style.display='none';
+  document.getElementById('pills').innerHTML='';
+  loadNext();
+}
+</script>
+</body>
+</html>

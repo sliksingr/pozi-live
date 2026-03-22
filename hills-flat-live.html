@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hills Flat Lumber</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#222}
+.hf-nav{background:#2c5f2e;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.hf-logo{color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px}
+.hf-nav-links{display:flex;gap:16px}
+.hf-nav-links a{color:rgba(255,255,255,0.8);font-size:12px;text-decoration:none;font-weight:600}
+.hf-hero{background:linear-gradient(135deg,#2c5f2e,#1a3d1c);padding:40px 20px;text-align:center;color:#fff}
+.hf-hero h1{font-size:26px;font-weight:800;margin-bottom:8px;line-height:1.2}
+.hf-hero p{font-size:14px;opacity:0.85;margin-bottom:20px}
+.hf-locations{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.hf-loc{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;color:#fff}
+.pozi-btn-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pozi-check-btn{display:inline-flex;align-items:center;gap:9px;background:#0a0a14;color:#00c96e;border:2px solid #00c96e;border-radius:12px;padding:14px 24px;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent}
+.pozi-check-btn:active{background:#00c96e;color:#000}
+.pozi-btn-dot{width:8px;height:8px;border-radius:50%;background:#00c96e;animation:pdot 1.5s infinite;flex-shrink:0}
+.pozi-powered{font-size:10px;color:rgba(255,255,255,0.5);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:0.3}}
+.hf-section{background:#fff;padding:24px 20px;border-bottom:1px solid #eee}
+.hf-section-title{font-size:16px;font-weight:800;color:#2c5f2e;margin-bottom:14px}
+.hf-dept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hf-dept{background:#f9f9f9;border:1px solid #eee;border-radius:10px;padding:14px 8px;text-align:center;cursor:pointer}
+.hf-dept-icon{font-size:22px;margin-bottom:6px}
+.hf-dept-name{font-size:11px;font-weight:700;color:#333}
+.hf-hours{background:#f0f7f0;border:1px solid #c8e6c9;border-radius:10px;padding:14px;margin-top:12px}
+.hf-hours-title{font-size:12px;font-weight:800;color:#2c5f2e;margin-bottom:8px}
+.hf-hours-row{display:flex;justify-content:space-between;font-size:11px;color:#555;padding:3px 0}
+.pozi-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:9999;display:none;flex-direction:column}
+.pozi-overlay.open{display:flex}
+.pozi-modal{background:#0a0a14;flex:1;display:flex;flex-direction:column;overflow:hidden;margin-top:44px;border-radius:20px 20px 0 0}
+.pozi-modal-bar{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e1e32;flex-shrink:0}
+.pozi-modal-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff}
+.pozi-modal-logo span{color:#00c96e}
+.pozi-live-badge{display:flex;align-items:center;gap:5px;background:#00c96e12;border:1px solid #00c96e30;border-radius:20px;padding:5px 10px}
+.pozi-live-dot{width:6px;height:6px;border-radius:50%;background:#00c96e;animation:pdot 1.5s infinite}
+.pozi-live-txt{font-size:10px;color:#00c96e;font-family:'Syne',sans-serif;font-weight:700}
+.pozi-close-btn{width:32px;height:32px;background:#1a1a2e;border:1px solid #2a2a45;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#888;font-size:16px;margin-left:10px}
+.pozi-status{padding:8px 14px;font-size:10px;color:#666;font-family:'Syne',sans-serif;font-weight:700;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid #0d0d1e}
+.pozi-status-dot{width:5px;height:5px;border-radius:50%;background:#ffcc00;flex-shrink:0}
+.pozi-status-dot.live{background:#00c96e;animation:pdot 1.5s infinite}
+.portal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 80px}
+.search-wrap{padding:14px 14px 0;position:relative;margin-bottom:14px}
+.portal-search{width:100%;background:#111122;border:1px solid #1e1e32;border-radius:14px;padding:13px 16px 13px 44px;font-family:'Inter',sans-serif;font-size:15px;color:#fff;outline:none;-webkit-appearance:none}
+.portal-search::placeholder{color:#333}
+.portal-search:focus{border-color:#00c96e40}
+.search-ico{position:absolute;left:27px;top:50%;transform:translateY(-50%);pointer-events:none}
+.loc-tabs{display:flex;gap:8px;padding:0 14px 14px;overflow-x:auto;scrollbar-width:none}
+.loc-tabs::-webkit-scrollbar{display:none}
+.loc-tab{background:#111122;border:1px solid #1e1e32;border-radius:20px;padding:8px 16px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#444;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .2s}
+.loc-tab.on{background:#00c96e12;border-color:#00c96e40;color:#00c96e}
+.cat-section{padding:4px 14px 14px}
+.cat-label{font-size:10px;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-family:'Syne',sans-serif;font-weight:700}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cat-tile{background:#111122;border:1px solid #1e1e32;border-radius:14px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all 0.2s;text-align:center}
+.cat-tile:active{transform:scale(0.95)}
+.cat-tile.on{background:#00c96e10;border-color:#00c96e35}
+.cat-tile-icon{font-size:22px}
+.cat-tile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:8px;color:#555;letter-spacing:0.5px;text-transform:uppercase;line-height:1.3}
+.cat-tile-count{font-size:9px;color:#333;font-weight:700}
+.cat-tile.on .cat-tile-name,.cat-tile.on .cat-tile-count{color:#00c96e}
+.prod-section{padding:14px}
+.prod-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.back-btn{background:none;border:none;color:#00c96e;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px}
+.prod-title{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;flex:1}
+.prod-count{font-size:11px;color:#333}
+.prod-row{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #0d0d1e;gap:12px;cursor:pointer}
+.prod-row:last-child{border-bottom:none}
+.prod-row:active{opacity:0.7}
+.prod-icon{font-size:20px;flex-shrink:0;width:32px;text-align:center}
+.prod-info{flex:1;min-width:0}
+.prod-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#fff;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-sku{font-size:9px;color:#222;letter-spacing:1px}
+.prod-locs{margin-top:8px;display:none}
+.prod-loc-row{display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid #0d0d1e}
+.prod-loc-name{font-size:10px;color:#444}
+.prod-loc-qty{font-size:10px;font-weight:700}
+.prod-right{text-align:right;flex-shrink:0}
+.prod-qty{font-family:'Syne',sans-serif;font-weight:800;font-size:18px}
+.prod-qty-label{font-size:9px;color:#333;text-transform:uppercase;letter-spacing:1px}
+.q-ok{color:#00c96e}.q-low{color:#ffcc00}.q-out{color:#ff3355}
+.empty{text-align:center;padding:40px 20px}
+.empty-icon{font-size:36px;opacity:0.2;margin-bottom:10px}
+.empty-txt{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#333}
+.portal-footer{flex-shrink:0;padding:10px 14px 24px;background:#0a0a14;border-top:1px solid #1e1e32;display:flex;align-items:center;justify-content:space-between}
+.portal-footer-brand{font-size:10px;color:#222;font-family:'Syne',sans-serif;font-weight:700}
+.portal-footer-brand span{color:#00c96e}
+.portal-footer-time{font-size:9px;color:#333}
+</style>
+</head>
+<body>
+
+<nav class="hf-nav">
+  <div class="hf-logo"><span>🌲</span> Hills Flat Lumber</div>
+  <div class="hf-nav-links">
+    <a href="#">Shop</a><a href="#">Departments</a><a href="#">About</a>
+  </div>
+</nav>
+
+<div class="hf-hero">
+  <h1>Your Local Hardware Store<br>Since 1921</h1>
+  <p>Serving Grass Valley &amp; Colfax — Family owned for over 100 years</p>
+  <div class="hf-locations">
+    <div class="hf-loc">📍 Grass Valley — Hwy 49</div>
+    <div class="hf-loc">📍 Colfax — I-80</div>
+  </div>
+  <div class="pozi-btn-wrap">
+    <button class="pozi-check-btn" id="openBtn">
+      <span class="pozi-btn-dot"></span>
+      🔍 Check Live Inventory
+    </button>
+    <div class="pozi-powered">POWERED BY POZi ⚡ REAL-TIME STOCK</div>
+  </div>
+</div>
+
+<div class="hf-section">
+  <div class="hf-section-title">Shop by Department</div>
+  <div class="hf-dept-grid">
+    <div class="hf-dept"><div class="hf-dept-icon">🪵</div><div class="hf-dept-name">Lumber</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🔩</div><div class="hf-dept-name">Hardware</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🔧</div><div class="hf-dept-name">Tools</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🎨</div><div class="hf-dept-name">Paint</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">⚡</div><div class="hf-dept-name">Electrical</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🚰</div><div class="hf-dept-name">Plumbing</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🌱</div><div class="hf-dept-name">Garden</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🚗</div><div class="hf-dept-name">Automotive</div></div>
+    <div class="hf-dept"><div class="hf-dept-icon">🏠</div><div class="hf-dept-name">Home</div></div>
+  </div>
+  <div class="hf-hours">
+    <div class="hf-hours-title">📍 Store Hours — Both Locations</div>
+    <div class="hf-hours-row"><span>Mon – Fri</span><span style="font-weight:700;color:#2c5f2e">7:00 AM – 7:00 PM</span></div>
+    <div class="hf-hours-row"><span>Saturday</span><span style="font-weight:700;color:#2c5f2e">8:00 AM – 7:00 PM</span></div>
+    <div class="hf-hours-row"><span>Sunday</span><span style="font-weight:700;color:#2c5f2e">8:00 AM – 5:00 PM</span></div>
+  </div>
+</div>
+
+<div class="pozi-overlay" id="poziOverlay">
+  <div class="pozi-modal">
+    <div class="pozi-modal-bar">
+      <div class="pozi-modal-logo">POZ<span>i</span> <span style="font-size:11px;color:#444;font-weight:400;margin-left:6px">Hills Flat Lumber</span></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="pozi-live-badge">
+          <div class="pozi-live-dot"></div>
+          <div class="pozi-live-txt">LIVE</div>
+        </div>
+        <div class="pozi-close-btn" id="closeBtn">✕</div>
+      </div>
+    </div>
+    <div class="pozi-status">
+      <div class="pozi-status-dot" id="sDot"></div>
+      <span id="sTxt">Loading...</span>
+    </div>
+    <div class="portal-body">
+      <div class="search-wrap">
+        <span class="search-ico">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input class="portal-search" id="portalQ" placeholder="Search lumber, hardware, tools..." autocomplete="off"/>
+      </div>
+      <div class="loc-tabs">
+        <div class="loc-tab on" id="tabAll">📍 Both Locations</div>
+        <div class="loc-tab" id="tabGV">Grass Valley</div>
+        <div class="loc-tab" id="tabCF">Colfax</div>
+      </div>
+      <div id="browseView">
+        <div class="cat-section">
+          <div class="cat-label">Browse by Department</div>
+          <div class="cat-grid" id="catGrid"></div>
+        </div>
+      </div>
+      <div id="productsView" style="display:none">
+        <div class="prod-section">
+          <div class="prod-header">
+            <button class="back-btn" id="backBtn">← Back</button>
+            <div class="prod-title" id="prodTitle">Products</div>
+            <div class="prod-count" id="prodCount"></div>
+          </div>
+          <div id="prodList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="portal-footer">
+      <div class="portal-footer-brand">Real-time inventory by <span>POZi</span> ⚡</div>
+      <div class="portal-footer-time" id="lastSync">—</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+var SURL = 'https://eaagnkwtflsxiclpcaok.supabase.co';
+var SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE';
+
+var DB = [];
+var LOC = 'all';
+var CURCAT = null;
+var SQ = '';
+var sb = null;
+
+var CATS = [
+  {k:'Lumber',i:'🪵'},{k:'Hardware',i:'🔩'},{k:'Tools',i:'🔧'},
+  {k:'Paint',i:'🎨'},{k:'Electrical',i:'⚡'},{k:'Plumbing',i:'🚰'},
+  {k:'Garden',i:'🌱'},{k:'Irrigation',i:'💧'},{k:'Beekeeping',i:'🐝'},{k:'Home',i:'🏠'}
+];
+
+var ICONS = {
+  Lumber:'🪵',Hardware:'🔩',Tools:'🔧',Paint:'🎨',
+  Electrical:'⚡',Plumbing:'🚰',Garden:'🌱',Irrigation:'💧',
+  Beekeeping:'🐝',Home:'🏠',General:'📦'
+};
+
+var SAMPLE = [
+  {sku:'LUM-2X4-8',product_name:'2x4x8 Framing Stud',category:'Lumber',store_location:'Grass Valley CA',quantity:186},
+  {sku:'LUM-2X4-8',product_name:'2x4x8 Framing Stud',category:'Lumber',store_location:'Colfax CA',quantity:144},
+  {sku:'LUM-PLY-34',product_name:'3/4 Plywood 4x8',category:'Lumber',store_location:'Grass Valley CA',quantity:28},
+  {sku:'LUM-PLY-34',product_name:'3/4 Plywood 4x8',category:'Lumber',store_location:'Colfax CA',quantity:3},
+  {sku:'HW-SCRW-3',product_name:'3in Deck Screws 5lb',category:'Hardware',store_location:'Grass Valley CA',quantity:22},
+  {sku:'HW-BOLT-12',product_name:'Carriage Bolt 25pk',category:'Hardware',store_location:'Grass Valley CA',quantity:18},
+  {sku:'TL-DRILL',product_name:'DeWalt 20V Drill Kit',category:'Tools',store_location:'Grass Valley CA',quantity:4},
+  {sku:'TL-TAPE-25',product_name:'25ft Tape Measure',category:'Tools',store_location:'Grass Valley CA',quantity:12},
+  {sku:'PT-EXTLAT',product_name:'Exterior Latex Paint 1gal',category:'Paint',store_location:'Grass Valley CA',quantity:19},
+  {sku:'EL-ROMX12',product_name:'12/2 Romex Wire 250ft',category:'Electrical',store_location:'Grass Valley CA',quantity:8},
+  {sku:'EL-ROMX12',product_name:'12/2 Romex Wire 250ft',category:'Electrical',store_location:'Colfax CA',quantity:5},
+  {sku:'PL-CPPR12',product_name:'Copper Pipe 10ft',category:'Plumbing',store_location:'Grass Valley CA',quantity:24},
+  {sku:'ATZ-HIVEBOX',product_name:'Langstroth Hive Body',category:'Beekeeping',store_location:'Grass Valley CA',quantity:8},
+  {sku:'ATZ-SUIT',product_name:'Full Beekeeper Suit',category:'Beekeeping',store_location:'Grass Valley CA',quantity:3},
+  {sku:'ATZ-DRIP12',product_name:'Drip Line 100ft',category:'Irrigation',store_location:'Grass Valley CA',quantity:22},
+  {sku:'BNC-DEADBLT',product_name:'Deadbolt Satin Nickel',category:'Home',store_location:'Grass Valley CA',quantity:7}
+];
+
+function setStatus(msg, live) {
+  document.getElementById('sTxt').textContent = msg;
+  var d = document.getElementById('sDot');
+  if (live) { d.classList.add('live'); } else { d.classList.remove('live'); }
+  document.getElementById('lastSync').textContent = live ? 'Live ' + new Date().toLocaleTimeString() : msg;
+}
+
+function openPortal() {
+  document.getElementById('poziOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  DB = SAMPLE;
+  renderBrowse();
+  setStatus('Loading live data...', false);
+  fetchLive();
+}
+
+function closePortal() {
+  document.getElementById('poziOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function fetchLive() {
+  if (!sb) {
+    try { sb = window.supabase.createClient(SURL, SKEY); }
+    catch(e) { setStatus('Demo data', false); return; }
+  }
+  sb.from('inventory').select('*').order('product_name').then(function(res) {
+    if (res.error || !res.data || res.data.length === 0) {
+      setStatus('Demo data', false);
+      return;
+    }
+    DB = res.data;
+    if (CURCAT) { showCat(CURCAT); }
+    else if (SQ) { doSearch(); }
+    else { renderBrowse(); }
+    setStatus('Live inventory', true);
+  }).catch(function() {
+    setStatus('Demo data', false);
+  });
+}
+
+function setLoc(l, el) {
+  LOC = l;
+  document.querySelectorAll('.loc-tab').forEach(function(t) { t.classList.remove('on'); });
+  el.classList.add('on');
+  if (CURCAT) { showCat(CURCAT); }
+  else if (SQ) { doSearch(); }
+  else { renderBrowse(); }
+}
+
+function showBrowse() {
+  CURCAT = null;
+  SQ = '';
+  document.getElementById('portalQ').value = '';
+  document.getElementById('browseView').style.display = 'block';
+  document.getElementById('productsView').style.display = 'none';
+  renderBrowse();
+}
+
+function renderBrowse() {
+  var g = document.getElementById('catGrid');
+  if (!g) return;
+  var h = '';
+  CATS.forEach(function(c) {
+    var filtered = DB.filter(function(d) {
+      if (LOC !== 'all' && !(d.store_location && d.store_location.includes(LOC))) return false;
+      return d.category === c.k;
+    });
+    var skus = {};
+    filtered.forEach(function(d) { skus[d.sku] = true; });
+    var cnt = Object.keys(skus).length;
+    if (!cnt) return;
+    h += '<div class="cat-tile" data-cat="' + c.k + '">';
+    h += '<div class="cat-tile-icon">' + c.i + '</div>';
+    h += '<div class="cat-tile-name">' + c.k + '</div>';
+    h += '<div class="cat-tile-count">' + cnt + ' items</div>';
+    h += '</div>';
+  });
+  g.innerHTML = h || '<div style="color:#333;font-size:12px;padding:20px;text-align:center;grid-column:1/-1">No products found</div>';
+  g.querySelectorAll('.cat-tile').forEach(function(el) {
+    el.addEventListener('click', function() { showCat(el.getAttribute('data-cat')); });
+  });
+}
+
+function showCat(cat) {
+  CURCAT = cat;
+  document.getElementById('browseView').style.display = 'none';
+  document.getElementById('productsView').style.display = 'block';
+  var c = CATS.find(function(x) { return x.k === cat; });
+  document.getElementById('prodTitle').textContent = (c ? c.i + ' ' : '') + cat;
+  var d = DB.filter(function(x) {
+    if (LOC !== 'all' && !(x.store_location && x.store_location.includes(LOC))) return false;
+    return x.category === cat;
+  });
+  renderProds(d);
+}
+
+function onSearch(q) {
+  SQ = q;
+  if (!q) { showBrowse(); return; }
+  CURCAT = null;
+  document.getElementById('browseView').style.display = 'none';
+  document.getElementById('productsView').style.display = 'block';
+  document.getElementById('prodTitle').textContent = 'Search Results';
+  doSearch();
+}
+
+function doSearch() {
+  var q = SQ.toLowerCase();
+  var d = DB.filter(function(x) {
+    if (LOC !== 'all' && !(x.store_location && x.store_location.includes(LOC))) return false;
+    return (x.product_name && x.product_name.toLowerCase().includes(q)) ||
+           (x.sku && x.sku.toLowerCase().includes(q));
+  });
+  renderProds(d);
+}
+
+function renderProds(data) {
+  var groups = {};
+  data.forEach(function(d) {
+    if (!groups[d.sku]) groups[d.sku] = {sku:d.sku, name:d.product_name, cat:d.category, locs:[]};
+    groups[d.sku].locs.push({loc:d.store_location, qty:d.quantity});
+  });
+  var items = Object.values(groups).sort(function(a,b) { return a.name.localeCompare(b.name); });
+  var cnt = document.getElementById('prodCount');
+  if (cnt) cnt.textContent = items.length + ' product' + (items.length !== 1 ? 's' : '');
+  var list = document.getElementById('prodList');
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div class="empty-txt">Nothing found</div></div>';
+    return;
+  }
+  var h = '';
+  items.forEach(function(item) {
+    var tot = item.locs.reduce(function(s,l) { return s + l.qty; }, 0);
+    var qc = tot === 0 ? 'q-out' : tot <= 3 ? 'q-low' : 'q-ok';
+    var icon = ICONS[item.cat] || '📦';
+    var sid = 'p' + item.sku.replace(/[^a-zA-Z0-9]/g, '');
+    h += '<div class="prod-row" data-sid="' + sid + '">';
+    h += '<div class="prod-icon">' + icon + '</div>';
+    h += '<div class="prod-info">';
+    h += '<div class="prod-name">' + item.name + '</div>';
+    h += '<div class="prod-sku">SKU: ' + item.sku + '</div>';
+    h += '<div class="prod-locs" id="' + sid + '">';
+    item.locs.forEach(function(l) {
+      var lc = l.qty === 0 ? 'q-out' : l.qty <= 3 ? 'q-low' : 'q-ok';
+      var ll = l.qty === 0 ? 'Out of stock' : l.qty <= 3 ? l.qty + ' left' : l.qty + ' in stock';
+      h += '<div class="prod-loc-row"><span class="prod-loc-name">' + l.loc + '</span><span class="prod-loc-qty ' + lc + '">' + ll + '</span></div>';
+    });
+    h += '</div></div>';
+    h += '<div class="prod-right"><div class="prod-qty ' + qc + '">' + tot + '</div><div class="prod-qty-label">in stock</div></div>';
+    h += '</div>';
+  });
+  list.innerHTML = h;
+  list.querySelectorAll('.prod-row').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var el = document.getElementById(row.getAttribute('data-sid'));
+      if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('openBtn').addEventListener('click', openPortal);
+  document.getElementById('closeBtn').addEventListener('click', closePortal);
+  document.getElementById('backBtn').addEventListener('click', showBrowse);
+  document.getElementById('portalQ').addEventListener('input', function() { onSearch(this.value); });
+  document.getElementById('tabAll').addEventListener('click', function() { setLoc('all', this); });
+  document.getElementById('tabGV').addEventListener('click', function() { setLoc('Grass Valley', this); });
+  document.getElementById('tabCF').addEventListener('click', function() { setLoc('Colfax', this); });
+  document.querySelectorAll('.hf-dept').forEach(function(d) {
+    d.addEventListener('click', openPortal);
+  });
+});
+
+setInterval(function() {
+  if (document.getElementById('poziOverlay').classList.contains('open')) {
+    fetchLive();
+  }
+}, 30000);
+</script>
+</body>
+</html>

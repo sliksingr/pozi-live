@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POZi — How Business Is Finished</title>
+<style>
+/* ── BASE: DARK THEME (default) ── */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth}
+:root{--green:#00ff88;--blue:#0066ff;--dark:#0f0f1a;--card:#1a1a2e;--border:#2a2a45;--muted:#c0c0d8}
+body{background:#0f0f1a !important;color:#ffffff !important;font-family:'Inter',sans-serif;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#000000}::-webkit-scrollbar-thumb{background:#333}
+
+/* PAGE SYSTEM */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.98);backdrop-filter:blur(24px);border-bottom:1px solid #ffffff08}
+.nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.nav-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 24px #00ff8830}
+.nav-name{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1}
+.nav-tagline{font-size:8px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.nav-links{display:flex;gap:2px}
+.nl{color:#aaaacc;font-size:12px;text-decoration:none;padding:8px 14px;border-radius:7px;transition:all 0.2s;letter-spacing:0.3px;cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
+.nl:hover{color:#ffffff;background:#ffffff15}
+.nl.active{color:var(--green);background:#00ff8815;border-radius:7px}
+.nav-cta{background:linear-gradient(135deg,var(--green),#00cc66);color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:9px 20px;border-radius:8px;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;border:none}
+.nav-cta:hover{box-shadow:0 6px 24px #00ff8840;transform:translateY(-1px)}
+
+/* SHARED */
+.badge{display:inline-flex;align-items:center;gap:8px;border-radius:20px;padding:7px 18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+.bdot{width:5px;height:5px;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sec-eyebrow{font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;text-align:center}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,50px);font-weight:800;color:#fff;letter-spacing:-1.5px;text-align:center;margin-bottom:14px}
+.sec-sub{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 56px;line-height:1.8;text-align:center}
+.grad-g{background:linear-gradient(135deg,var(--green),#00cc66);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad-b{background:linear-gradient(135deg,var(--blue),#0055ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.btn-p{background:linear-gradient(135deg,var(--green),#00cc66);color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:14px 36px;border-radius:10px;border:none;cursor:pointer;display:inline-block;transition:all 0.2s;margin:6px;text-decoration:none}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 10px 30px #00ff8845}
+.btn-s{background:transparent;color:#fff;font-family:'Syne',sans-serif;font-weight:600;font-size:14px;padding:14px 36px;border-radius:10px;border:1px solid #ffffff15;cursor:pointer;display:inline-block;transition:all 0.2s;margin:6px;text-decoration:none}
+.btn-s:hover{background:#ffffff08;border-color:#ffffff30}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 100% 60% at 50% -10%,#00ff8810,transparent 65%),radial-gradient(ellipse 60% 40% at 90% 90%,#0066ff08,transparent 60%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff03 1px,transparent 1px),linear-gradient(90deg,#ffffff03 1px,transparent 1px);background-size:56px 56px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+h1{font-family:'Syne',sans-serif;font-size:clamp(44px,9vw,96px);font-weight:800;line-height:0.95;color:#fff;letter-spacing:-3px;margin-bottom:10px}
+.h1-sub{font-family:'Syne',sans-serif;font-size:clamp(44px,9vw,96px);font-weight:800;line-height:0.95;letter-spacing:-3px;margin-bottom:28px}
+.hero-desc{font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:580px;line-height:1.8;margin-bottom:48px;font-weight:300}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:64px}
+
+/* BROADCAST */
+.broadcast-wrap{position:relative;width:100%;max-width:560px;margin:0 auto}
+.broadcast-center{width:80px;height:80px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;position:relative;z-index:10;box-shadow:0 0 40px #00ff8840}
+.broadcast-name{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#000}
+.broadcast-sub{font-size:7px;color:#00000060;letter-spacing:1px;text-transform:uppercase}
+.ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--green);animation:expand 3s infinite}
+.ring:nth-child(2){animation-delay:1s}
+.ring:nth-child(3){animation-delay:2s}
+@keyframes expand{0%{width:80px;height:80px;opacity:0.6}100%{width:400px;height:400px;opacity:0}}
+.broadcast-nodes{position:absolute;inset:0;pointer-events:none}
+.bnode{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bnode-bubble{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;border:1px solid;position:relative}
+.bnode-label{font-size:9px;color:var(--muted)}
+.bnode-ping{position:absolute;top:-4px;right:-4px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--dark);animation:ping 1.5s infinite}
+@keyframes ping{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* SAVINGS */
+.savings{padding:100px 24px;position:relative}
+.savings-wrap{max-width:1000px;margin:0 auto}
+.savings-hero-stat{text-align:center;margin-bottom:64px;padding:56px 40px;background:var(--card);border:1px solid #00ff8820;border-radius:20px;position:relative;overflow:hidden}
+.savings-hero-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.savings-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,#00ff8808,transparent 70%);pointer-events:none}
+.savings-big-num{font-family:'Syne',sans-serif;font-size:clamp(60px,14vw,120px);font-weight:800;line-height:1;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.savings-big-label{font-size:clamp(14px,2vw,20px);color:#fff;font-family:'Syne',sans-serif;font-weight:600;margin-bottom:12px}
+.savings-big-sub{font-size:14px;color:var(--muted);max-width:480px;margin:0 auto;line-height:1.7}
+.savings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.saving-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;overflow:hidden;transition:transform 0.3s}
+.saving-card:hover{transform:translateY(-4px)}
+.saving-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent)}
+.saving-icon{font-size:28px;margin-bottom:14px}
+.saving-stat{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--green);line-height:1;margin-bottom:8px}
+.saving-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:8px}
+.saving-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* BROADCAST SECTION */
+.broadcast-section{padding:100px 24px;background:linear-gradient(180deg,transparent,#0d0d1a40,transparent)}
+.broadcast-wrap2{max-width:960px;margin:0 auto}
+.broadcast-timeline{display:grid;grid-template-columns:1fr 80px 1fr;gap:0;margin-top:64px;align-items:start}
+.bt-col{display:flex;flex-direction:column;gap:16px}
+.bt-center-col{display:flex;flex-direction:column;align-items:center;padding-top:20px}
+.bt-line{width:2px;flex:1;background:linear-gradient(180deg,var(--green),var(--blue));min-height:40px;margin:8px 0}
+.bt-step{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.bt-step:hover{border-color:#00ff8830}
+.bt-step-num{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.bt-step-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+.bt-step-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.bt-center-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.speed-badge{background:#00ff8812;border:1px solid #00ff8825;border-radius:8px;padding:10px 16px;text-align:center;margin-top:8px}
+.speed-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--green)}
+.speed-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+/* BEFORE AFTER */
+.ba-section{padding:0 24px 100px;max-width:960px;margin:0 auto}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ba-card{border-radius:16px;padding:36px;border:1px solid}
+.ba-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:24px}
+.ba-item{display:flex;gap:12px;margin-bottom:16px;align-items:flex-start}
+.ba-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.ba-text{font-size:13px;color:#777;line-height:1.6}
+.ba-time{display:inline-block;background:#ffffff08;border-radius:4px;padding:2px 8px;font-size:10px;color:#aaaacc;margin-top:4px;font-family:'Syne',sans-serif;font-weight:600}
+
+/* NETWORK STRIP */
+.network-strip{padding:60px 24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center}
+.strip-label{font-size:10px;color:#8888aa;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+.strip-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;align-items:center}
+.strip-pill{padding:10px 24px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;border:1px solid;opacity:0.5;transition:all 0.3s;display:flex;align-items:center;gap:8px}
+.strip-pill:hover{opacity:1;transform:translateY(-2px)}
+.strip-dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite}
+.proof-section{padding:100px 24px}
+.proof-wrap{max-width:960px;margin:0 auto}
+.proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.proof-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center}
+.proof-num{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;line-height:1;margin-bottom:10px}
+.proof-label{font-size:12px;color:var(--muted);line-height:1.6;max-width:160px;margin:0 auto}
+
+/* HOW IT WORKS PAGE */
+.page-hero{padding:140px 24px 70px;text-align:center;position:relative;overflow:hidden}
+.page-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,#00ff8808,transparent 65%);pointer-events:none}
+.page-grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff03 1px,transparent 1px),linear-gradient(90deg,#ffffff03 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+.hero-mission{font-family:'Syne',sans-serif;font-size:clamp(12px,2vw,16px);color:#ffffff20;letter-spacing:4px;text-transform:uppercase;margin-bottom:22px}
+.bridge-section{padding:70px 24px 60px}
+.bridge-wrap{max-width:860px;margin:0 auto;text-align:center}
+.bridge-visual{position:relative;height:180px;max-width:760px;margin:0 auto 20px}
+.bside{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:6px}
+.bside-l{left:0}.bside-r{right:0}
+.bblock{width:72px;height:72px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;border:2px solid;gap:3px}
+.blabel{font-size:9px;color:var(--muted)}
+.bcenter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 50px #00ff8840;z-index:10}
+.bcenter-name{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#000}
+.bcenter-sub{font-size:7px;color:#00000055;letter-spacing:1px;text-transform:uppercase}
+.bridge-caption{font-size:12px;color:#aaaacc;letter-spacing:1px;text-align:center;margin-top:8px}
+.mission{background:linear-gradient(135deg,#00ff8806,#0066ff06);border:1px solid #00ff8818;border-radius:16px;padding:44px 36px;text-align:center;margin:0 24px 80px;max-width:860px;margin-left:auto;margin-right:auto}
+.mq{font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,36px);font-weight:800;color:#fff;line-height:1.3;letter-spacing:-0.5px;margin-bottom:18px}
+.mq .hl{color:var(--green)}
+.md{font-size:14px;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.8}
+.steps-section{padding:0 24px 80px;max-width:820px;margin:0 auto}
+.steps-header{text-align:center;margin-bottom:52px}
+.slabel{font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.stitle{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,42px);font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:12px}
+.ssub{font-size:14px;color:var(--muted);line-height:1.7}
+.timeline{display:flex;flex-direction:column}
+.trow{display:grid;grid-template-columns:56px 2px 1fr;gap:0 20px}
+.tnum-col{display:flex;flex-direction:column;align-items:center}
+.tnum{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:2px solid;flex-shrink:0}
+.tline{width:2px;flex:1;min-height:32px;margin:6px auto 0;background:linear-gradient(180deg,var(--border),transparent)}
+.tlast .tline{display:none}
+.tcontent{padding:2px 0 48px}
+.ticon{font-size:26px;margin-bottom:10px}
+.ttitle{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;color:#fff;margin-bottom:8px}
+.tdesc{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:14px}
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.tcard-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.tcard-text{font-size:12px;color:#888;line-height:1.6}
+.tcard-text strong{color:#ccc;display:block;margin-bottom:3px;font-family:'Syne',sans-serif;font-size:12px}
+.promise{padding:0 24px 80px;max-width:860px;margin:0 auto}
+.promise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px}
+.promise-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center}
+.promise-icon{font-size:30px;margin-bottom:12px}
+.promise-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:8px}
+.promise-text{font-size:11px;color:var(--muted);line-height:1.6}
+
+/* PRICING PAGE */
+.pricing-hero{padding:140px 24px 80px;text-align:center;position:relative;overflow:hidden}
+.pricing-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,#0066ff08,transparent 65%),radial-gradient(ellipse 50% 40% at 20% 90%,#00ff8806,transparent 60%);pointer-events:none}
+.ss-card{background:linear-gradient(135deg,#00ff8808,#0066ff08);border:1px solid #00ff8820;border-radius:20px;padding:56px 48px;text-align:center;position:relative;overflow:hidden}
+.ss-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.ss-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:250px;background:radial-gradient(ellipse,#00ff8806,transparent 70%);pointer-events:none}
+.ss-eyebrow{font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.ss-title{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,52px);font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:20px}
+.ss-title .hl{color:var(--green)}
+.ss-desc{font-size:15px;color:var(--muted);max-width:560px;margin:0 auto 40px;line-height:1.8}
+.ss-speed-row{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
+.ss-speed-item{text-align:center}
+.ss-speed-val{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,60px);font-weight:800;line-height:1}
+.ss-speed-label{font-size:11px;color:var(--muted);margin-top:6px}
+.ss-divider{width:1px;height:60px;background:var(--border)}
+.value-section{padding:80px 24px;max-width:960px;margin:0 auto}
+.value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.value-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;overflow:hidden;transition:all 0.3s}
+.value-card:hover{transform:translateY(-4px);border-color:#00ff8830}
+.value-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent)}
+.value-icon{font-size:32px;margin-bottom:16px}
+.value-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:10px}
+.value-desc{font-size:12px;color:var(--muted);line-height:1.7}
+.value-metric{display:inline-block;margin-top:14px;background:#00ff8812;border:1px solid #00ff8825;border-radius:6px;padding:5px 12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--green)}
+.pricing-section{padding:0 24px 80px;max-width:960px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden;transition:all 0.3s}
+.pricing-card:hover{transform:translateY(-4px)}
+.pricing-card.featured{border-color:#00ff8830;background:linear-gradient(180deg,#0d1a14,#0d0d1a)}
+.pricing-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.featured-badge{position:absolute;top:20px;right:20px;background:var(--green);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:9px;padding:4px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase}
+.tier-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-family:'Syne',sans-serif;font-weight:600}
+.tier-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:6px}
+.tier-desc{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.tier-price-val{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;line-height:1;color:#fff}
+.tier-price-period{font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:24px}
+.tier-divider{height:1px;background:var(--border);margin:20px 0}
+.tier-features{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.tf{display:flex;gap:10px;align-items:flex-start}
+.tf-check{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:2px;background:#00ff8815;color:var(--green)}
+.tf-text{font-size:12px;color:#888;line-height:1.5}
+.tf-text strong{color:#ccc;font-family:'Syne',sans-serif;font-size:11px;display:block;margin-bottom:1px}
+.tier-btn{width:100%;padding:13px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;border:none;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.tier-btn:hover{transform:translateY(-1px)}
+.tier-btn-primary{background:linear-gradient(135deg,var(--green),#00cc66);color:#000}
+.tier-btn-primary:hover{box-shadow:0 8px 24px #00ff8840}
+.tier-btn-secondary{background:transparent;color:#fff;border:1px solid #ffffff20}
+.tier-btn-secondary:hover{background:#ffffff08}
+.speed-compare{padding:0 24px 80px;max-width:860px;margin:0 auto}
+.sc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.sc-head{display:grid;grid-template-columns:1fr 120px 120px 120px;padding:14px 20px;background:#000000;border-bottom:1px solid var(--border);font-size:10px;font-family:'Syne',sans-serif;font-weight:700}
+.sc-head-col{text-align:center}
+.sc-row{display:grid;grid-template-columns:1fr 120px 120px 120px;padding:14px 20px;border-bottom:1px solid #0a0a18;align-items:center}
+.sc-row:last-child{border-bottom:none}
+.sc-label{font-size:12px;color:#888}
+.sc-val{text-align:center;font-size:12px;font-weight:600;font-family:'Syne',sans-serif}
+.sc-best{color:var(--green)}.sc-mid{color:#ffcc00}.sc-slow{color:#8888aa}
+.worth-section{padding:0 24px 80px;max-width:860px;margin:0 auto}
+.worth-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:48px}
+.worth-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;display:flex;gap:16px;align-items:flex-start}
+.worth-icon{font-size:28px;flex-shrink:0}
+.worth-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+.worth-desc{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* CTA + FOOTER */
+.cta-section{padding:100px 24px;text-align:center;position:relative;overflow:hidden}
+.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,#00ff8806,transparent);pointer-events:none}
+.cta-title{font-family:'Syne',sans-serif;font-size:clamp(30px,6vw,60px);font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:20px}
+.cta-sub{font-size:16px;color:var(--muted);margin-bottom:12px;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto}
+.cta-slogan{font-family:'Syne',sans-serif;font-size:11px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.cta-tag{font-family:'Syne',sans-serif;font-size:12px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:36px}
+footer{padding:32px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px}
+.footer-name{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff}
+.footer-slogans{font-size:9px;color:#222;letter-spacing:1px;margin-top:3px}
+.footer-links{display:flex;gap:20px}
+.footer-link{font-size:11px;color:#888899;text-decoration:none;transition:color 0.2s;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif}
+.footer-link:hover{color:#666}
+.footer-copy{font-size:10px;color:#1a1a1a}
+
+@media(max-width:768px){
+.name-grid{grid-template-columns:1fr!important}
+#heroMobileDownloadBtn{display:inline-block!important}
+  nav{padding:12px 16px;flex-wrap:wrap;gap:8px}
+  .nav-links{display:flex;flex-wrap:wrap;gap:2px;order:3;width:100%;justify-content:center}
+  .nl{font-size:11px;padding:6px 10px}
+  .nav-cta{font-size:11px;padding:7px 14px}
+  .savings-grid,.value-grid,.proof-grid{grid-template-columns:1fr}
+  .broadcast-timeline{grid-template-columns:1fr}.bt-center-col{display:none}
+  .ba-grid,.worth-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .promise-grid{grid-template-columns:1fr}
+  .sc-head,.sc-row{grid-template-columns:1fr 80px 80px 80px}
+  .ss-divider{display:none}.ss-card{padding:36px 24px}
+  footer{padding:24px 16px}.footer-links{display:none}
+  h1,.h1-sub{letter-spacing:-1.5px}
+#cf-first,#cf-last{grid-column:1/-1}
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#00ff88;--blue:#0066ff;--dark:#000000;--card:#050510;--border:#1c1c32;--muted:#8888aa;--red:#ff3355;--yellow:#ffcc00;--orange:#ff6600}
+body{background:#000000;color:#ffffff;font-family:'Inter',sans-serif;overflow-x:hidden;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#000000}::-webkit-scrollbar-thumb{background:#333}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.99);backdrop-filter:blur(24px);border-bottom:1px solid #ffffff08}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.nav-name{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff}
+.nav-tag{font-size:8px;color:#666688;letter-spacing:1.5px;text-transform:uppercase}
+.nav-links{display:flex;gap:4px}
+.nl{color:#aaaacc;font-size:12px;padding:7px 13px;border-radius:7px;transition:all 0.2s;cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
+.nl:hover{color:#ffffff;background:#ffffff15}
+.nl.active{color:var(--green);background:#00ff8815;border-radius:7px}
+.nav-cta{background:linear-gradient(135deg,var(--green),#00cc66);color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:8px 16px;border-radius:8px;cursor:pointer;border:none;transition:all 0.2s}
+.nav-cta:hover{box-shadow:0 6px 20px #00ff8840;transform:translateY(-1px)}
+
+/* HERO */
+
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,#00ff8808,transparent 65%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff02 1px,transparent 1px),linear-gradient(90deg,#ffffff02 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* DEMO CONTROLS */
+
+/* MAIN DEMO STAGE */
+
+/* RIGHT SIDE — SYSTEMS */
+
+/* EVENT LOG */
+
+to{transform:translateX(0);opacity:1}}
+
+/* INTERACTIVE TRIGGER */
+
+/* SPEED METER */
+
+/* PROGRESS BAR */
+
+@media(max-width:700px){
+  nav{padding:12px 16px}.nav-links{display:none}
+  
+  
+  
+  
+}
+
+html, body, .page, .page.active {
+  background: #0f0f1a !important;
+  color: #ffffff !important;
+}
+.hero, .page-hero, .pricing-hero, .savings, .broadcast-section, .ba-section, .network-strip, .proof-section, .cta-section, .steps-section, .promise, .value-section, .pricing-section, .speed-compare, .worth-section, .bridge-section {
+  background: transparent;
+}
+.saving-card, .proof-card, .bt-step, .ba-card, .step, .tcard, .promise-card, .value-card, .pricing-card, .worth-card, .sc-card, .savings-hero-stat, .mission, .ss-card {
+  background: var(--card);
+  border-color: var(--border);
+}
+nav {
+  background: rgba(15,15,26,0.97) !important;
+}
+
+/* ===== POZi ANIMATED LOGO ===== */
+.pozi-logo-text{display:inline-flex;align-items:baseline;gap:0;line-height:1;font-family:'Syne',sans-serif;font-weight:800;position:relative}
+.pozi-logo-poz{color:#fff}
+/* The i has NO natural dot rendered — we replace it with our animated one */
+.pozi-logo-i-wrap{position:relative;display:inline-flex;justify-content:center;overflow:visible}
+/* Hide the natural dot by using a dotless i via text-decoration trick —
+   we render the stem only and add our own dot absolutely positioned */
+.pozi-logo-i-stem{
+  color:#00ff88;
+  /* Use a custom character that looks like i stem without dot */
+  font-variant-numeric:normal;
+}
+/* OUR DOT — sits exactly where the i dot naturally lives, IS the dot */
+.pozi-logo-i-dot{
+  position:absolute;
+  /* Precisely positioned at the natural dot location of lowercase i */
+  top:0.05em;
+  left:50%;
+  transform:translateX(-50%);
+  width:0.2em;
+  height:0.2em;
+  border-radius:50%;
+  background:#00ff88;
+  box-shadow:0 0 5px #00ff88, 0 0 10px #00ff8870;
+  animation:iDotBlast 2.5s ease-in-out infinite;
+  transform-origin:center center;
+}
+/* BEAM — shoots right from the dot position */
+.pozi-logo-i-trail{
+  position:absolute;
+  top:0.14em;
+  left:50%;
+  height:0.07em;
+  width:0;
+  border-radius:4px;
+  background:linear-gradient(90deg,#00ff88,#00ff8860,transparent);
+  box-shadow:0 0 3px #00ff88;
+  animation:iBeamBlast 2.5s ease-in-out infinite;
+  transform-origin:left center;
+}
+@keyframes iDotBlast{
+  /* Sit still as the normal dot */
+  0%,25%{
+    transform:translateX(-50%) scale(1);
+    opacity:1;
+    top:0.05em;
+    left:50%;
+  }
+  /* Quick pulse before launch */
+  28%{transform:translateX(-50%) scale(1.3);opacity:1}
+  /* BLAST RIGHT — travels 3.5em total */
+  50%{
+    transform:translateX(3em) scale(0.2);
+    opacity:0;
+    top:0.05em;
+  }
+  /* Snap back invisibly */
+  51%{transform:translateX(-50%) scale(0);opacity:0;top:0.05em;left:50%}
+  /* Reappear as normal dot */
+  62%{transform:translateX(-50%) scale(1);opacity:1;top:0.05em;left:50%}
+  100%{transform:translateX(-50%) scale(1);opacity:1;top:0.05em;left:50%}
+}
+@keyframes iBeamBlast{
+  0%,27%{width:0;opacity:0}
+  /* Beam grows as dot travels */
+  32%{width:0.5em;opacity:1}
+  48%{width:3em;opacity:0.7}
+  52%{width:0;opacity:0}
+  100%{width:0;opacity:0}
+}
+/* Small version for nav */
+.pozi-logo-sm{font-size:20px}
+/* Large version for hero */
+.pozi-logo-lg{font-size:clamp(44px,9vw,96px);letter-spacing:-3px}
+
+/* ── LIGHT THEME OVERRIDES ── */
+/* Covers every section, card, and element site-wide */
+
+/* ── ROOT & BODY ── */
+[data-theme="light"]{
+  --green:#00a050;
+  --blue:#0055ff;
+  --dark:#0a0a14;
+  --card:#f5f5fa;
+  --border:#e0e0ee;
+  --muted:#5a5a7a;
+}
+[data-theme="light"] body{
+  background:#f8f8fc !important;
+  color:#0a0a14 !important;
+  font-weight:500;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── ALL SECTIONS WHITE/LIGHT ── */
+[data-theme="light"] section,
+[data-theme="light"] .page,
+[data-theme="light"] .hero,
+[data-theme="light"] #page-home,
+[data-theme="light"] #page-how,
+[data-theme="light"] #page-pricing,
+[data-theme="light"] .metrics,
+[data-theme="light"] .ba-section,
+[data-theme="light"] .bridge-section,
+[data-theme="light"] .broadcast-section,
+[data-theme="light"] .steps-section,
+[data-theme="light"] .proof-section,
+[data-theme="light"] .value-section,
+[data-theme="light"] .worth-section,
+[data-theme="light"] .savings-wrap,
+[data-theme="light"] .pricing-section,
+[data-theme="light"] .pricing-hero,
+[data-theme="light"] .cta-section,
+[data-theme="light"] .contact-section,
+[data-theme="light"] 
+
+/* Alternating light sections */
+[data-theme="light"] .metrics,
+[data-theme="light"] .ba-section,
+[data-theme="light"] .proof-section,
+[data-theme="light"] .worth-section,
+[data-theme="light"] .cta-section,
+[data-theme="light"] .contact-section{
+  background:#f4f4f9 !important;
+}
+
+/* ── NAV ── */
+[data-theme="light"] nav{
+  background:rgba(255,255,255,0.96) !important;
+  border-bottom:1px solid rgba(0,0,0,0.07) !important;
+  box-shadow:0 2px 20px rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .nav-name{color:#0a0a14 !important}
+[data-theme="light"] .nav-tagline{color:#999 !important}
+[data-theme="light"] .nl{color:#555 !important}
+[data-theme="light"] .nl:hover{color:#0a0a14 !important;background:rgba(0,0,0,0.05) !important}
+[data-theme="light"] .nl.active{color:#00a050 !important;background:rgba(0,160,80,0.08) !important}
+
+/* ── ALL TEXT ── */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] .hero-title,
+[data-theme="light"] .sec-title,
+[data-theme="light"] .section-title,
+[data-theme="light"] .cta-slogan,
+[data-theme="light"] .cta-title,
+[data-theme="light"] .cta-tag,
+[data-theme="light"] .feature-title,
+[data-theme="light"] .step-title,
+[data-theme="light"] .bt-step-title,
+[data-theme="light"] .how-card-title,
+[data-theme="light"] .pricing-tier,
+[data-theme="light"] .pricing-price,
+[data-theme="light"] .proof-card h3,
+[data-theme="light"] .worth-card h3,
+[data-theme="light"] .value-card h3,
+[data-theme="light"] .promise-card h3,
+[data-theme="light"] .saving-card h3,
+[data-theme="light"] .tcard-text,
+[data-theme="light"] .ba-card h3,
+[data-theme="light"] .ss-card h3,
+[data-theme="light"] .sc-card h3,
+[data-theme="light"] .broadcast-name,
+[data-theme="light"] .contact-title{
+  color:#0a0a14 !important;
+}
+
+/* ── ALL BODY/DESCRIPTION TEXT ── */
+[data-theme="light"] p,
+[data-theme="light"] .hero-sub,
+[data-theme="light"] .hero-desc,
+[data-theme="light"] .sec-sub,
+[data-theme="light"] .section-sub,
+[data-theme="light"] .feature-desc,
+[data-theme="light"] .step-desc,
+[data-theme="light"] .bt-step-desc,
+[data-theme="light"] .how-card-desc,
+[data-theme="light"] .pricing-desc,
+[data-theme="light"] .proof-card p,
+[data-theme="light"] .worth-card p,
+[data-theme="light"] .value-card p,
+[data-theme="light"] .promise-card p,
+[data-theme="light"] .saving-card p,
+[data-theme="light"] .ba-card p,
+[data-theme="light"] .ss-card p,
+[data-theme="light"] .sc-card p,
+[data-theme="light"] .broadcast-sub,
+[data-theme="light"] .contact-sub,
+[data-theme="light"] .cta-sub{
+  color:#1a1a2a !important;
+  font-weight:500 !important;
+}
+
+/* ── MUTED TEXT ── */
+[data-theme="light"] .sec-eyebrow,
+[data-theme="light"] .hero-eyebrow,
+[data-theme="light"] .pricing-per,
+[data-theme="light"] .pricing-note,
+[data-theme="light"] .metric-label,
+[data-theme="light"] .bt-step-num{
+  color:#00a050 !important;
+}
+[data-theme="light"] .pricing-per,
+[data-theme="light"] .pricing-note{color:#888 !important}
+
+/* ── ALL CARDS ── */
+[data-theme="light"] .feature-card,
+[data-theme="light"] .how-card,
+[data-theme="light"] .proof-card,
+[data-theme="light"] .worth-card,
+[data-theme="light"] .value-card,
+[data-theme="light"] .promise-card,
+[data-theme="light"] .saving-card,
+[data-theme="light"] .tcard,
+[data-theme="light"] .ba-card,
+[data-theme="light"] .ss-card,
+[data-theme="light"] .sc-card,
+[data-theme="light"] .inv-row,
+[data-theme="light"] .demo-wrap,
+[data-theme="light"] .bridge-wrap,
+[data-theme="light"] .broadcast-wrap,
+[data-theme="light"] .broadcast-wrap2,
+  background:#ffffff !important;
+  border-color:#e0e0ee !important;
+  box-shadow:0 2px 16px rgba(0,0,0,0.07) !important;
+  color:#0a0a14 !important;
+}
+[data-theme="light"] .feature-card:hover,
+[data-theme="light"] .how-card:hover,
+[data-theme="light"] .proof-card:hover,
+[data-theme="light"] .worth-card:hover,
+[data-theme="light"] .value-card:hover,
+[data-theme="light"] .promise-card:hover{
+  border-color:rgba(0,160,80,0.3) !important;
+  box-shadow:0 8px 32px rgba(0,0,0,0.1) !important;
+}
+
+/* ── PRICING CARDS ── */
+[data-theme="light"] .pricing-card{
+  background:#ffffff !important;
+  border-color:#e0e0ee !important;
+  box-shadow:0 2px 16px rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .pricing-card.featured{
+  border-color:rgba(0,160,80,0.4) !important;
+  box-shadow:0 8px 40px rgba(0,160,80,0.14) !important;
+}
+[data-theme="light"] .pricing-feature{color:#1a1a2a !important;font-weight:500 !important}
+[data-theme="light"] .pricing-divider{background:#e8e8f0 !important}
+[data-theme="light"] .pricing-check{color:#00a050 !important}
+[data-theme="light"] .tier-features{border-top-color:#e8e8f0 !important}
+
+/* ── METRICS ── */
+[data-theme="light"] .metric-num{color:#0a0a14 !important}
+[data-theme="light"] .metric-divider{background:#e0e0ee !important}
+
+/* ── BADGE & DOTS ── */
+[data-theme="light"] .badge{
+  background:rgba(0,160,80,0.08) !important;
+  border-color:rgba(0,160,80,0.2) !important;
+  color:#00a050 !important;
+}
+[data-theme="light"] .bdot{background:#00a050 !important}
+
+/* ── BUTTONS ── */
+[data-theme="light"] .btn-s{
+  background:transparent !important;
+  border:1px solid #ccc !important;
+  color:#444 !important;
+}
+[data-theme="light"] .btn-s:hover{
+  background:rgba(0,0,0,0.04) !important;
+  color:#0a0a14 !important;
+  border-color:#999 !important;
+}
+
+/* ── HERO BACKGROUND ── */
+[data-theme="light"] .hero-bg{
+  background:
+    radial-gradient(ellipse 100% 70% at 50% -10%,rgba(0,201,110,0.1),transparent 65%),
+    radial-gradient(ellipse 60% 40% at 90% 90%,rgba(0,85,255,0.05),transparent 60%)
+  !important;
+}
+[data-theme="light"] .hero-grid{
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px) !important;
+}
+
+/* ── BROADCAST ANIMATION ── */
+[data-theme="light"] .broadcast-section{background:#f0f8f4 !important}
+[data-theme="light"] .broadcast-center{background:linear-gradient(135deg,#00c96e,#0055ff) !important;box-shadow:0 8px 24px rgba(0,201,110,0.3) !important}
+[data-theme="light"] .broadcast-name{color:#000 !important}
+[data-theme="light"] .broadcast-sub{color:rgba(0,0,0,0.5) !important}
+[data-theme="light"] .broadcast-node-label{color:#444 !important}
+[data-theme="light"] .broadcast-timeline{background:#e8e8f0 !important}
+/* SVG animation bg in light mode */
+[data-theme="light"] .bc-bg{background:transparent !important}
+/* Broadcast SVG dark background → light in light mode */
+[data-theme="light"] #bc-svg{background:linear-gradient(135deg,#e8f8f0,#eef5ff) !important;border-radius:16px}
+[data-theme="light"] .bg-stop-1{stop-color:#e8f8f0 !important}
+[data-theme="light"] .bg-stop-2{stop-color:#eef5ff !important}
+/* Hub POZi text in light mode stays dark (on green bg) */
+[data-theme="light"] #hubText{fill:#000 !important}
+/* Broadcast section container */
+[data-theme="light"] .broadcast-wrap{background:transparent !important;border:none !important;box-shadow:none !important}
+
+/* ── STEPS ── */
+[data-theme="light"] .step-connector{background:linear-gradient(180deg,rgba(0,160,80,0.2),transparent) !important}
+[data-theme="light"] .steps-header{color:#0a0a14 !important}
+
+/* ── CONTACT FORM ── */
+[data-theme="light"] .contact-input,
+[data-theme="light"] .contact-textarea,
+[data-theme="light"] .contact-select{
+  background:#ffffff !important;
+  border:1px solid #e0e0ee !important;
+  color:#0a0a14 !important;
+}
+[data-theme="light"] .contact-input::placeholder,
+[data-theme="light"] .contact-textarea::placeholder{color:#bbb !important}
+[data-theme="light"] .contact-label{color:#333 !important;font-weight:600 !important}
+
+/* ── INV ROWS (LIVE DEMO) ── */
+[data-theme="light"] .inv-row{background:#ffffff !important;border-color:#e8e8f0 !important}
+[data-theme="light"] .inv-name{color:#0a0a14 !important}
+[data-theme="light"] .inv-sku{color:#999 !important}
+[data-theme="light"] .inv-loc{color:#444 !important}
+[data-theme="light"] .demo-wrap{background:#f4f4f9 !important;border-color:#e0e0ee !important}
+[data-theme="light"] .demo-label{color:#0a0a14 !important}
+
+/* ── APP DOWNLOAD SECTION ── */
+[data-theme="light"] 
+
+/* ── SCROLLBAR ── */
+[data-theme="light"] ::-webkit-scrollbar-track{background:#f0f0f5}
+[data-theme="light"] ::-webkit-scrollbar-thumb{background:#ccc}
+
+/* ── LOGO & WHITE TEXT ELEMENTS ── */
+[data-theme="light"] .nav-name,
+[data-theme="light"] .pozi-logo-poz,
+[data-theme="light"] .pozi-logo-text,
+[data-theme="light"] .hero-title,
+[data-theme="light"] .h1-sub,
+[data-theme="light"] .grad-text,
+[data-theme="light"] .broadcast-center-text,
+[data-theme="light"] .steps-header h2,
+[data-theme="light"] .pricing-bg h2,
+[data-theme="light"] .section-eyebrow,
+[data-theme="light"] .proof-num,
+[data-theme="light"] .worth-num,
+[data-theme="light"] .metric-num{
+  color:#0a0a14 !important;
+}
+/* POZi logo POZ part specifically */
+[data-theme="light"] .pozi-logo-poz{color:#0a0a14 !important}
+/* Logo i stays green always */
+[data-theme="light"] .pozi-logo-i-stem,
+[data-theme="light"] .pozi-logo-i{color:#00a050 !important}
+/* Nav icon stays green/dark */
+[data-theme="light"] .nav-icon{
+  background:linear-gradient(135deg,#00c96e,#0055ff) !important;
+}
+/* Any remaining white text in light mode */
+[data-theme="light"] *:not(footer):not(footer *):not(.btn-p):not(.btn-p *):not(.nav-cta){
+  --white-text:#0a0a14;
+}
+/* Catch-all for any white text on light bg */
+[data-theme="light"] .pozi-logo-sm *:not(.pozi-logo-i-stem):not(.pozi-logo-i-dot):not(.pozi-logo-i-trail){
+  color:#0a0a14 !important;
+}
+/* Hero section headings */
+[data-theme="light"] .hero h1,
+[data-theme="light"] .hero h2,
+[data-theme="light"] .hero p{color:#0a0a14 !important}
+/* All section headings catch-all */
+[data-theme="light"] section h1,
+[data-theme="light"] section h2,
+[data-theme="light"] section h3,
+[data-theme="light"] section h4{color:#0a0a14 !important}
+/* All section paragraphs */
+[data-theme="light"] section p{color:#1a1a2a !important;font-weight:500 !important}
+/* Broadcast nodes */
+[data-theme="light"] .broadcast-node-label{color:#333 !important}
+/* Steps numbers */
+[data-theme="light"] .bt-step-num{
+  color:#00a050 !important;
+  border-color:rgba(0,160,80,0.25) !important;
+  background:rgba(0,160,80,0.06) !important;
+}
+/* Nav icon background */
+[data-theme="light"] .nav-icon{box-shadow:0 0 16px rgba(0,201,110,0.2) !important}
+
+/* ── STEP CARDS IN LIGHT MODE ── */
+[data-theme="light"] .bt-step{
+  background:#ffffff !important;
+  border:1px solid #e0e0ee !important;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06) !important;
+}
+[data-theme="light"] .bt-step:hover{
+  border-color:rgba(0,160,80,0.3) !important;
+  box-shadow:0 6px 20px rgba(0,0,0,0.09) !important;
+}
+[data-theme="light"] .bt-step-title{color:#0a0a14 !important;font-weight:800 !important}
+[data-theme="light"] .bt-step-desc{color:#1a1a2a !important;font-weight:500 !important}
+[data-theme="light"] .bt-step-num{color:#00a050 !important}
+/* The numbered circles (01, 02, 03) */
+[data-theme="light"] .broadcast-section{background:#f0f8f4 !important}
+[data-theme="light"] .broadcast-wrap2{color:#0a0a14 !important}
+/* The speed badge */
+[data-theme="light"] .speed-badge{
+  background:#ffffff !important;
+  border:1px solid #e0e0ee !important;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06) !important;
+}
+[data-theme="light"] .speed-val{color:#0a0a14 !important}
+[data-theme="light"] .speed-label{color:#555 !important}
+/* Updated checkmark cards */
+[data-theme="light"] .bt-step[style*="border-color:#00ff8825"]{
+  background:#f0faf5 !important;
+  border-color:rgba(0,160,80,0.2) !important;
+}
+
+/* ── FOOTER stays dark always ── */
+[data-theme="light"] footer{background:#0a0a14 !important;color:#fff !important}
+[data-theme="light"] footer *{color:#fff !important}
+[data-theme="light"] .footer-name{color:#fff !important}
+[data-theme="light"] .footer-slogans{color:#555 !important}
+[data-theme="light"] .footer-link{color:#666 !important}
+[data-theme="light"] .footer-copy{color:#444 !important}
+[data-theme="light"] footer .pozi-logo-poz{color:#fff !important}
+[data-theme="light"] footer .pozi-logo-i-stem{color:#00c96e !important}
+[data-theme="light"] footer .footer-name{color:#fff !important}
+/* Footer in dark mode too - always white */
+footer .pozi-logo-poz{color:#fff !important}
+footer .footer-name{color:#fff !important}
+
+/* ── GRADIENT TEXT stays green ── */
+[data-theme="light"] .grad-g{
+  background:linear-gradient(135deg,#00c96e,#00a050) !important;
+  -webkit-background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  background-clip:text !important;
+}
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;
+  padding:6px 12px;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:11px;
+  color:#aaa;
+  margin-right:8px;
+}
+.theme-toggle:hover{background:rgba(255,255,255,0.15);color:#fff}
+[data-theme="light"] .theme-toggle{
+  background:rgba(0,0,0,0.05);
+  border:1px solid rgba(0,0,0,0.1);
+  color:#555;
+}
+[data-theme="light"] .theme-toggle:hover{background:rgba(0,0,0,0.1);color:#0a0a14}
+.toggle-icon{font-size:14px;transition:transform 0.3s}
+.theme-toggle:hover .toggle-icon{transform:rotate(20deg)}
+
+/* ══ MOBILE NAV ══ */
+.nav-desktop-right{display:flex;align-items:center;gap:8px}
+.nav-mobile-right{display:none;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+
+/* Laser */
+.mob-laser-wrap{position:absolute;right:64px;top:50%;transform:translateY(-50%);width:80px;height:24px;pointer-events:none;overflow:visible}
+.mob-laser-beam{position:absolute;right:0;top:50%;transform:translateY(-50%);height:1.5px;width:0;background:linear-gradient(90deg,transparent,#00c96e,#fff);border-radius:2px;box-shadow:0 0 6px #00c96e;animation:mBeam 10s ease-in-out infinite}
+.mob-laser-dot{position:absolute;top:50%;right:80px;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:#00c96e;box-shadow:0 0 10px #00c96e;animation:mDot 10s ease-in-out infinite}
+@keyframes mBeam{0%,100%{width:0;right:80px;opacity:0}4%{opacity:1}10%{width:76px;right:0;opacity:0.8}13%{opacity:0;width:76px}14%{width:0;right:80px;opacity:0}}
+@keyframes mDot{0%,100%{right:80px;opacity:0;transform:translateY(-50%) scale(0.5)}3%{opacity:1;transform:translateY(-50%) scale(1)}10%{right:0;opacity:1}13%{right:0;opacity:0;transform:translateY(-50%) scale(2)}14%{right:80px;opacity:0;transform:translateY(-50%) scale(0.5)}}
+
+/* Ring + hamburger */
+.mob-hamburger{position:relative;width:48px;height:48px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mob-ring{position:absolute;inset:0;width:48px;height:48px;pointer-events:none}
+.mob-ring-arc{animation:mRing 10s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(0,201,110,0.6))}
+@keyframes mRing{0%,100%{stroke-dashoffset:125.6;opacity:0.2}10%{stroke-dashoffset:0;opacity:1}30%{stroke-dashoffset:0;opacity:0.5}45%{stroke-dashoffset:125.6;opacity:0.2}}
+.mob-bars{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.mb1,.mb2,.mb3{display:block;height:2px;background:rgba(255,255,255,0.8);border-radius:2px;transition:all 0.3s cubic-bezier(0.2,0.8,0.3,1)}
+.mb1{width:18px}.mb2{width:12px}.mb3{width:18px}
+.mob-hamburger:hover .mb1,.mob-hamburger:hover .mb2,.mob-hamburger:hover .mb3{background:#00c96e;box-shadow:0 0 6px #00c96e50}
+.mob-hamburger:hover .mb2{width:18px}
+.mob-hamburger:hover .mob-ring-arc{stroke-dashoffset:0;opacity:1}
+/* Open = X */
+.nav-mobile-right.open .mb1{transform:translateY(7px) rotate(45deg);background:#00c96e;width:18px}
+.nav-mobile-right.open .mb2{opacity:0;transform:scaleX(0)}
+.nav-mobile-right.open .mb3{transform:translateY(-7px) rotate(-45deg);background:#00c96e;width:18px}
+.nav-mobile-right.open .mob-ring-arc{stroke-dashoffset:0;opacity:1}
+
+/* Mini theme button */
+.mob-theme-btn{width:48px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:3px 0;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:8px;color:rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;gap:2px;transition:all 0.2s}
+.mob-theme-btn:hover{background:rgba(0,201,110,0.1);border-color:rgba(0,201,110,0.3);color:#00c96e}
+[data-theme="light"] .mob-theme-btn{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.1);color:rgba(0,0,0,0.4)}
+[data-theme="light"] .mob-theme-btn:hover{background:rgba(0,160,80,0.08);color:#00a050}
+[data-theme="light"] .mb1,[data-theme="light"] .mb2,[data-theme="light"] .mb3{background:rgba(0,0,0,0.5)}
+[data-theme="light"] .mob-hamburger:hover .mb1,[data-theme="light"] .mob-hamburger:hover .mb2,[data-theme="light"] .mob-hamburger:hover .mb3{background:#00a050}
+[data-theme="light"] .nav-mobile-right.open .mb1,[data-theme="light"] .nav-mobile-right.open .mb3{background:#00a050}
+
+/* Mobile menu overlay */
+.mobile-menu{position:fixed;inset:0;background:rgba(0,0,0,0.97);backdrop-filter:blur(24px);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu-inner{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;max-width:320px;padding:0 24px}
+.mobile-nl{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px 20px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;text-align:left;transition:all 0.2s}
+.mobile-nl:hover,.mobile-nl:active{background:rgba(0,255,136,0.08);border-color:rgba(0,255,136,0.2);color:#00c96e}
+.mobile-cta{width:100%;background:linear-gradient(135deg,#00c96e,#009950);border:none;border-radius:14px;padding:16px 20px;color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;cursor:pointer;margin-top:8px}
+[data-theme="light"] .mobile-menu{background:rgba(255,255,255,0.97)}
+[data-theme="light"] .mobile-nl{background:rgba(0,0,0,0.03);border-color:rgba(0,0,0,0.06);color:#0a0a14}
+[data-theme="light"] .mobile-nl:hover{background:rgba(0,160,80,0.06);border-color:rgba(0,160,80,0.2);color:#00a050}
+
+/* Responsive */
+@media(max-width:768px){
+  .nav-mobile-right{display:flex !important}
+  .nav-desktop-right{display:none !important}
+  .nav-links{display:none !important}
+  nav{padding:10px 16px !important;position:fixed !important}
+  .hero{padding-top:80px !important}
+}
+@media(min-width:769px){
+  .nav-mobile-right{display:none !important}
+  .nav-desktop-right{display:flex !important}
+  .mobile-menu{display:none !important}
+}
+
+/* Mobile nav spacer — pushes content below fixed nav */
+.mobile-nav-spacer{display:none;height:0}
+@media(max-width:768px){
+  .mobile-nav-spacer{display:block;height:44px}
+}
+
+/* ===== POZI LIVE DASHBOARD STYLES ===== */
+#pozi-live-section{
+  max-width:900px;margin:0 auto 80px;padding:0 24px;
+}
+.pozi-live-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.pozi-live-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(18px,3vw,26px);color:#fff;
+}
+.pozi-sync-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:6px 14px;
+}
+#pozi-sync-indicator{
+  width:8px;height:8px;border-radius:50%;
+  background:#00c96e;
+  box-shadow:0 0 6px #00c96e;
+  animation:syncPulse 2s infinite;
+  transition:all 0.2s;
+}
+#pozi-sync-indicator.firing{
+  background:#00ff88;
+  box-shadow:0 0 20px #00ff88;
+  transform:scale(1.6);
+}
+@keyframes syncPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.pozi-sync-text{
+  font-family:'Inter',sans-serif;font-size:11px;color:#888;
+}
+#pozi-last-sync{color:#00c96e;font-weight:600;}
+#pozi-live-inventory{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+}
+.pozi-store-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:18px;
+  transition:border-color 0.3s;
+}
+.pozi-store-card:hover{border-color:#00c96e40;}
+.pozi-store-name{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:13px;color:#fff;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.pozi-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid #1a1a2e;
+}
+.pozi-item:last-child{border-bottom:none;}
+.pozi-item-name{
+  font-family:'Inter',sans-serif;font-size:12px;color:#ccc;
+  flex:1;margin-right:8px;
+}
+.pozi-item-qty{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  white-space:nowrap;
+}
+.pozi-dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+.pozi-item.ok .pozi-dot{background:#00c96e;box-shadow:0 0 4px #00c96e;}
+.pozi-item.ok .pozi-item-qty{color:#00c96e;}
+.pozi-item.low .pozi-dot{background:#ffcc00;box-shadow:0 0 4px #ffcc00;}
+.pozi-item.low .pozi-item-qty{color:#ffcc00;}
+.pozi-item.out .pozi-dot{background:#ff3355;}
+.pozi-item.out .pozi-item-qty{color:#ff3355;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" id="navLogo">
+    <div class="nav-icon">⚡</div>
+    <div>
+      <div class="nav-name"><span class="pozi-logo-text pozi-logo-sm">
+          <span class="pozi-logo-poz">POZ</span><span class="pozi-logo-i-wrap"><span class="pozi-logo-i-stem">ı</span><span class="pozi-logo-i-dot"></span><span class="pozi-logo-i-trail"></span></span>
+        </span></div>
+      <div class="nav-tagline">All In One Place</div>
+    </div>
+  </div>
+  <!-- Desktop nav links -->
+  <div class="nav-links">
+    <button class="nl active" id="nav-home" data-page="home">Home</button>
+    <button class="nl" id="nav-how" data-page="how">How It Works</button>
+    <button class="nl" id="nav-pricing" data-page="pricing">Pricing</button>
+    <button class="nl" id="nav-demo" style="opacity:0.6;font-size:11px">▶ Demo</button>
+    
+    <button class="nl" id="nav-contact">Contact</button>
+  </div>
+  <!-- Desktop right: theme + download -->
+  <div class="nav-desktop-right">
+    <button class="theme-toggle" id="themeToggle" id="themeToggleBtn">
+      <span class="toggle-icon" id="toggleIcon">☀️</span>
+      <span id="toggleLabel">Light</span>
+    </button>
+    <button class="nav-cta" id="poziGoBtn" style="background:linear-gradient(135deg,#00c96e,#009950);letter-spacing:0.5px">⬇ Download POZi Go</button>
+  </div>
+  <!-- Mobile right: ring+hamburger on top, mini theme below -->
+  <div class="nav-mobile-right" id="navMobileRight">
+    <div class="mob-laser-wrap">
+      <div class="mob-laser-beam"></div>
+      <div class="mob-laser-dot"></div>
+    </div>
+    <div class="mob-hamburger" id="hamburgerBtn">
+      <svg class="mob-ring" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="20" stroke="rgba(0,201,110,0.15)" stroke-width="1.5"/>
+        <circle class="mob-ring-arc" cx="24" cy="24" r="20"
+          stroke="url(#rg)" stroke-width="2.5" stroke-linecap="round"
+          stroke-dasharray="125.6" stroke-dashoffset="125.6"
+          transform="rotate(-90 24 24)"/>
+        <defs>
+          <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00c96e"/>
+            <stop offset="100%" stop-color="#0055ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="mob-bars">
+        <span class="mb1"></span>
+        <span class="mb2"></span>
+        <span class="mb3"></span>
+      </div>
+    </div>
+    <button class="mob-theme-btn" id="themeToggleMobile" id="themeToggleBtn">
+      <span id="toggleIconMobile">☀️</span>
+      <span id="toggleLabelMobile">Light</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile fullscreen menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-inner">
+    <button class="mobile-nl" data-page="home" data-close="1">🏠 Home</button>
+    <button class="mobile-nl" data-page="how" data-close="1">⚡ How It Works</button>
+    <button class="mobile-nl" data-page="pricing" data-close="1">💰 Pricing</button>
+    <button class="mobile-nl" id="mobileDemoBtn">▶ Watch Demo</button>
+    <button class="mobile-nl" id="mobileContactBtn">✉ Contact</button>
+    <div style="height:1px;background:rgba(255,255,255,0.06);margin:8px 0"></div>
+    <button class="mobile-cta" id="mobilePoziGoBtn">⬇ Download POZi Go</button>
+  </div>
+</div>
+
+<!-- ============ HOME PAGE ============ -->
+<div class="mobile-nav-spacer"></div>
+<div id="page-home" class="page active">
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="badge" style="background:#00ff8810;border:1px solid #00ff8828;color:var(--green)"><div class="bdot" style="background:var(--green)"></div>Broadcasting live across all retailers</div>
+  <h1>Retail inventory.</h1>
+  <div class="h1-sub"><span class="grad">Fixed instantly.</span></div>
+  <p class="hero-desc">Every time a sale happens anywhere in your network, POZi <strong>broadcasts an instant update</strong> to every store, every warehouse, every online listing — at the same time. No lag. No batches. No wasted trips.</p>
+  <div class="hero-actions">
+    <button class="btn-p" id="heroSavingsBtn">See How Much You Save</button>
+    <button class="btn-s" id="heroDemoBtn">▶ Watch Demo</button>
+    <button class="btn-p" id="heroMobileDownloadBtn" style="display:none;background:linear-gradient(135deg,#00c96e,#009950);box-shadow:0 8px 32px #00c96e30">⬇ Download POZi Go</button>
+  </div>
+  <div class="broadcast-wrap">
+    <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="broadcast-center"><div class="broadcast-name">POZi</div><div class="broadcast-sub">Broadcasting</div></div>
+      <div class="broadcast-nodes">
+        <div class="bnode" style="left:2%;top:15%"><div class="bnode-bubble" style="background:#0046BE15;border-color:#0046BE40;color:#0046BE">BB<div class="bnode-ping"></div></div><div class="bnode-label">Best Buy</div></div>
+        <div class="bnode" style="right:2%;top:15%"><div class="bnode-bubble" style="background:#0071CE15;border-color:#0071CE40;color:#0071CE">WM<div class="bnode-ping" style="animation-delay:0.5s"></div></div><div class="bnode-label">Walmart</div></div>
+        <div class="bnode" style="left:2%;bottom:15%"><div class="bnode-bubble" style="background:#F9630215;border-color:#F9630240;color:#F96302">HD<div class="bnode-ping" style="animation-delay:1s"></div></div><div class="bnode-label">Home Depot</div></div>
+        <div class="bnode" style="right:2%;bottom:15%"><div class="bnode-bubble" style="background:#CC000015;border-color:#CC000040;color:#CC0000">TGT<div class="bnode-ping" style="animation-delay:1.5s"></div></div><div class="bnode-label">Target</div></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#333;letter-spacing:1px;text-align:center;margin-top:8px">Every subscriber updated instantly — the moment anything changes</div>
+  </div>
+</section>
+
+<section class="savings" id="savings">
+  <div class="savings-wrap">
+    <div class="sec-eyebrow">The Real Cost of Broken Inventory</div>
+    <div class="sec-title">Here's what you're<br>losing right now.</div>
+    <p class="sec-sub">Before we talk about Pozi, let's talk about what bad inventory is already costing you every single day.</p>
+    <div class="savings-hero-stat">
+      <div class="savings-glow"></div>
+      <div class="savings-big-num">$1.8T</div>
+      <div class="savings-big-label">Lost every year across retail — globally</div>
+      <p class="savings-big-sub">That's $1.8 trillion in revenue evaporating because online said "in stock" and the shelf was empty. POZi exists to give that money back.</p>
+    </div>
+    <div class="savings-grid">
+      <div class="saving-card"><div class="saving-icon">🚗</div><div class="saving-stat">73%</div><div class="saving-title">Customers Don't Return</div><div class="saving-desc">Nearly 3 in 4 shoppers who make a wasted trip — because inventory was wrong — never come back to that store again.</div></div>
+      <div class="saving-card"><div class="saving-icon">⏱️</div><div class="saving-stat">24hrs</div><div class="saving-title">Average Inventory Lag</div><div class="saving-desc">Most retailers update inventory in batches every 2 to 24 hours. A lot can sell — and go missing — in that window.</div></div>
+      <div class="saving-card"><div class="saving-icon">💰</div><div class="saving-stat">32%</div><div class="saving-title">Of Inventory Is Inaccurate</div><div class="saving-desc">On average, nearly a third of what's listed online doesn't match what's actually on the shelf at any given moment.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="broadcast-section">
+  <div class="broadcast-wrap2">
+    <div class="sec-eyebrow">The POZi Difference</div>
+    <div class="sec-title">One sale. Instant broadcast.<br>Every system updated.</div>
+    <p class="sec-sub">Think of it like a group text — the moment anything changes, every subscriber gets the update at the same time.</p>
+
+    <!-- SECTION 1: WHAT HAPPENS -->
+    <div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⚡</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff">What happens when a sale fires</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#000;flex-shrink:0;margin-top:2px">01</div>
+          <div>
+            <div class="bt-step-title">Sale Happens at Register</div>
+            <div class="bt-step-desc">A customer buys a product. The register processes the transaction normally — nothing changes for the cashier.</div>
+          </div>
+        </div>
+        <div style="width:2px;height:16px;background:linear-gradient(180deg,var(--green),var(--blue));margin-left:13px;border-radius:2px"></div>
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#000;flex-shrink:0;margin-top:2px">02</div>
+          <div>
+            <div class="bt-step-title">POZi Detects the Event</div>
+            <div class="bt-step-desc">POZi's middleware sees the transaction the instant it's processed — before the receipt even prints. 50 bytes. That's it.</div>
+          </div>
+        </div>
+        <div style="width:2px;height:16px;background:linear-gradient(180deg,var(--green),var(--blue));margin-left:13px;border-radius:2px"></div>
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#000;flex-shrink:0;margin-top:2px">03</div>
+          <div>
+            <div class="bt-step-title">Broadcast Fires</div>
+            <div class="bt-step-desc">POZi broadcasts to every subscribed system simultaneously — in under 100 milliseconds. No lag. No batches. No wasted trips.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPEED DIVIDER -->
+    <div style="display:flex;align-items:center;gap:12px;margin:28px 0">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--green))"></div>
+      <div class="speed-badge" style="flex-shrink:0"><div class="speed-val">&lt;100ms</div><div class="speed-label">Total broadcast time</div></div>
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--green),transparent)"></div>
+    </div>
+
+    <!-- SECTION 2: WHAT GETS UPDATED -->
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📡</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff">Everything updates instantly</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start;border-color:#00ff8825">
+          <div style="width:28px;height:28px;border-radius:50%;background:#00c96e18;border:1px solid #00c96e40;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
+          <div>
+            <div class="bt-step-title">Online Listing</div>
+            <div class="bt-step-desc">Website shows correct stock instantly. No customer drives for nothing.</div>
+          </div>
+        </div>
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start;border-color:#00ff8825">
+          <div style="width:28px;height:28px;border-radius:50%;background:#00c96e18;border:1px solid #00c96e40;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
+          <div>
+            <div class="bt-step-title">Warehouse System</div>
+            <div class="bt-step-desc">Shelf is low — replenishment queues automatically. No manual check needed.</div>
+          </div>
+        </div>
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start;border-color:#00ff8825">
+          <div style="width:28px;height:28px;border-radius:50%;background:#00c96e18;border:1px solid #00c96e40;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
+          <div>
+            <div class="bt-step-title">Every Other Location</div>
+            <div class="bt-step-desc">All nearby stores see updated stock. Managers get alerts when any location hits a threshold.</div>
+          </div>
+        </div>
+        <div class="bt-step" style="display:flex;gap:14px;align-items:flex-start;border-color:#00ff8825">
+          <div style="width:28px;height:28px;border-radius:50%;background:#00c96e18;border:1px solid #00c96e40;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
+          <div>
+            <div class="bt-step-title">POZi Go Consumer App</div>
+            <div class="bt-step-desc">Customers checking inventory on POZi Go see the live count drop in real time. Know before they go.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="ba-section">
+  <div class="sec-eyebrow" style="text-align:center">The Difference</div>
+  <div class="sec-title">The old way. The POZi way.</div>
+  <div style="height:40px"></div>
+  <div class="ba-grid">
+    <div class="ba-card" style="background:#050510;border-color:#ffffff10">
+      <div class="ba-title" style="color:#888">The Old Way</div>
+      <div class="ba-item"><div class="ba-dot" style="background:#444"></div><div class="ba-text">Inventory syncs in batches every few hours<div class="ba-time">Lag: up to 24 hours</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:#444"></div><div class="ba-text">Online listings fall behind what's on the shelf<div class="ba-time">Customers see inaccurate stock counts</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:#444"></div><div class="ba-text">Staff check stock availability manually by phone<div class="ba-time">15–30 minutes per inquiry</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:#444"></div><div class="ba-text">Warehouse restocking happens on a delay<div class="ba-time">Empty shelves go unnoticed overnight</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:#444"></div><div class="ba-text">Revenue and customer confidence both slip<div class="ba-time">73% of affected shoppers don't return</div></div></div>
+    </div>
+    <div class="ba-card" style="background:#050510;border-color:#00ff8825">
+      <div class="ba-title" style="color:var(--green)">The POZi Way</div>
+      <div class="ba-item"><div class="ba-dot" style="background:var(--green)"></div><div class="ba-text">Every sale broadcasts an instant update to the whole network<div class="ba-time">Sync time: &lt;100ms</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:var(--green)"></div><div class="ba-text">Online listings reflect real shelf stock in real time<div class="ba-time">Always accurate. Always live.</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:var(--green)"></div><div class="ba-text">Every location visible in one unified dashboard<div class="ba-time">All in one place — no calls needed</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:var(--green)"></div><div class="ba-text">Warehouse receives an automatic restock signal instantly<div class="ba-time">Shelves stay full without manual oversight</div></div></div>
+      <div class="ba-item"><div class="ba-dot" style="background:var(--green)"></div><div class="ba-text">Customers shop with confidence — and come back<div class="ba-time">Revenue recovered. Trust earned.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="network-strip">
+  <div class="strip-label">Retailers on the POZi network</div>
+  <div class="strip-row">
+    <div class="strip-pill" style="color:#0046BE;border-color:#0046BE30"><div class="strip-dot" style="background:#0046BE"></div>Best Buy</div>
+    <div class="strip-pill" style="color:#0071CE;border-color:#0071CE30"><div class="strip-dot" style="background:#0071CE;animation-delay:0.3s"></div>Walmart</div>
+    <div class="strip-pill" style="color:#F96302;border-color:#F9630230"><div class="strip-dot" style="background:#F96302;animation-delay:0.6s"></div>Home Depot</div>
+    <div class="strip-pill" style="color:#CC0000;border-color:#CC000030"><div class="strip-dot" style="background:#CC0000;animation-delay:0.9s"></div>Target</div>
+    <div class="strip-pill" style="color:#007DC6;border-color:#007DC630"><div class="strip-dot" style="background:#007DC6;animation-delay:1.2s"></div>Lowe's</div>
+    <div class="strip-pill" style="color:#00A651;border-color:#00A65130"><div class="strip-dot" style="background:#00A651;animation-delay:1.5s"></div>Whole Foods</div>
+  </div>
+</div>
+
+<section class="proof-section">
+  <div class="proof-wrap">
+    <div class="sec-eyebrow">By The Numbers</div>
+    <div class="sec-title">The results speak<br>for themselves.</div>
+    <div class="proof-grid">
+      <div class="proof-card"><div class="proof-num" style="color:var(--green)">$2.8M</div><div class="proof-label">Average annual revenue recovered per retail chain on Pozi</div></div>
+      <div class="proof-card"><div class="proof-num" style="color:var(--blue)">&lt;100ms</div><div class="proof-label">Time from sale to full network sync across all locations</div></div>
+      <div class="proof-card"><div class="proof-num" style="color:#ffcc00">99.99%</div><div class="proof-label">Network uptime. The POZi broadcast never stops.</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--bg);padding:60px 0">
+  <div id="pozi-live-section" style="max-width:900px;margin:0 auto;padding:0 24px">
+    <div class="pozi-live-header">
+      <div class="pozi-live-title">⚡ Live Inventory — POZi Network</div>
+      <div class="pozi-sync-bar">
+        <div id="pozi-sync-indicator"></div>
+        <div class="pozi-sync-text">Last sync: <span id="pozi-last-sync">connecting...</span></div>
+      </div>
+    </div>
+    <div id="pozi-live-inventory">
+      <div style="color:#555;font-family:'Inter',sans-serif;font-size:13px;padding:20px">
+        Connecting to POZi network...
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact" style="padding:80px 24px">
+  <div class="cta-bg"></div>
+  <div style="max-width:600px;margin:0 auto;text-align:center">
+    <div class="badge" style="margin-bottom:20px;background:#00ff8810;border:1px solid #00ff8825;color:var(--green);display:inline-flex"><div class="bdot" style="background:var(--green)"></div>Get in touch</div>
+    <div class="cta-title" style="margin-bottom:10px;font-size:clamp(28px,4.5vw,52px);word-break:keep-all;overflow-wrap:normal">Inquire about <span class="grad-g">your business.</span></div>
+    <p class="cta-sub" style="margin-bottom:36px">Tell us about your stores and we'll reach out with a plan built around your network.</p>
+
+    <div style="background:#111122;border:1px solid #1e1e32;border-radius:20px;padding:36px;text-align:left">
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" class="name-grid">
+          <div>
+            <label style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#666880;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">First Name</label>
+            <input id="cf-first" type="text" placeholder="Jane" style="width:100%;background:#0a0a14;border:1px solid #1e1e32;border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none" onfocus="this.style.borderColor='#00c96e40'" onblur="this.style.borderColor='#1e1e32'"/>
+          </div>
+          <div>
+            <label style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#666880;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Last Name</label>
+            <input id="cf-last" type="text" placeholder="Smith" style="width:100%;background:#0a0a14;border:1px solid #1e1e32;border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none" onfocus="this.style.borderColor='#00c96e40'" onblur="this.style.borderColor='#1e1e32'"/>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#666880;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Business Name</label>
+          <input id="cf-biz" type="text" placeholder="Acme Hardware Co." style="width:100%;background:#0a0a14;border:1px solid #1e1e32;border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none" onfocus="this.style.borderColor='#00c96e40'" onblur="this.style.borderColor='#1e1e32'"/>
+        </div>
+
+        <div>
+          <label style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#666880;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Email</label>
+          <input id="cf-email" type="email" placeholder="jane@yourbusiness.com" style="width:100%;background:#0a0a14;border:1px solid #1e1e32;border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none" onfocus="this.style.borderColor='#00c96e40'" onblur="this.style.borderColor='#1e1e32'"/>
+        </div>
+
+        <div>
+          <label style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#666880;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Number of Locations</label>
+          <select id="cf-locs" style="width:100%;background:#0a0a14;border:1px solid #1e1e32;border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none;cursor:pointer;-webkit-appearance:auto;appearance:auto;min-height:46px;display:block;margin-bottom:8px" onfocus="this.style.borderColor='#00c96e40'" onblur="this.style.borderColor='#1e1e32'">
+            <option value="" disabled selected>Select range...</option>
+            <option value="1-10">1 – 10 locations</option>
+            <option value="11-50">11 – 50 locations</option>
+            <option value="51-100">51 – 100 locations</option>
+            <option value="100+">100+ locations</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:#666880;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Tell us about your business</label>
+          <textarea id="cf-msg" placeholder="What inventory challenges are you facing? What systems do you currently use?" rows="4" style="width:100%;background:#0a0a14;border:1px solid #1e1e32;border-radius:10px;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#fff;outline:none;resize:vertical" onfocus="this.style.borderColor='#00c96e40'" onblur="this.style.borderColor='#1e1e32'"></textarea>
+        </div>
+
+        <button id="submitContactBtn" style="width:100%;background:linear-gradient(135deg,#00c96e,#009950);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;padding:15px;border-radius:12px;border:none;cursor:pointer;transition:all 0.2s;margin-top:4px">
+          Send Inquiry ⚡
+        </button>
+
+        <div id="cf-status" style="text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;min-height:18px"></div>
+
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:#333;margin-top:20px">Or email us directly at <a href="mailto:hello@pozi.live" style="color:#00c96e;text-decoration:none">hello@pozi.live</a></p>
+  </div>
+</section>
+
+<footer>
+  <div><div class="footer-name">⚡ <span class="pozi-logo-text" style="font-size:16px">
+          <span class="pozi-logo-poz">POZ</span><span class="pozi-logo-i-wrap"><span class="pozi-logo-i-stem">ı</span><span class="pozi-logo-i-dot"></span><span class="pozi-logo-i-trail"></span></span>
+        </span></div><div class="footer-slogans">How Business Is Finished &nbsp;·&nbsp; All In One Place</div></div>
+  <div class="footer-links">
+    <button class="footer-link" data-page="home">Home</button>
+    <button class="footer-link" data-page="how">How It Works</button>
+    <button class="footer-link" data-page="pricing">Pricing</button>
+    
+    <button class="footer-link" id="footerContactBtn">Contact</button>
+  </div>
+  <div class="footer-copy">© 2026 POZi Inc. All rights reserved.</div>
+</footer>
+</div>
+
+<!-- ============ HOW IT WORKS PAGE ============ -->
+<div id="page-how" class="page">
+
+<section class="page-hero">
+  <div class="page-bg"></div><div class="page-grid"></div>
+  <div class="badge" style="background:#00ff8810;border:1px solid #00ff8825;color:var(--green)"><div class="bdot" style="background:var(--green)"></div>The connection layer for retail</div>
+  <h1>Built to<br><span class="grad">Connect.</span></h1>
+  <div class="hero-mission">Connecting · Building · Bridging</div>
+  <p class="hero-desc" style="margin:0 auto">This is what technology was always supposed to do — bring things together. POZi is the bridge that connects every store, every shelf, and every customer into one living network.</p>
+</section>
+
+<section class="bridge-section">
+  <div class="bridge-wrap">
+    <div class="bridge-visual">
+      <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" viewBox="0 0 760 180" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#0046BE;stop-opacity:0.6"/><stop offset="100%" style="stop-color:#00ff88;stop-opacity:0.8"/></linearGradient>
+          <linearGradient id="g2"><stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.8"/><stop offset="100%" style="stop-color:#F96302;stop-opacity:0.6"/></linearGradient>
+        </defs>
+        <line x1="72" y1="90" x2="338" y2="90" stroke="url(#g1)" stroke-width="1.5" stroke-dasharray="6,4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.4s" repeatCount="indefinite"/></line>
+        <line x1="380" y1="90" x2="648" y2="90" stroke="url(#g2)" stroke-width="1.5" stroke-dasharray="6,4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.4s" repeatCount="indefinite"/></line>
+      </svg>
+      <div class="bside bside-l"><div class="bblock" style="background:#0046BE18;border-color:#0046BE;color:#0046BE">BB<br>WM</div><div class="blabel">Retailers</div></div>
+      <div class="bcenter"><div class="bcenter-name">POZi</div><div class="bcenter-sub">The Bridge</div></div>
+      <div class="bside bside-r"><div class="bblock" style="background:#00ff8815;border-color:#00ff88;color:#00ff88">📦<br>🛒</div><div class="blabel">Customers</div></div>
+    </div>
+    <div class="bridge-caption">Every sale. Every shelf. Every store. Connected.</div>
+  </div>
+</section>
+
+<div class="mission">
+  <div class="mq">"We were always <span class="hl">supposed to connect.</span><br>POZi is how we get there."</div>
+  <p class="md">Technology promised us a world where everything works together seamlessly. Somewhere along the way, retail got fragmented — different systems, different databases, different truths. POZi builds the bridge back to what was always possible.</p>
+</div>
+
+<section class="steps-section">
+  <div class="steps-header">
+    <div class="slabel">The Process</div>
+    <div class="stitle">How the bridge gets built</div>
+    <p class="ssub">Four steps from broken and disconnected to fully synced — all in one place.</p>
+  </div>
+  <div class="timeline">
+    <div class="trow">
+      <div class="tnum-col"><div class="tnum" style="background:#ff335518;border-color:#ff335540;color:#ff3355">01</div><div class="tline"></div></div>
+      <div style="width:2px;background:linear-gradient(180deg,#ff335530,transparent)"></div>
+      <div class="tcontent">
+        <div class="ticon">🔍</div>
+        <div class="ttitle">The Problem Is Identified</div>
+        <p class="tdesc">Right now, every major retailer runs on siloed systems. A sale happens at register 7 in Burbank — but the online inventory doesn't update for hours. Customers drive across town for nothing. Sales are lost. Trust is broken.</p>
+        <div class="tcard"><div class="tcard-icon">📉</div><div class="tcard-text"><strong>The Gap</strong>Between what's listed online and what's actually on the shelf — that gap costs retailers $1.8 trillion every year.</div></div>
+      </div>
+    </div>
+    <div class="trow">
+      <div class="tnum-col"><div class="tnum" style="background:#ffcc0018;border-color:#ffcc0040;color:#ffcc00">02</div><div class="tline"></div></div>
+      <div style="width:2px;background:linear-gradient(180deg,#ffcc0030,transparent)"></div>
+      <div class="tcontent">
+        <div class="ticon">🔌</div>
+        <div class="ttitle">Pozi Plugs In</div>
+        <p class="tdesc">POZi installs as a middleware layer — sitting between your existing POS registers and your inventory database. No ripping out old systems. No months of IT work. POZi connects to what you already have.</p>
+        <div class="tcard"><div class="tcard-icon">⚙️</div><div class="tcard-text"><strong>Plug-In, Not Replace</strong>Works with SAP, Oracle, NCR, Lightspeed, Square, and all major POS platforms. If your registers can talk, POZi can listen.</div></div>
+      </div>
+    </div>
+    <div class="trow">
+      <div class="tnum-col"><div class="tnum" style="background:#0066ff18;border-color:#0066ff40;color:var(--blue)">03</div><div class="tline"></div></div>
+      <div style="width:2px;background:linear-gradient(180deg,#0066ff30,transparent)"></div>
+      <div class="tcontent">
+        <div class="ticon">⚡</div>
+        <div class="ttitle">The Bridge Goes Live</div>
+        <p class="tdesc">The moment a sale is made, POZi fires an update across the entire network in under 100 milliseconds. Online listings, warehouse counts, and store-to-store availability all update instantly — automatically.</p>
+        <div class="tcard"><div class="tcard-icon">🌐</div><div class="tcard-text"><strong>Real-Time, Always</strong>Not batch updates. Not hourly syncs. Every single transaction triggers an instant network-wide update. The bridge never sleeps.</div></div>
+      </div>
+    </div>
+    <div class="trow tlast">
+      <div class="tnum-col"><div class="tnum" style="background:#00ff8818;border-color:#00ff8840;color:var(--green)">04</div><div class="tline"></div></div>
+      <div style="width:2px"></div>
+      <div class="tcontent">
+        <div class="ticon">🏆</div>
+        <div class="ttitle">Business Is Finished — The Right Way</div>
+        <p class="tdesc">Customers see accurate inventory before they drive to the store. Store managers see everything in one dashboard. Warehouses auto-fulfill when shelves run low. Everyone is connected. Everyone wins.</p>
+        <div class="tcard"><div class="tcard-icon">✅</div><div class="tcard-text"><strong>All In One Place</strong>One dashboard. Every store. Every SKU. Every location. The way it was always supposed to work.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="promise">
+  <div style="text-align:center;margin-bottom:36px">
+    <div class="slabel">The POZi Promise</div>
+    <div class="stitle" style="font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:800;color:#fff;letter-spacing:-1px">What we stand for</div>
+  </div>
+  <div class="promise-grid">
+    <div class="promise-card"><div class="promise-icon">🌉</div><div class="promise-title">Build Bridges</div><div class="promise-text">Every piece of technology we build is designed to connect — not divide. Stores, systems, people.</div></div>
+    <div class="promise-card"><div class="promise-icon">⚡</div><div class="promise-title">Move Fast</div><div class="promise-text">Under 100ms sync time. Because in retail, every second of delay costs real money.</div></div>
+    <div class="promise-card"><div class="promise-icon">🔍</div><div class="promise-title">Be Transparent</div><div class="promise-text">What you see online is what's on the shelf. No surprises. No wasted trips. Just truth.</div></div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="slabel" style="font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">Ready?</div>
+  <div class="cta-title">Let's build the bridge<br>for your stores.</div>
+  <p class="cta-sub">Join the retailers already connected to the POZi network.</p>
+  <div class="cta-tag">How Business Is Finished — All In One Place</div>
+  
+</section>
+
+</div>
+
+<!-- ============ PRICING PAGE ============ -->
+<div id="page-pricing" class="page">
+
+<section class="pricing-hero">
+  <div class="pricing-bg"></div><div class="page-grid"></div>
+  <div class="badge" style="background:#0066ff10;border:1px solid #0066ff25;color:var(--blue)"><div class="bdot" style="background:var(--blue)"></div>Enterprise pricing — built for scale</div>
+  <h1>You're not paying<br>for <span class="grad-b">software.</span></h1>
+  <div class="h1-sub" style="margin-bottom:24px">You're paying for <span class="grad-g">speed.</span></div>
+  <p class="hero-desc" style="margin:0 auto">POZi connects every register, warehouse, and online listing in your entire network — and keeps them all talking together in real time. That speed and accuracy is what you're investing in.</p>
+</section>
+
+<div style="padding:60px 24px 80px">
+  <div style="max-width:860px;margin:0 auto">
+    <div class="ss-card">
+      <div class="ss-glow"></div>
+      <div class="ss-eyebrow">The POZi Standard</div>
+      <div class="ss-title">Every system in your network,<br>talking together in <span class="hl">under 100ms.</span></div>
+      <p class="ss-desc">That's the value of POZi. Not a dashboard. Not a report. The ability to have every store, every register, every warehouse, and every online listing all connected and current — at the same time — faster than anything else in retail.</p>
+      <div class="ss-speed-row">
+        <div class="ss-speed-item"><div class="ss-speed-val" style="color:var(--green)">&lt;100ms</div><div class="ss-speed-label">Pozi sync time</div></div>
+        <div class="ss-divider"></div>
+        <div class="ss-speed-item"><div class="ss-speed-val" style="color:#555">2–24hrs</div><div class="ss-speed-label">Industry average today</div></div>
+        <div class="ss-divider"></div>
+        <div class="ss-speed-item"><div class="ss-speed-val" style="color:var(--blue)">86,400x</div><div class="ss-speed-label">Faster than batch updates</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="value-section">
+  <div class="sec-eyebrow">What You're Investing In</div>
+  <div class="sec-title">Three things Pozi<br>does better than anyone.</div>
+  <p class="sec-sub">This is what justifies the investment. Not features — outcomes.</p>
+  <div class="value-grid">
+    <div class="value-card"><div class="value-icon">⚡</div><div class="value-title">Speed of Connection</div><div class="value-desc">Every sale, return, and restock fires an instant broadcast across your entire network. Every system receives the update simultaneously — no waiting, no lag, no batching.</div><div class="value-metric">&lt;100ms sync</div></div>
+    <div class="value-card"><div class="value-icon">🎯</div><div class="value-title">Accuracy at Scale</div><div class="value-desc">With 500+ locations all feeding into one live network, your inventory data is always current. What your customer sees online is exactly what's on the shelf — every time.</div><div class="value-metric">99.9% accuracy</div></div>
+    <div class="value-card"><div class="value-icon">🌐</div><div class="value-title">Everything Connected</div><div class="value-desc">Registers, warehouses, online stores, mobile apps — every system subscribes to POZi and receives updates the moment anything changes. All in one place.</div><div class="value-metric">All systems. One network.</div></div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <div class="sec-eyebrow" style="text-align:center">Enterprise Pricing</div>
+  <div class="sec-title">Simple. Flat. Per location.</div>
+  <p class="sec-sub">One annual fee per store location. Everything included. No surprises.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="tier-label">Regional Chain</div>
+      <div class="tier-name">Standard</div>
+      <div class="tier-desc">For retailers with up to 100 locations ready to move faster than the competition.</div>
+      <div class="tier-price-val">$25K</div>
+      <div class="tier-price-period">per location · annually</div>
+      <div class="tier-divider"></div>
+      <div class="tier-features">
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Real-time inventory broadcast</strong>Under 100ms sync across all locations</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Pozi unified dashboard</strong>All stores visible in one place</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Online listing sync</strong>What's online always matches the shelf</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Drift alerts</strong>Instant notification when stock diverges</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Onboarding support</strong>Full setup assistance included</div></div>
+      </div>
+      <button class="tier-btn tier-btn-secondary">Contact Sales</button>
+    </div>
+    <div class="pricing-card featured">
+      <div class="featured-badge">Most Popular</div>
+      <div class="tier-label">National Chain</div>
+      <div class="tier-name">Enterprise</div>
+      <div class="tier-desc">For major retailers with 100–1,000 locations. The full POZi network at enterprise scale.</div>
+      <div class="tier-price-val" style="background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">$50K</div>
+      <div class="tier-price-period">per location · annually</div>
+      <div class="tier-divider"></div>
+      <div class="tier-features">
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Everything in Standard</strong>Plus dedicated enterprise features</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Plugin integration</strong>Embeds directly into your existing POS software</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Warehouse auto-fulfillment</strong>Automatic restock signals when shelves run low</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>99.99% uptime SLA</strong>The broadcast never stops</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Dedicated account team</strong>A POZi team assigned to your chain</div></div>
+      </div>
+      <button class="tier-btn tier-btn-primary">Request a Demo</button>
+    </div>
+    <div class="pricing-card">
+      <div class="tier-label">Global Chain</div>
+      <div class="tier-name">Global</div>
+      <div class="tier-desc">For the world's largest retailers — 1,000+ locations, custom infrastructure, white-label options.</div>
+      <div class="tier-price-val">Custom</div>
+      <div class="tier-price-period">negotiated annually · per chain</div>
+      <div class="tier-divider"></div>
+      <div class="tier-features">
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Everything in Enterprise</strong>Plus global infrastructure</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>White-label option</strong>Deploy POZi under your own brand</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Custom API integration</strong>Built around your existing tech stack</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Multi-country support</strong>One network across every market</div></div>
+        <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Executive partnership</strong>Direct relationship with POZi leadership</div></div>
+      </div>
+      <button class="tier-btn tier-btn-secondary">Talk to Our Team</button>
+    </div>
+  </div>
+</section>
+
+<section class="speed-compare">
+  <div class="sec-eyebrow" style="text-align:center;margin-bottom:14px">Speed Comparison</div>
+  <div class="sec-title" style="text-align:center;font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:40px">How POZi stacks up.</div>
+  <div class="sc-card">
+    <div class="sc-head"><div style="color:var(--muted)">Capability</div><div class="sc-head-col" style="color:#555">Legacy</div><div class="sc-head-col" style="color:#888">Competitors</div><div class="sc-head-col" style="color:var(--green)">POZi</div></div>
+    <div class="sc-row"><div class="sc-label">Inventory sync speed</div><div class="sc-val sc-slow">2–24 hours</div><div class="sc-val sc-mid">15–60 min</div><div class="sc-val sc-best">&lt;100ms</div></div>
+    <div class="sc-row"><div class="sc-label">Systems connected simultaneously</div><div class="sc-val sc-slow">1–2</div><div class="sc-val sc-mid">3–5</div><div class="sc-val sc-best">Unlimited</div></div>
+    <div class="sc-row"><div class="sc-label">Online listing accuracy</div><div class="sc-val sc-slow">~68%</div><div class="sc-val sc-mid">~85%</div><div class="sc-val sc-best">99.9%</div></div>
+    <div class="sc-row"><div class="sc-label">Warehouse auto-fulfillment</div><div class="sc-val sc-slow">Manual</div><div class="sc-val sc-mid">Delayed</div><div class="sc-val sc-best">Instant</div></div>
+    <div class="sc-row"><div class="sc-label">Requires replacing existing POS</div><div class="sc-val sc-slow">Often</div><div class="sc-val sc-mid">Sometimes</div><div class="sc-val sc-best">Never</div></div>
+    <div class="sc-row"><div class="sc-label">Single unified dashboard</div><div class="sc-val sc-slow">✗</div><div class="sc-val sc-mid">Partial</div><div class="sc-val sc-best">✓</div></div>
+  </div>
+</section>
+
+<section class="worth-section">
+  <div class="sec-eyebrow" style="text-align:center">Why The Investment Makes Sense</div>
+  <div class="sec-title" style="text-align:center;font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:800;color:#fff;letter-spacing:-1px">The math is simple.</div>
+  <div class="worth-grid">
+    <div class="worth-card"><div class="worth-icon">🏪</div><div><div class="worth-title">500 Locations at $50K Each</div><div class="worth-desc">A national chain with 500 stores invests $25M annually in POZi. Their inventory accuracy goes from ~68% to 99.9%. Every location runs cleaner, faster, and smarter.</div></div></div>
+    <div class="worth-card"><div class="worth-icon">⚡</div><div><div class="worth-title">Speed Is the Product</div><div class="worth-desc">You're not buying software features — you're buying the fastest inventory connection layer in retail. That speed keeps shelves accurate, customers confident, and revenue flowing.</div></div></div>
+    <div class="worth-card"><div class="worth-icon">🔌</div><div><div class="worth-title">No Rip and Replace</div><div class="worth-desc">POZi plugs into whatever POS system you already use. No IT overhaul. No downtime. No disruption. Just faster, more accurate inventory from day one.</div></div></div>
+    <div class="worth-card"><div class="worth-icon">📈</div><div><div class="worth-title">Scales With You</div><div class="worth-desc">Open 50 new locations? They're automatically on the POZi network. The broadcast reaches every store the moment it goes live. Growth never breaks the system.</div></div></div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="badge" style="margin-bottom:24px;background:#00ff8810;border:1px solid #00ff8825;color:var(--green)"><div class="bdot" style="background:var(--green)"></div>Let's talk</div>
+  <div class="cta-title">Ready to move at<br><span class="grad-g">POZi speed?</span></div>
+  <p class="cta-sub">Request a live demo tailored to your chain — and see exactly how fast everything can connect.</p>
+  <div class="cta-slogan">How Business Is Finished — All In One Place</div>
+  
+  <button class="btn-s" data-page="how">How It Works →</button>
+</section>
+
+</div>
+
+<script>
+// ── PAGE NAVIGATION ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  var pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('.nl').forEach(function(n) { n.classList.remove('active'); });
+  var activeNav = document.getElementById('nav-' + name);
+  if (activeNav) activeNav.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goContact() {
+  showPage('home');
+  document.querySelectorAll('.nl').forEach(function(n) { n.classList.remove('active'); });
+  var cn = document.getElementById('nav-contact');
+  if (cn) cn.classList.add('active');
+  setTimeout(function() {
+    var el = document.getElementById('contact');
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  }, 100);
+}
+
+function openPoziGo() {
+  window.open('pozi-go.html', '_blank');
+}
+
+function submitContact() {
+  var first = document.getElementById('cf-first').value.trim();
+  var email = document.getElementById('cf-email').value.trim();
+  var status = document.getElementById('cf-status');
+  if (!first || !email) {
+    status.style.color = '#ff3355';
+    status.textContent = 'Please fill in your name and email.';
+    return;
+  }
+  var biz  = document.getElementById('cf-biz').value.trim();
+  var last = document.getElementById('cf-last').value.trim();
+  var locs = document.getElementById('cf-locs').value;
+  var msg  = document.getElementById('cf-msg').value.trim();
+  var body = 'Name: ' + first + ' ' + last + '\nBusiness: ' + biz + '\nLocations: ' + locs + '\n\n' + msg;
+  var mailto = 'mailto:hello@pozi.live?subject=' + encodeURIComponent('POZi Inquiry — ' + biz) + '&body=' + encodeURIComponent(body);
+  window.location.href = mailto;
+  status.style.color = '#00c96e';
+  status.textContent = '✓ Opening your email app...';
+}
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  var html = document.documentElement;
+  var cur = html.getAttribute('data-theme');
+  var next = cur === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  syncThemeButtons(next);
+  try { localStorage.setItem('pozi-theme', next); } catch(e) {}
+}
+
+function syncThemeButtons(theme) {
+  var isLight = theme === 'light';
+  var icon = isLight ? '🌙' : '☀️';
+  var label = isLight ? 'Dark' : 'Light';
+  var ti = document.getElementById('toggleIcon');
+  var tl = document.getElementById('toggleLabel');
+  var tim = document.getElementById('toggleIconMobile');
+  var tlm = document.getElementById('toggleLabelMobile');
+  if (ti) ti.textContent = icon;
+  if (tl) tl.textContent = label;
+  if (tim) tim.textContent = icon;
+  if (tlm) tlm.textContent = label;
+}
+
+// ── MOBILE MENU ──
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var nav = document.getElementById('navMobileRight');
+  if (!menu) return;
+  var isOpen = menu.classList.contains('open');
+  if (isOpen) {
+    menu.classList.remove('open');
+    menu.style.display = 'none';
+    if (nav) nav.classList.remove('open');
+  } else {
+    menu.style.display = 'flex';
+    setTimeout(function() { menu.classList.add('open'); }, 10);
+    if (nav) nav.classList.add('open');
+  }
+}
+
+function closeMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var nav = document.getElementById('navMobileRight');
+  if (menu) { menu.classList.remove('open'); menu.style.display = 'none'; }
+  if (nav) nav.classList.remove('open');
+}
+
+// ── WIRE ALL EVENTS ON DOM READY ──
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Restore theme
+  var saved = 'dark';
+  try { saved = localStorage.getItem('pozi-theme') || 'dark'; } catch(e) {}
+  if (saved === 'light') { document.documentElement.setAttribute('data-theme','light'); syncThemeButtons('light'); }
+
+  // Nav logo
+  var logo = document.getElementById('navLogo');
+  if (logo) logo.addEventListener('click', function() { showPage('home'); closeMobileMenu(); });
+
+  // Nav page buttons (data-page attribute)
+  document.querySelectorAll('[data-page]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var page = btn.getAttribute('data-page');
+      showPage(page);
+      if (btn.getAttribute('data-close')) closeMobileMenu();
+    });
+  });
+
+  // Nav specific buttons
+  var demoBtn = document.getElementById('nav-demo');
+  if (demoBtn) demoBtn.addEventListener('click', function() { window.open('pozi-animation.html','_blank'); });
+
+  var mobileDemoBtn = document.getElementById('mobileDemoBtn');
+  if (mobileDemoBtn) mobileDemoBtn.addEventListener('click', function() { window.open('pozi-animation.html','_blank'); closeMobileMenu(); });
+
+  var heroDemoBtn = document.getElementById('heroDemoBtn');
+  if (heroDemoBtn) heroDemoBtn.addEventListener('click', function() { window.open('pozi-animation.html','_blank'); });
+
+  var heroMobileDownload = document.getElementById('heroMobileDownloadBtn');
+  if (heroMobileDownload) heroMobileDownload.addEventListener('click', openPoziGo);
+
+  var contactNavBtn = document.getElementById('nav-contact');
+  if (contactNavBtn) contactNavBtn.addEventListener('click', goContact);
+
+  var mobileContactBtn = document.getElementById('mobileContactBtn');
+  if (mobileContactBtn) mobileContactBtn.addEventListener('click', function() { goContact(); closeMobileMenu(); });
+
+  // Theme toggles
+  document.querySelectorAll('#themeToggleBtn, #themeToggle, #themeToggleMobile').forEach(function(btn) {
+    if (btn) btn.addEventListener('click', toggleTheme);
+  });
+
+  // POZi Go buttons
+  document.querySelectorAll('#poziGoBtn, #heroPoziGoBtn, #mobilePoziGoBtn').forEach(function(btn) {
+    if (btn) btn.addEventListener('click', function() { openPoziGo(); closeMobileMenu(); });
+  });
+
+  var mobilePoziGoBtn = document.getElementById('mobilePoziGoBtn');
+  if (mobilePoziGoBtn) mobilePoziGoBtn.addEventListener('click', function() { openPoziGo(); closeMobileMenu(); });
+
+  // Hamburger
+  var hamburger = document.getElementById('hamburgerBtn');
+  if (hamburger) hamburger.addEventListener('click', toggleMobileMenu);
+
+  // Hero savings scroll
+  var heroSavings = document.getElementById('heroSavingsBtn');
+  if (heroSavings) heroSavings.addEventListener('click', function() {
+    var el = document.getElementById('savings');
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  });
+
+  // Contact form submit
+  var submitBtn = document.getElementById('submitContactBtn');
+  if (submitBtn) submitBtn.addEventListener('click', submitContact);
+
+  // Footer contact
+  var footerContact = document.getElementById('footerContactBtn');
+  if (footerContact) footerContact.addEventListener('click', function() {
+    var el = document.getElementById('contact');
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  });
+
+  // ESC closes mobile menu
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMobileMenu();
+  });
+});
+</script>
+
+<!-- ===== POZi LIVE INVENTORY DASHBOARD ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// POZi Live Database Connection
+if(typeof window.poziInitialized === 'undefined'){
+window.poziInitialized = true;
+const SUPABASE_URL = 'https://eaagnkwtflsxiclpcaok.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE';
+const pozClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ===== FETCH AND DISPLAY LIVE INVENTORY =====
+async function loadInventory() {
+  const { data, error } = await pozClient
+    .from('inventory')
+    .select('*')
+    .order('store_name');
+
+  if (error) {
+    console.error('POZi DB Error:', error);
+    return;
+  }
+
+  renderInventory(data);
+}
+
+function renderInventory(items) {
+  const container = document.getElementById('pozi-live-inventory');
+  if (!container) return;
+
+  // Group by store
+  const stores = {};
+  items.forEach(item => {
+    if (!stores[item.store_name]) stores[item.store_name] = [];
+    stores[item.store_name].push(item);
+  });
+
+  let html = '';
+  Object.keys(stores).forEach(store => {
+    html += `<div class="pozi-store-card">
+      <div class="pozi-store-name">📍 ${store}</div>`;
+    stores[store].forEach(item => {
+      const low = item.quantity <= 2;
+      const out = item.quantity === 0;
+      html += `<div class="pozi-item ${out ? 'out' : low ? 'low' : 'ok'}">
+        <div class="pozi-item-name">${item.product_name}</div>
+        <div class="pozi-item-qty">
+          <span class="pozi-dot"></span>
+          ${out ? 'Out of Stock' : item.quantity + ' in stock'}
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  container.innerHTML = html;
+
+  // Update last sync time
+  const ts = document.getElementById('pozi-last-sync');
+  if (ts) ts.textContent = new Date().toLocaleTimeString();
+}
+
+// ===== REAL-TIME SUBSCRIPTION =====
+// This fires INSTANTLY when any inventory changes in Supabase
+pozClient
+  .channel('inventory-changes')
+  .on('postgres_changes', 
+    { event: '*', schema: 'public', table: 'inventory' },
+    (payload) => {
+      console.log('⚡ POZi broadcast received:', payload);
+      // Flash the sync indicator
+      const indicator = document.getElementById('pozi-sync-indicator');
+      if (indicator) {
+        indicator.classList.add('firing');
+        setTimeout(() => indicator.classList.remove('firing'), 800);
+      }
+      // Reload inventory
+      loadInventory();
+    }
+  )
+  .subscribe();
+
+// Load on page ready
+document.addEventListener('DOMContentLoaded', loadInventory);
+window.addEventListener('load', loadInventory);
+} // end poziInitialized check
+
+// ── THEME TOGGLE ──
+function updateBroadcastSVG(theme){
+  var bcBgRect = document.getElementById('bcBgRect');
+  var hubText = document.getElementById('hubText');
+  var hubRect = document.getElementById('hubRect');
+  var s1 = document.querySelector('.bg-stop-1');
+  var s2 = document.querySelector('.bg-stop-2');
+  if(theme === 'light'){
+    // Light mode: make background rect light gray/mint
+    if(bcBgRect){bcBgRect.setAttribute('fill','#e8f5ee');}
+    if(s1){s1.setAttribute('stop-color','#e8f5ee');s1.setAttribute('stop-opacity','1');}
+    if(s2){s2.setAttribute('stop-color','#eef0ff');s2.setAttribute('stop-opacity','1');}
+    if(hubText){hubText.setAttribute('fill','#000');}
+  } else {
+    // Dark mode: original
+    if(bcBgRect){bcBgRect.setAttribute('fill','url(#bgGlow)');}
+    if(s1){s1.setAttribute('stop-color','#001a0a');s1.setAttribute('stop-opacity','1');}
+    if(s2){s2.setAttribute('stop-color','#000005');s2.setAttribute('stop-opacity','1');}
+    if(hubText){hubText.setAttribute('fill','#000');}
+  }
+}
+
+function toggleTheme(){
+  var html = document.documentElement;
+  var cur = html.getAttribute('data-theme');
+  var next = cur === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  var icon = document.getElementById('toggleIcon');
+  var label = document.getElementById('toggleLabel');
+  updateBroadcastSVG(next);
+  if(next === 'light'){
+    icon.textContent = '🌙';
+    label.textContent = 'Dark';
+  } else {
+    icon.textContent = '☀️';
+    label.textContent = 'Light';
+  }
+  // Save preference
+  try{localStorage.setItem('pozi-theme', next);}catch(e){}
+  syncMobileThemeBtn();
+}
+
+// Load saved preference on startup
+(function(){
+  try{
+    var saved = localStorage.getItem('pozi-theme');
+    if(saved === 'light'){
+      document.documentElement.setAttribute('data-theme','light');
+      var icon = document.getElementById('toggleIcon');
+      var label = document.getElementById('toggleLabel');
+      if(icon) icon.textContent = '🌙';
+      if(label) label.textContent = 'Dark';
+      setTimeout(function(){updateBroadcastSVG('light');},100);
+    }
+  }catch(e){}
+})();
+
+// ── MOBILE NAV ──
+function toggleMobileMenu(){
+  var menu=document.getElementById('mobileMenu');
+  var right=document.getElementById('navMobileRight');
+  var isOpen=menu.classList.contains('open');
+  if(isOpen){
+    menu.classList.remove('open');
+    menu.style.display='none';
+    if(right)right.classList.remove('open');
+    document.body.style.overflow='';
+  } else {
+    menu.style.display='flex';
+    setTimeout(function(){menu.classList.add('open');},10);
+    if(right)right.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  syncMobileThemeBtn();
+}
+function closeMobileMenu(){
+  var menu=document.getElementById('mobileMenu');
+  var right=document.getElementById('navMobileRight');
+  if(menu){menu.classList.remove('open');menu.style.display='none';}
+  if(right)right.classList.remove('open');
+  document.body.style.overflow='';
+}
+function syncMobileThemeBtn(){
+  var theme=document.documentElement.getAttribute('data-theme');
+  var icon=document.getElementById('toggleIconMobile');
+  var label=document.getElementById('toggleLabelMobile');
+  if(icon)icon.textContent=theme==='light'?'🌙':'☀️';
+  if(label)label.textContent=theme==='light'?'Dark':'Light';
+}
+</script>
+
+
+<!-- ===== POZI GO OVERLAY ===== -->
+
+
+</div>
+
+<script>
+function openPoziGo(){
+  window.open('pozi-go.html','_blank');
+}
+</script>
+
+</body>
+</html>

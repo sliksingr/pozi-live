@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="POZi Go">
+<meta name="theme-color" content="#0a0a14">
+<title>POZi Go</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- ZXing barcode library -->
+<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js" crossorigin="anonymous"></script>
+
+<style>
+/* ── BASE ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;position:fixed;background:#0a0a14;font-family:'DM Sans',sans-serif;color:#fff}
+:root{--g:#00c96e;--b:#0055ff;--dk:#0a0a14;--cd:#141420;--br:#1e1e32;--mt:#3a3a55}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;background:#0a0a14;overflow:hidden}
+.screen.on{display:flex}
+
+/* ── ANIMATIONS ── */
+@keyframes pop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bn{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes scl{0%,100%{opacity:0.4;top:8px}50%{opacity:1;top:calc(100% - 10px)}}
+@keyframes scp{0%,100%{border-color:#00c96e;opacity:0.6}50%{border-color:#0055ff;opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes flash{0%,100%{background:#0a0a14}50%{background:#00c96e15}}
+
+/* ── DOTS / SPINNER ── */
+.sd{width:6px;height:6px;border-radius:50%;background:#00c96e;animation:bn .7s ease-in-out infinite}
+.ld{width:6px;height:6px;border-radius:50%;background:#00c96e;animation:bn 1.5s infinite;flex-shrink:0}
+
+/* ── POZi LOGO i ── */
+.pozi-i{position:relative;display:inline-flex;justify-content:center;color:#00c96e}
+.pozi-dot{position:absolute;top:0.06em;left:50%;transform:translateX(-50%);width:0.18em;height:0.18em;border-radius:50%;background:#00c96e;box-shadow:0 0 8px #00c96e;animation:dot-blast 2.2s ease-in-out infinite}
+.pozi-beam{position:absolute;top:0.16em;left:50%;height:0.07em;width:0;border-radius:4px;background:linear-gradient(90deg,#00c96e,transparent);animation:beam-blast 2.2s ease-in-out infinite}
+@keyframes dot-blast{0%,25%{transform:translateX(-50%) scale(1);opacity:1;top:0.06em}28%{transform:translateX(-50%) scale(1.3);opacity:1}50%{transform:translateX(3em) scale(0.2);opacity:0}51%{transform:translateX(-50%) scale(0);opacity:0;top:0.06em}62%{transform:translateX(-50%) scale(1);opacity:1;top:0.06em}100%{transform:translateX(-50%) scale(1);opacity:1;top:0.06em}}
+@keyframes beam-blast{0%,27%{width:0;opacity:0}32%{width:0.5em;opacity:1}48%{width:3em;opacity:0.7}52%{width:0;opacity:0}100%{width:0;opacity:0}}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:flex;background:#080810;border-top:1px solid #1e1e32;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.bt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;gap:4px;opacity:0.4;transition:opacity 0.2s}
+.bt.on{opacity:1}
+.bt svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bt.on svg{stroke:#00c96e}
+.bt span{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:#fff;letter-spacing:0.5px}
+.bt.on span{color:#00c96e}
+.bts .scc{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#00c96e,#0055ff);display:flex;align-items:center;justify-content:center;margin-bottom:-4px;box-shadow:0 0 20px #00c96e40}
+.bts svg{stroke:#000;width:22px;height:22px}
+.bt.on.bts svg{stroke:#000}
+
+/* ── BACK BUTTON ── */
+.bk{width:34px;height:34px;background:#141420;border:1px solid #1e1e32;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.bk svg{width:18px;height:18px;fill:none;stroke:#888;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── PRODUCT CARDS ── */
+.pc{display:flex;align-items:center;gap:12px;padding:12px;background:#0d0d1a;border:1px solid #1e1e32;border-radius:14px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s}
+.pc:active{border-color:#00c96e40}
+.pc.flash{animation:flash 0.5s ease}
+
+/* ── CHIPS ── */
+.ch{background:#141420;border:1px solid #1e1e32;border-radius:20px;padding:7px 14px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#555;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .2s}
+.ch.on{background:#00c96e12;border-color:#00c96e40;color:#00c96e}
+
+/* ── DETAIL SCREEN ── */
+.det-sc{background:#141420;border:1px solid #1e1e32;border-radius:14px;padding:16px;margin-bottom:10px}
+.det-act{display:flex;align-items:center;justify-content:center;gap:8px;background:#1a1a2e;border:1px solid #2a2a45;border-radius:10px;padding:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#888;cursor:pointer;margin-bottom:8px;transition:all 0.2s}
+.det-act:active{opacity:0.7}
+
+/* ── STORE CARDS ── */
+.sc-card{display:flex;align-items:center;gap:12px;padding:14px;background:#0d0d1a;border:1px solid #1e1e32;border-radius:14px;margin-bottom:8px;cursor:pointer}
+.sc-card:active{border-color:#00c96e30}
+
+/* ── SEARCH INPUT ── */
+.ri{width:100%;background:#141420;border:1px solid #1e1e32;border-radius:12px;padding:11px 14px 11px 38px;font-family:'DM Sans',sans-serif;font-size:14px;color:#fff;outline:none;-webkit-appearance:none}
+.ri::placeholder{color:#3a3a55}
+.ri:focus{border-color:#00c96e40}
+
+/* ── TOAST ── */
+#toastEl{position:fixed;top:54px;left:50%;transform:translateX(-50%) translateY(-12px);background:#141420;border:1px solid #1e1e32;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:999;opacity:0;transition:all 0.3s;white-space:nowrap;pointer-events:none;max-width:90vw}
+
+/* ── BUY OVERLAY ── */
+.bo{display:flex;align-items:center;gap:12px;padding:12px;background:#0d0d1a;border:2px solid #1e1e32;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s}
+.bo.sel{border-color:#00c96e}
+.bo-chk{width:20px;height:20px;border-radius:50%;background:#1e1e32;display:flex;align-items:center;justify-content:center;font-size:10px;color:#555;margin-left:auto;flex-shrink:0;transition:all 0.2s}
+.bo.sel .bo-chk{background:#00c96e;color:#000}
+
+/* ── CAMERA OVERLAY ── */
+#camOv{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div class="screen on" id="splash" style="align-items:center;justify-content:center">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="font-size:48px;animation:pop .5s cubic-bezier(.175,.885,.32,1.275) .3s both">⚡</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:54px;letter-spacing:-3px;display:flex;align-items:baseline;animation:pop .5s cubic-bezier(.175,.885,.32,1.275) .5s both">
+      <span style="color:#fff">POZ</span><span class="pozi-i">ı<span class="pozi-dot"></span><span class="pozi-beam"></span></span><span style="font-size:16px;color:#00c96e;letter-spacing:3px;margin-left:8px;align-self:flex-end;margin-bottom:8px">GO</span>
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#3a3a55;letter-spacing:2.5px;text-transform:uppercase;animation:up .5s ease .9s both">Know Before You Go</div>
+    <div style="display:flex;gap:6px;margin-top:30px;animation:up .4s ease 1.1s both">
+      <div class="sd"></div><div class="sd" style="animation-delay:.15s"></div><div class="sd" style="animation-delay:.3s"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div class="screen" id="login" style="justify-content:flex-start;padding:40px 24px 0;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:28px">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:44px;letter-spacing:-2px;display:flex;align-items:baseline">
+      <span style="color:#fff">POZ</span><span class="pozi-i">ı<span class="pozi-dot"></span><span class="pozi-beam"></span></span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#00c96e;letter-spacing:3px;margin-left:7px;align-self:flex-end;margin-bottom:5px">GO</span>
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#3a3a55;letter-spacing:1.5px">Know Before You Go ⚡</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin-bottom:24px">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:#fff;text-align:center;line-height:1.2">Live inventory at every store near you</div>
+    <div style="font-size:14px;color:#666880;text-align:center;line-height:1.65;max-width:280px">Scan any barcode — instantly see what's in stock at every store on the POZi network.</div>
+    <!-- Preview card -->
+    <div style="background:#141420;border:1px solid #1e1e32;border-radius:16px;padding:14px 16px;width:100%;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:20px;width:32px;text-align:center">🌲</div>
+        <div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#fff">Hills Flat Lumber</div><div style="font-size:10px;color:#666880;margin-top:1px">Grass Valley · 0.8 mi</div></div>
+        <div style="background:#00c96e18;border:1px solid #00c96e30;color:#00c96e;border-radius:6px;padding:3px 9px;font-family:'Syne',sans-serif;font-size:10px;font-weight:800">Live</div>
+      </div>
+    </div>
+  </div>
+  <!-- Login buttons -->
+  <div style="width:100%;display:flex;flex-direction:column;gap:10px;padding-bottom:40px">
+    <button id="guestBtn" style="width:100%;background:linear-gradient(135deg,#00c96e,#009950);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;padding:15px;border-radius:14px;border:none;cursor:pointer">
+      Browse as Guest ⚡
+    </button>
+    <div style="text-align:center;font-size:11px;color:#3a3a55;font-family:'Syne',sans-serif;font-weight:700;padding:4px 0">Account login coming soon</div>
+    <!-- Add to home screen tip -->
+    <div style="background:rgba(0,201,110,0.06);border:1px solid rgba(0,201,110,0.15);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:8px">
+      <div style="font-size:18px">📲</div>
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#00c96e;margin-bottom:2px">ADD TO HOME SCREEN</div>
+        <div style="font-size:10px;color:#555;line-height:1.5">Open in Safari · Tap <span style="color:#00c96e;font-weight:700">Share ⬆</span> · Add to Home Screen</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCANNER ══ -->
+<div class="screen" id="scanner">
+  <div style="padding:50px 18px 8px;flex-shrink:0;background:#0a0a14">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:21px;display:flex;align-items:baseline">
+        <span style="color:#fff">POZ</span><span class="pozi-i">ı<span class="pozi-dot"></span><span class="pozi-beam"></span></span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:#00c96e;letter-spacing:2.5px;margin-left:6px;align-self:flex-end;margin-bottom:2px">GO</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <div style="display:flex;align-items:center;gap:3px;background:#141420;border:1px solid #1e1e32;border-radius:20px;padding:6px 11px">
+          <div class="ld"></div>
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#00c96e">POZi Live</span>
+        </div>
+      </div>
+    </div>
+    <!-- Search bar -->
+    <div style="position:relative;margin-bottom:8px">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a3a55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input id="scQ" class="ri" placeholder="Search any product..." style="padding-left:34px"/>
+    </div>
+  </div>
+  <!-- Viewfinder -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px 16px;overflow:hidden">
+    <div style="font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:#3a3a55;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Point &amp; Scan</div>
+    <div id="vfWrap" style="position:relative;width:min(80vw,300px);height:min(80vw,300px);margin-bottom:16px;flex-shrink:0">
+      <video id="camVid" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;display:none"></video>
+      <div id="vfIdle" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+        <div style="font-size:36px;opacity:.15">📦</div>
+        <div style="font-size:9px;color:#1e1e32;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase">Tap to scan</div>
+      </div>
+      <!-- Corner brackets -->
+      <div style="position:absolute;width:26px;height:26px;border-color:#00c96e;border-style:solid;border-width:2.5px 0 0 2.5px;border-radius:4px 0 0 0;top:0;left:0"></div>
+      <div style="position:absolute;width:26px;height:26px;border-color:#00c96e;border-style:solid;border-width:2.5px 2.5px 0 0;border-radius:0 4px 0 0;top:0;right:0"></div>
+      <div style="position:absolute;width:26px;height:26px;border-color:#00c96e;border-style:solid;border-width:0 0 2.5px 2.5px;border-radius:0 0 0 4px;bottom:0;left:0"></div>
+      <div style="position:absolute;width:26px;height:26px;border-color:#00c96e;border-style:solid;border-width:0 2.5px 2.5px 0;border-radius:0 0 4px 0;bottom:0;right:0"></div>
+      <div id="vfLine" style="position:absolute;left:8px;right:8px;height:2px;background:linear-gradient(90deg,transparent,#00c96e,transparent);top:8px;display:none;animation:scl 2s ease-in-out infinite"></div>
+      <div id="vfPulse" style="position:absolute;inset:0;border-radius:14px;border:2px solid #00c96e;display:none;animation:scp 1.2s ease-in-out infinite"></div>
+    </div>
+    <button id="scBtn" style="background:linear-gradient(135deg,#00c96e,#00a855);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;padding:11px 28px;border-radius:50px;border:none;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 4px 16px #00c96e30;margin-bottom:8px;flex-shrink:0">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Tap to Scan Barcode
+    </button>
+    <button id="scStop" style="background:#141420;border:1px solid #ff335525;color:#ff3355;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:9px 24px;border-radius:30px;cursor:pointer;display:none;margin-bottom:12px;flex-shrink:0">✕ Stop Scanning</button>
+    <div id="scStatus" style="font-size:11px;color:#666880;text-align:center;min-height:14px;margin-bottom:6px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 2px">
+      <div style="display:flex;align-items:center;gap:5px"><div class="ld"></div><div style="font-size:10px;color:#00c96e;font-family:'Syne',sans-serif;font-weight:700">POZi Network Live</div></div>
+      <div id="browseAllBtn" style="font-size:11px;color:#3a3a55;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer">Browse all →</div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bt" id="nav-stores"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse</span></div>
+    <div class="bt" id="nav-results"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></div>
+    <div class="bt bts on" id="nav-scanner"><div class="scc"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div><span>Scan</span></div>
+    <div class="bt" id="nav-alerts"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Alerts</span></div>
+  </div>
+</div>
+
+<!-- ══ STORES / BROWSE ══ -->
+<div class="screen" id="stores">
+  <div style="padding:50px 18px 12px;flex-shrink:0;background:#0c0c18;border-bottom:1px solid #1e1e32">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;margin-bottom:12px">Browse Stores</div>
+    <div style="position:relative">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3a3a55" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input id="storeSearchQ" class="ri" placeholder="Search products..."/>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 90px">
+    <div id="storesList"></div>
+  </div>
+  <div class="bnav">
+    <div class="bt on" id="snav-stores"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse</span></div>
+    <div class="bt" id="snav-results"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></div>
+    <div class="bt bts" id="snav-scanner"><div class="scc"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div><span>Scan</span></div>
+    <div class="bt" id="snav-alerts"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Alerts</span></div>
+  </div>
+</div>
+
+<!-- ══ RESULTS / SEARCH ══ -->
+<div class="screen" id="results" style="flex-direction:column">
+  <div style="padding:50px 18px 12px;background:#0c0c18;border-bottom:1px solid #1e1e32;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div class="bk" id="resBk"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div style="flex:1;position:relative">
+        <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3a3a55" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        <input id="resQ" class="ri" placeholder="Search products..."/>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px" id="chips">
+      <div class="ch on" data-f="all">All</div>
+      <div class="ch" data-f="Grass Valley">📍 Grass Valley</div>
+      <div class="ch" data-f="Colfax">📍 Colfax</div>
+      <div class="ch" data-f="Lumber">🪵 Lumber</div>
+      <div class="ch" data-f="Hardware">🔩 Hardware</div>
+      <div class="ch" data-f="Tools">🔧 Tools</div>
+      <div class="ch" data-f="Paint">🎨 Paint</div>
+      <div class="ch" data-f="Electrical">⚡ Electrical</div>
+      <div class="ch" data-f="Plumbing">🚰 Plumbing</div>
+      <div class="ch" data-f="Garden">🌱 Garden</div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 16px 90px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div id="resCt" style="font-size:11px;color:#666880"></div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#00c96e;font-family:'Syne',sans-serif;font-weight:700"><div class="ld"></div>Live</div>
+    </div>
+    <div id="resCards"></div>
+  </div>
+  <div class="bnav">
+    <div class="bt" id="rnav-stores"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse</span></div>
+    <div class="bt on" id="rnav-results"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></div>
+    <div class="bt bts" id="rnav-scanner"><div class="scc"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div><span>Scan</span></div>
+    <div class="bt" id="rnav-alerts"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Alerts</span></div>
+  </div>
+</div>
+
+<!-- ══ DETAIL ══ -->
+<div class="screen" id="detail" style="flex-direction:column">
+  <div style="padding:50px 18px 14px;background:#0c0c18;border-bottom:1px solid #1e1e32;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div class="bk" id="detBk"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+      <div style="flex:1">
+        <div id="detNm" style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;line-height:1.2"></div>
+        <div id="detSku" style="font-size:10px;color:#3a3a55;margin-top:3px;letter-spacing:0.5px"></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div class="ld"></div>
+      <div style="font-size:10px;color:#00c96e;font-family:'Syne',sans-serif;font-weight:700">Live · Updated <span id="detTime"></span></div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 90px">
+    <div id="detStores"></div>
+  </div>
+  <div style="padding:12px 16px;background:#0c0c18;border-top:1px solid #1e1e32;flex-shrink:0">
+    <button id="buyBtn" style="width:100%;background:linear-gradient(135deg,#00c96e,#009950);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:14px;border-radius:12px;border:none;cursor:pointer">
+      Reserve for Pickup ⚡
+    </button>
+  </div>
+</div>
+
+<!-- ══ ALERTS ══ -->
+<div class="screen" id="alerts" style="flex-direction:column">
+  <div style="padding:50px 18px 14px;background:#0c0c18;border-bottom:1px solid #1e1e32;flex-shrink:0">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff">Stock Alerts</div>
+    <div style="font-size:12px;color:#3a3a55;margin-top:4px">Get notified when items are back in stock</div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:24px">
+    <div style="font-size:40px;opacity:0.15">🔔</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#2a2a45;text-align:center">No alerts set yet</div>
+    <div style="font-size:12px;color:#3a3a55;text-align:center;max-width:220px;line-height:1.6">Tap the alert button on any product to get notified when it's back in stock</div>
+  </div>
+  <div class="bnav">
+    <div class="bt" id="anav-stores"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse</span></div>
+    <div class="bt" id="anav-results"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Search</span></div>
+    <div class="bt bts" id="anav-scanner"><div class="scc"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div><span>Scan</span></div>
+    <div class="bt on" id="anav-alerts"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Alerts</span></div>
+  </div>
+</div>
+
+<!-- ══ BUY OVERLAY ══ -->
+<div id="buyOv" style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:800;display:none;align-items:flex-end">
+  <div style="background:#0d0d1a;border-radius:20px 20px 0 0;padding:20px 18px 40px;width:100%;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff">Choose Pickup Location</div>
+      <div id="closeBuyOv" style="width:28px;height:28px;background:#1a1a2e;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#666;font-size:14px">✕</div>
+    </div>
+    <div id="buyStores"></div>
+    <button id="confirmBuyBtn" style="width:100%;background:linear-gradient(135deg,#00c96e,#009950);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:14px;border-radius:12px;border:none;cursor:pointer;margin-top:8px">
+      Confirm Pickup ⚡
+    </button>
+  </div>
+</div>
+
+<!-- ══ CAMERA PERMISSION OVERLAY ══ -->
+<div id="camOv">
+  <div style="background:#141420;border:1px solid #1e1e32;border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center">
+    <div style="font-size:40px;margin-bottom:16px">📷</div>
+    <div id="camTtl" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;margin-bottom:10px">Enable Camera</div>
+    <div id="camSub" style="font-size:13px;color:#666880;line-height:1.6;margin-bottom:24px">Allow camera access to scan barcodes and check live inventory</div>
+    <button id="camAllow" style="width:100%;background:linear-gradient(135deg,#00c96e,#009950);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:13px;border-radius:12px;border:none;cursor:pointer;margin-bottom:10px">
+      Allow Camera Access
+    </button>
+    <button id="camSet" style="display:none;width:100%;background:transparent;border:1px solid #2a2a45;color:#888;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;padding:12px;border-radius:12px;cursor:pointer;margin-bottom:10px">
+      Open Settings
+    </button>
+    <button id="camCancel" style="width:100%;background:transparent;border:none;color:#3a3a55;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;padding:8px;cursor:pointer">
+      Cancel
+    </button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toastEl">
+  <span id="tIco" style="font-size:16px"></span>
+  <div>
+    <div id="tNm" style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff"></div>
+    <div id="tSb" style="font-size:11px;color:#666880;margin-top:1px"></div>
+  </div>
+</div>
+
+<script>
+// ══ CONFIG ══
+var API = 'https://eaagnkwtflsxiclpcaok.supabase.co/rest/v1';
+var SH = {
+  'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE',
+  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE'
+};
+
+// ══ STATE ══
+var DB = [], Q = '', F = 'all', cur = 'splash', hist = [], detSku = '', selSt = null, scanning = false, codeRdr = null, tT = null;
+
+var CATS = ['Lumber','Hardware','Tools','Paint','Electrical','Plumbing','Garden','Irrigation','Beekeeping','Home'];
+var ICONS = {Lumber:'🪵',Hardware:'🔩',Tools:'🔧',Paint:'🎨',Electrical:'⚡',Plumbing:'🚰',Garden:'🌱',Irrigation:'💧',Beekeeping:'🐝',Home:'🏠',General:'📦'};
+var STORES = [
+  {nm:'Hills Flat Lumber',addr:'380 Railroad Ave, Grass Valley',dist:'0.8 mi',ico:'🌲',loc:'Grass Valley'},
+  {nm:'Hills Flat Lumber',addr:'1000 S Canyon Way, Colfax',dist:'14 mi',ico:'🌲',loc:'Colfax'}
+];
+
+// ══ SCREEN NAVIGATION ══
+function show(id) {
+  if (id === cur) return;
+  hist.push(cur);
+  document.getElementById(cur).classList.remove('on');
+  document.getElementById(id).classList.add('on');
+  cur = id;
+  if (scanning && id !== 'scanner') stopCam();
+}
+
+function back() {
+  var p = hist.pop() || 'scanner';
+  document.getElementById(cur).classList.remove('on');
+  document.getElementById(p).classList.add('on');
+  cur = p;
+}
+
+// ══ SUPABASE FETCH ══
+function fetchDB() {
+  fetch(API + '/inventory?select=*&order=product_name', {headers: SH})
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(d) { if (Array.isArray(d) && d.length) DB = d; })
+    .catch(function() {});
+}
+
+// Auto refresh every 30s
+setInterval(function() {
+  fetch(API + '/inventory?select=*&order=product_name', {headers: SH})
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(d) {
+      if (!Array.isArray(d) || !d.length) return;
+      d.forEach(function(n) {
+        var i = DB.findIndex(function(x) { return x.id === n.id; });
+        if (i >= 0 && DB[i].quantity !== n.quantity) { DB[i] = n; flash(n.sku); }
+        else if (i < 0) { DB.push(n); }
+      });
+    }).catch(function() {});
+}, 30000);
+
+// ══ HELPERS ══
+function grp(arr) {
+  var g = {};
+  arr.forEach(function(d) {
+    if (!g[d.sku]) g[d.sku] = {sku:d.sku, nm:d.product_name, cat:d.category||'General', locs:[]};
+    g[d.sku].locs.push({store:d.store_name||d.store_location, loc:d.store_location, qty:d.quantity, ts:d.last_updated});
+  });
+  return Object.values(g);
+}
+function st(q) { return q === 0 ? 'out' : q <= 3 ? 'low' : 'ok'; }
+function sl(q) { return q === 0 ? 'Out of Stock' : q <= 3 ? q + ' left' : q + ' in stock'; }
+function ce(c) { return ICONS[c] || '📦'; }
+function es(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/'/g,"\\'") : ''; }
+
+function flash(sku) {
+  var el = document.getElementById('pc-' + sku.replace(/[^a-zA-Z0-9]/g,'-'));
+  if (el) { el.classList.add('flash'); setTimeout(function() { el.classList.remove('flash'); }, 500); }
+}
+
+function toast(ico, nm, sub) {
+  var el = document.getElementById('toastEl');
+  document.getElementById('tIco').textContent = ico;
+  document.getElementById('tNm').textContent = nm;
+  document.getElementById('tSb').textContent = sub;
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  el.style.opacity = '1';
+  clearTimeout(tT);
+  tT = setTimeout(function() {
+    el.style.transform = 'translateX(-50%) translateY(-12px)';
+    el.style.opacity = '0';
+  }, 2800);
+}
+
+// ══ STORES LIST ══
+function buildStores() {
+  var h = '';
+  STORES.forEach(function(s) {
+    h += '<div class="sc-card" data-loc="' + s.loc + '">';
+    h += '<div style="width:46px;height:46px;border-radius:11px;background:#0e1e10;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">' + s.ico + '</div>';
+    h += '<div style="flex:1;min-width:0"><div style="font-family:Syne,sans-serif;font-weight:800;font-size:13px;color:#fff;margin-bottom:2px">' + s.nm + '</div>';
+    h += '<div style="font-size:10px;color:#666880;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + s.addr + '</div>';
+    h += '<div style="display:flex;align-items:center;gap:8px"><div style="font-size:10px;color:#555">📍 ' + s.dist + '</div>';
+    h += '<div style="display:flex;align-items:center;gap:3px;font-size:9px;color:#00c96e;font-family:Syne,sans-serif;font-weight:700"><div class="ld" style="width:5px;height:5px"></div>Live</div></div></div>';
+    h += '<div style="color:#2a2a45;font-size:16px;flex-shrink:0">›</div></div>';
+  });
+  var el = document.getElementById('storesList');
+  if (el) el.innerHTML = h;
+}
+
+// ══ SEARCH / FILTER ══
+function showRes(q, f) {
+  Q = q || ''; F = f || 'all';
+  show('results');
+  var rq = document.getElementById('resQ');
+  if (rq && q) rq.value = q;
+  document.querySelectorAll('.ch').forEach(function(c) { c.classList.remove('on'); });
+  var fc = document.querySelector('.ch[data-f="all"]');
+  if (fc) fc.classList.add('on');
+  render();
+}
+
+function render() {
+  var d = DB;
+  if (F !== 'all') {
+    if (CATS.includes(F)) d = d.filter(function(x) { return x.category === F; });
+    else d = d.filter(function(x) { return x.store_location && x.store_location.includes(F); });
+  }
+  if (Q) {
+    var q = Q.toLowerCase();
+    d = d.filter(function(x) {
+      return (x.product_name && x.product_name.toLowerCase().includes(q)) ||
+             (x.sku && x.sku.toLowerCase().includes(q));
+    });
+  }
+  var items = grp(d).sort(function(a,b) { return a.nm.localeCompare(b.nm); });
+  var ct = document.getElementById('resCt');
+  if (ct) ct.innerHTML = '<b>' + items.length + '</b> product' + (items.length !== 1 ? 's' : '');
+  var cards = document.getElementById('resCards');
+  if (!cards) return;
+  if (!items.length) {
+    cards.innerHTML = '<div style="text-align:center;padding:50px 20px;color:#333"><div style="font-size:36px;margin-bottom:10px;opacity:.3">🔍</div><div style="font-family:Syne,sans-serif;font-size:15px;font-weight:800;color:#2a2a45;margin-bottom:5px">Nothing found</div><div style="font-size:11px;color:#1e1e32">Try a different search</div></div>';
+    return;
+  }
+  var h = '';
+  items.forEach(function(item) {
+    var tot = item.locs.reduce(function(s,l) { return s + l.qty; }, 0);
+    var ss = st(tot);
+    var gc = {ok:'#00c96e',low:'#ffcc00',out:'#ff3355'};
+    var bc = {ok:'#00c96e12',low:'#ffcc0012',out:'#ff335512'};
+    var bbc = {ok:'#00c96e22',low:'#ffcc0022',out:'#ff335522'};
+    var lh = '';
+    item.locs.forEach(function(l) {
+      var ls = st(l.qty);
+      var dc = gc[ls];
+      lh += '<div style="display:flex;align-items:center;justify-content:space-between">';
+      lh += '<div style="font-size:10px;color:#666880;display:flex;align-items:center;gap:3px"><div style="width:4px;height:4px;border-radius:50%;background:' + dc + ';flex-shrink:0"></div>' + es(l.loc) + '</div>';
+      lh += '<div style="font-family:Syne,sans-serif;font-size:10px;font-weight:700;color:' + dc + '">' + sl(l.qty) + '</div></div>';
+    });
+    var ts = item.locs[0] && item.locs[0].ts ? new Date(item.locs[0].ts).toLocaleTimeString() : '—';
+    h += '<div class="pc" id="pc-' + es(item.sku.replace(/[^a-zA-Z0-9]/g,'-')) + '" data-sku="' + es(item.sku) + '">';
+    h += '<div style="width:40px;height:40px;background:#0a0a14;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">' + ce(item.cat) + '</div>';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:7px;margin-bottom:3px">';
+    h += '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:#fff;line-height:1.3;flex:1">' + es(item.nm) + '</div>';
+    h += '<div style="border-radius:6px;padding:2px 8px;font-family:Syne,sans-serif;font-size:9px;font-weight:800;white-space:nowrap;flex-shrink:0;background:' + bc[ss] + ';border:1px solid ' + bbc[ss] + ';color:' + gc[ss] + '">' + sl(tot) + '</div></div>';
+    h += '<div style="font-size:8px;color:#333;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px">SKU: ' + es(item.sku) + '</div>';
+    h += '<div style="display:flex;flex-direction:column;gap:3px">' + lh + '</div>';
+    h += '<div style="font-size:8px;color:#1e1e32;margin-top:5px">⚡ ' + ts + '</div>';
+    h += '</div></div>';
+  });
+  cards.innerHTML = h;
+  // Wire click events
+  cards.querySelectorAll('.pc').forEach(function(el) {
+    el.addEventListener('click', function() { openDet(el.getAttribute('data-sku')); });
+  });
+}
+
+// ══ DETAIL ══
+function openDet(sku) {
+  detSku = sku;
+  hist.push(cur);
+  document.getElementById(cur).classList.remove('on');
+  document.getElementById('detail').classList.add('on');
+  cur = 'detail';
+  renderDet(sku);
+}
+
+function renderDet(sku) {
+  var items = grp(DB);
+  var item = items.find(function(x) { return x.sku === sku; });
+  if (!item) return;
+  document.getElementById('detNm').textContent = item.nm;
+  document.getElementById('detSku').textContent = 'SKU: ' + item.sku + ' · ' + item.cat;
+  document.getElementById('detTime').textContent = new Date().toLocaleTimeString();
+  var h = '';
+  var gc = {ok:'#00c96e',low:'#ffcc00',out:'#ff3355'};
+  item.locs.forEach(function(l) {
+    var ls = st(l.qty);
+    var qc = gc[ls];
+    h += '<div class="det-sc">';
+    h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">';
+    h += '<div><div style="font-family:Syne,sans-serif;font-weight:800;font-size:13px;color:#fff">' + es(l.store || l.loc) + '</div>';
+    h += '<div style="font-size:10px;color:#666880;margin-top:1px">📍 ' + es(l.loc) + '</div></div>';
+    h += '<div style="text-align:right"><div style="font-family:Syne,sans-serif;font-size:28px;font-weight:800;color:' + qc + '">' + l.qty + '</div>';
+    h += '<div style="font-size:8px;color:#3a3a55;text-transform:uppercase;letter-spacing:1px">' + (ls==='out'?'out of stock':ls==='low'?'low stock':'in stock') + '</div></div></div>';
+    h += '<div style="display:flex;gap:7px">';
+    h += '<div class="det-act" style="flex:1" data-loc="' + es(l.loc) + '">🗺 Directions</div>';
+    h += '<div class="det-act" style="flex:1">📞 Call</div>';
+    h += '<div class="det-act" style="flex:1">🔔 Alert</div>';
+    h += '</div></div>';
+  });
+  var el = document.getElementById('detStores');
+  el.innerHTML = h;
+  // Wire direction clicks
+  el.querySelectorAll('.det-act').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var loc = btn.getAttribute('data-loc');
+      if (loc) window.open('https://maps.apple.com/?q=' + encodeURIComponent(loc), '_blank');
+      else toast('📞','Calling...','Connecting to store');
+    });
+  });
+}
+
+// ══ BUY / RESERVE ══
+function openBuy() {
+  var items = grp(DB);
+  var item = items.find(function(x) { return x.sku === detSku; });
+  if (!item) return;
+  selSt = null;
+  var h = '';
+  var inStock = item.locs.filter(function(l) { return st(l.qty) !== 'out'; });
+  if (!inStock.length) {
+    toast('⚠️','Out of stock','Not available at any location');
+    return;
+  }
+  inStock.forEach(function(l, i) {
+    var id = 'bo' + i;
+    h += '<div class="bo" id="' + id + '" data-i="' + i + '">';
+    h += '<div style="flex:1"><div style="font-family:Syne,sans-serif;font-weight:800;font-size:13px;color:#fff">' + es(l.store || l.loc) + '</div>';
+    h += '<div style="font-size:10px;color:#666880;margin-top:2px">📍 ' + es(l.loc) + '</div></div>';
+    h += '<div style="font-family:Syne,sans-serif;font-weight:800;font-size:12px;color:#00c96e;flex-shrink:0">' + l.qty + ' left</div>';
+    h += '<div class="bo-chk">✓</div></div>';
+  });
+  document.getElementById('buyStores').innerHTML = h;
+  document.getElementById('buyOv').style.display = 'flex';
+  document.querySelectorAll('.bo').forEach(function(el) {
+    el.addEventListener('click', function() {
+      selSt = parseInt(el.getAttribute('data-i'));
+      document.querySelectorAll('.bo').forEach(function(b) { b.classList.remove('sel'); });
+      el.classList.add('sel');
+    });
+  });
+}
+
+// ══ CAMERA / SCANNER ══
+function tapScan() {
+  document.getElementById('camOv').style.display = 'flex';
+}
+
+async function reqCam() {
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+    if (confirm('Camera requires HTTPS. Open pozi.live/pozi-go.html?')) {
+      window.location.href = 'https://pozi.live/pozi-go.html';
+    }
+    return;
+  }
+  document.getElementById('camOv').style.display = 'none';
+  var st2 = document.getElementById('scStatus');
+  st2.textContent = 'Opening camera...';
+  try {
+    var stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    var vid = document.getElementById('camVid');
+    vid.srcObject = stream;
+    vid.style.display = 'block';
+    document.getElementById('vfIdle').style.display = 'none';
+    document.getElementById('vfLine').style.display = 'block';
+    document.getElementById('vfPulse').style.display = 'block';
+    document.getElementById('scBtn').style.display = 'none';
+    document.getElementById('scStop').style.display = 'block';
+    st2.textContent = 'Scanning — point at any barcode';
+    scanning = true;
+    if (window.ZXing) {
+      try {
+        codeRdr = new ZXing.BrowserMultiFormatReader();
+        codeRdr.decodeFromStream(stream, vid, function(res) {
+          if (res && scanning) { stopCam(); handleCode(res.getText()); }
+        });
+      } catch(e) { st2.textContent = 'Camera active — use search below'; }
+    } else {
+      st2.textContent = 'Camera active — ZXing loading, use search below';
+    }
+  } catch(err) {
+    if (err.name === 'NotAllowedError') {
+      document.getElementById('camTtl').textContent = 'Camera Access Denied';
+      document.getElementById('camSub').textContent = 'Go to Settings → Safari → Camera → Allow, then return to pozi.live/pozi-go.html';
+      document.getElementById('camAllow').style.display = 'none';
+      document.getElementById('camSet').style.display = 'block';
+      document.getElementById('camOv').style.display = 'flex';
+    } else {
+      st2.textContent = 'Camera unavailable — use search';
+    }
+  }
+}
+
+function stopCam() {
+  scanning = false;
+  var vid = document.getElementById('camVid');
+  if (vid.srcObject) { vid.srcObject.getTracks().forEach(function(t) { t.stop(); }); vid.srcObject = null; }
+  if (codeRdr) { try { codeRdr.reset(); } catch(e) {} codeRdr = null; }
+  vid.style.display = 'none';
+  document.getElementById('vfIdle').style.display = 'flex';
+  document.getElementById('vfLine').style.display = 'none';
+  document.getElementById('vfPulse').style.display = 'none';
+  document.getElementById('scBtn').style.display = 'flex';
+  document.getElementById('scStop').style.display = 'none';
+  document.getElementById('scStatus').textContent = '';
+}
+
+// ══ HANDLE SCANNED CODE — regular function, not async ══
+function handleCode(code) {
+  toast('📷','Scanned!','Searching POZi...');
+  var found = DB.find(function(d) { return d.sku === code; });
+  if (found) { openDet(found.sku); return; }
+  showRes(code, 'all');
+}
+
+// ══ INIT ══
+window.addEventListener('load', function() {
+  // Build UI
+  buildStores();
+
+  // Fetch live data
+  fetchDB();
+
+  // Wire all nav buttons using event listeners — never onclick in HTML
+  // Bottom nav — scanner screen
+  document.getElementById('nav-stores').addEventListener('click', function() { show('stores'); });
+  document.getElementById('nav-results').addEventListener('click', function() { showRes('','all'); });
+  document.getElementById('nav-scanner').addEventListener('click', function() { show('scanner'); });
+  document.getElementById('nav-alerts').addEventListener('click', function() { show('alerts'); });
+  // Bottom nav — stores screen
+  document.getElementById('snav-stores').addEventListener('click', function() { show('stores'); });
+  document.getElementById('snav-results').addEventListener('click', function() { showRes('','all'); });
+  document.getElementById('snav-scanner').addEventListener('click', function() { show('scanner'); });
+  document.getElementById('snav-alerts').addEventListener('click', function() { show('alerts'); });
+  // Bottom nav — results screen
+  document.getElementById('rnav-stores').addEventListener('click', function() { show('stores'); });
+  document.getElementById('rnav-results').addEventListener('click', function() { showRes('','all'); });
+  document.getElementById('rnav-scanner').addEventListener('click', function() { show('scanner'); });
+  document.getElementById('rnav-alerts').addEventListener('click', function() { show('alerts'); });
+  // Bottom nav — alerts screen
+  document.getElementById('anav-stores').addEventListener('click', function() { show('stores'); });
+  document.getElementById('anav-results').addEventListener('click', function() { showRes('','all'); });
+  document.getElementById('anav-scanner').addEventListener('click', function() { show('scanner'); });
+  document.getElementById('anav-alerts').addEventListener('click', function() { show('alerts'); });
+
+  // Back buttons
+  document.getElementById('resBk').addEventListener('click', back);
+  document.getElementById('detBk').addEventListener('click', back);
+
+  // Scanner buttons
+  document.getElementById('scBtn').addEventListener('click', tapScan);
+  document.getElementById('scStop').addEventListener('click', stopCam);
+  document.getElementById('browseAllBtn').addEventListener('click', function() { showRes('','all'); });
+
+  // Search inputs
+  document.getElementById('scQ').addEventListener('input', function() {
+    if (this.value) { showRes(this.value, 'all'); }
+  });
+  document.getElementById('resQ').addEventListener('input', function() {
+    Q = this.value; render();
+  });
+  document.getElementById('storeSearchQ').addEventListener('input', function() {
+    if (this.value) showRes(this.value, 'all');
+  });
+
+  // Chips
+  document.getElementById('chips').addEventListener('click', function(e) {
+    var ch = e.target.closest('.ch');
+    if (!ch) return;
+    F = ch.getAttribute('data-f');
+    document.querySelectorAll('.ch').forEach(function(c) { c.classList.remove('on'); });
+    ch.classList.add('on');
+    render();
+  });
+
+  // Store cards
+  document.getElementById('storesList').addEventListener('click', function(e) {
+    var card = e.target.closest('.sc-card');
+    if (!card) return;
+    showRes('', card.getAttribute('data-loc'));
+  });
+
+  // Camera overlay
+  document.getElementById('camAllow').addEventListener('click', reqCam);
+  document.getElementById('camSet').addEventListener('click', function() {
+    window.location.href = 'app-settings:'; // iOS settings deep link
+  });
+  document.getElementById('camCancel').addEventListener('click', function() {
+    document.getElementById('camOv').style.display = 'none';
+  });
+  document.getElementById('camOv').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+
+  // Buy overlay
+  document.getElementById('buyBtn').addEventListener('click', openBuy);
+  document.getElementById('confirmBuyBtn').addEventListener('click', function() {
+    if (selSt === null) { toast('⚠️','Pick a store','Choose a pickup location first'); return; }
+    document.getElementById('buyOv').style.display = 'none';
+    var orderNum = 'POZi-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    toast('✅','Order #' + orderNum,'Ready for pickup ~15 min');
+  });
+  document.getElementById('closeBuyOv').addEventListener('click', function() {
+    document.getElementById('buyOv').style.display = 'none';
+  });
+  document.getElementById('buyOv').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+
+  // Guest login button
+  document.getElementById('guestBtn').addEventListener('click', function() {
+    try { sessionStorage.setItem('pz','1'); } catch(e) {}
+    show('scanner');
+  });
+
+  // Splash → check session → go to scanner or login
+  setTimeout(function() {
+    var seen = false;
+    try { seen = !!sessionStorage.getItem('pz'); } catch(e) {}
+    document.getElementById('splash').classList.remove('on');
+    var next = seen ? 'scanner' : 'login';
+    document.getElementById(next).classList.add('on');
+    cur = next;
+  }, 2000);
+});
+</script>
+</body>
+</html>
