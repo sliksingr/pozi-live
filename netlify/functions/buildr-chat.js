@@ -2,7 +2,9 @@ exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: "Method not allowed" }),
+      body: JSON.stringify({
+        error: "Method not allowed. Use POST."
+      })
     };
   }
 
@@ -12,7 +14,9 @@ exports.handler = async (event) => {
     if (!prompt) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Missing prompt" }),
+        body: JSON.stringify({
+          error: "Missing prompt."
+        })
       };
     }
 
@@ -24,7 +28,7 @@ exports.handler = async (event) => {
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 800,
         messages: [
           {
@@ -37,21 +41,33 @@ exports.handler = async (event) => {
 
     const data = await response.json();
 
+    console.log("Anthropic response:", JSON.stringify(data));
+
+    const reply =
+      data?.content?.[0]?.text ||
+      data?.completion ||
+      "No response returned.";
+
     return {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        reply: data?.content?.[0]?.text || "No response returned."
+        reply
       })
     };
 
   } catch (error) {
+    console.error("BUILDr function error:", error);
+
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        error: error.message
+        error: error.message || "Unknown server error."
       })
     };
   }
