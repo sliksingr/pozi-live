@@ -1379,24 +1379,24 @@ img[alt*="POZi logo"]{
    BUILDr THUNDER TENSION SECTION
 ════════════════════════════════════ */
 .buildr-tension-section{
-  padding:100px 24px;
+  padding:90px 24px;
   position:relative;
   overflow:hidden;
 }
 .buildr-tension-wrap{
-  max-width:1080px;
+  max-width:1180px;
   margin:0 auto;
 }
 .buildr-tension-shell{
   position:relative;
   display:grid;
-  grid-template-columns:minmax(0,1fr) 240px minmax(0,1fr);
-  gap:22px;
+  grid-template-columns:minmax(285px,1fr) minmax(280px,390px) minmax(285px,1fr);
+  gap:14px;
   align-items:center;
   background:linear-gradient(135deg,rgba(0,255,136,.035),rgba(0,102,255,.035));
   border:1px solid rgba(255,255,255,.07);
   border-radius:28px;
-  padding:30px;
+  padding:24px;
   overflow:hidden;
 }
 .buildr-tension-shell::before{
@@ -1404,18 +1404,18 @@ img[alt*="POZi logo"]{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(ellipse 55% 45% at 50% 50%,rgba(118,60,255,.12),transparent 65%),
-    radial-gradient(ellipse 40% 30% at 50% 48%,rgba(0,255,136,.06),transparent 70%);
+    radial-gradient(ellipse 44% 42% at 50% 50%,rgba(118,60,255,.16),transparent 64%),
+    radial-gradient(ellipse 38% 30% at 50% 48%,rgba(0,255,136,.06),transparent 70%);
   pointer-events:none;
 }
 .buildr-panel{
   position:relative;
   z-index:2;
-  background:rgba(10,10,20,.72);
+  background:rgba(10,10,20,.74);
   border:1px solid rgba(255,255,255,.08);
   border-radius:22px;
   padding:24px;
-  min-height:260px;
+  min-height:310px;
   box-shadow:0 18px 50px rgba(0,0,0,.22);
 }
 .buildr-panel-left{
@@ -1469,31 +1469,32 @@ img[alt*="POZi logo"]{
 .buildr-thunder-core{
   position:relative;
   z-index:1;
-  min-height:300px;
+  min-height:330px;
   display:flex;
   align-items:center;
   justify-content:center;
   pointer-events:none;
+  margin:0 -28px;
 }
 .buildr-thunder-core::before,
 .buildr-thunder-core::after{
   content:'';
   position:absolute;
   top:50%;
-  width:110px;
+  width:120px;
   height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,255,136,.45),rgba(0,102,255,.25),transparent);
-  opacity:.7;
+  background:linear-gradient(90deg,transparent,rgba(0,255,136,.48),rgba(0,102,255,.28),transparent);
+  opacity:.85;
 }
 .buildr-thunder-core::before{right:50%; transform:translateY(-50%);}
 .buildr-thunder-core::after{left:50%; transform:translateY(-50%);}
 .buildr-thunder-img{
   position:relative;
   z-index:2;
-  width:min(300px,32vw);
+  width:min(470px,42vw);
   max-width:none;
-  opacity:.78;
-  filter:drop-shadow(0 0 28px rgba(116,68,255,.45)) drop-shadow(0 0 18px rgba(0,255,136,.12));
+  opacity:.9;
+  filter:drop-shadow(0 0 42px rgba(116,68,255,.58)) drop-shadow(0 0 24px rgba(0,255,136,.18));
   animation:buildrFloat 6s ease-in-out infinite;
 }
 @keyframes buildrFloat{
@@ -1559,18 +1560,29 @@ img[alt*="POZi logo"]{
   background:rgba(0,0,0,.025);
   border-color:rgba(0,0,0,.07);
 }
-@media(max-width:860px){
+@media(max-width:980px){
+  .buildr-tension-wrap{max-width:960px;}
+  .buildr-tension-shell{
+    grid-template-columns:minmax(260px,1fr) minmax(220px,300px) minmax(260px,1fr);
+    gap:10px;
+    padding:18px;
+  }
+  .buildr-panel{padding:20px; min-height:290px;}
+  .buildr-thunder-core{min-height:290px; margin:0 -34px;}
+  .buildr-thunder-img{width:min(390px,38vw);}
+}
+@media(max-width:720px){
   .buildr-tension-shell{
     grid-template-columns:1fr;
     padding:20px;
   }
   .buildr-thunder-core{
-    min-height:170px;
-    margin:-6px 0;
+    min-height:150px;
+    margin:-8px 0;
   }
   .buildr-thunder-img{
-    width:min(340px,82vw);
-    opacity:.72;
+    width:min(420px,86vw);
+    opacity:.86;
   }
   .buildr-thunder-core::before,
   .buildr-thunder-core::after{
@@ -1795,14 +1807,14 @@ img[alt*="POZi logo"]{
     <div class="buildr-tension-shell">
       <div class="buildr-panel buildr-panel-left">
         <div class="buildr-kicker">Prompt</div>
-        <div class="buildr-panel-title">Start with what you want to build.</div>
+        <div class="buildr-panel-title">BUILDr asks what you want.</div>
         <p class="buildr-panel-copy">
-          Instead of searching store by store, tell BUILDr what you are trying to do. It organizes the project first.
+          Tell BUILDr the idea, the space, or the problem. It turns the conversation into a real project plan.
         </p>
 
         <div class="buildr-prompt-box">
           <div class="buildr-prompt-label">Example request</div>
-          “I want to build a 12x20 cedar deck with stairs. Tell me what materials, tools, and fasteners I need.”
+          “What are you trying to build, fix, or design today?”
         </div>
 
         <div class="buildr-mini-actions">
@@ -1819,22 +1831,22 @@ img[alt*="POZi logo"]{
 
       <div class="buildr-panel buildr-panel-right">
         <div class="buildr-kicker">BUILDr response</div>
-        <div class="buildr-panel-title">Plan first. Search once.</div>
+        <div class="buildr-panel-title">You answer. BUILDr organizes.</div>
 
         <div class="buildr-response-stack">
           <div class="buildr-bubble hot">
-            <strong>Project basket created</strong>
-            Cedar boards, posts, joists, fasteners, concrete, railing options, stairs, and tool needs.
+            <strong>Your project intent</strong>
+            “I want a 12x20 cedar deck with stairs. I need materials, tools, and what to buy.”
           </div>
 
           <div class="buildr-bubble">
-            <strong>Smart sourcing pass</strong>
-            When the basket is ready, POZi can search major retailers, local stores, and supported inventory sources together.
+            <strong>BUILDr output</strong>
+            Materials, quantities, tool needs, options, and a smarter shopping path are organized before sourcing.
           </div>
 
           <div class="buildr-bubble">
-            <strong>Built for real buying intent</strong>
-            Consumers get organized shopping help. Contractors get faster material planning and sourcing.
+            <strong>Then POZi helps source it</strong>
+            Major retailers, local stores, and product links become the next step — not the whole starting point.
           </div>
         </div>
       </div>
