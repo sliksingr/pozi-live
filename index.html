@@ -1593,6 +1593,64 @@ img[alt*="POZi logo"]{
   }
 }
 
+
+/* BUILDr live chat controls */
+.buildr-input-area{
+  width:100%;
+  min-height:112px;
+  resize:vertical;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:16px;
+  padding:15px 16px;
+  color:#fff;
+  font-family:var(--fb);
+  font-size:13px;
+  line-height:1.55;
+  outline:none;
+  margin-top:10px;
+}
+.buildr-input-area:focus{
+  border-color:rgba(0,255,136,.28);
+  box-shadow:0 0 0 3px rgba(0,255,136,.05);
+}
+.buildr-input-area::placeholder{color:#8b8ba8;}
+.buildr-ask-btn{
+  width:100%;
+  margin-top:14px;
+  background:linear-gradient(135deg,var(--green),#00cc66);
+  color:#000;
+  font-family:var(--fh);
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:.4px;
+  padding:14px 18px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  transition:transform .18s, box-shadow .18s, opacity .18s;
+}
+.buildr-ask-btn:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,255,136,.18);}
+.buildr-ask-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none;}
+.buildr-live-answer{white-space:pre-wrap;}
+.buildr-status{
+  margin-top:10px;
+  min-height:18px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.4;
+}
+.buildr-status.ok{color:var(--green);}
+.buildr-status.err{color:#ff6680;}
+[data-theme="light"] .buildr-input-area{
+  background:rgba(0,0,0,.025);
+  border-color:rgba(0,0,0,.08);
+  color:#0a0a14;
+}
+[data-theme="light"] .buildr-input-area::placeholder{color:#777790;}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -1813,15 +1871,17 @@ img[alt*="POZi logo"]{
         </p>
 
         <div class="buildr-prompt-box">
-          <div class="buildr-prompt-label">Example request</div>
-          “What are you trying to build, fix, or design today?”
+          <div class="buildr-prompt-label">Ask BUILDr</div>
+          <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Example: I want to build a 12x20 cedar deck with stairs. Tell me the materials, tools, and what to buy."></textarea>
+          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr <span>↗</span></button>
+          <div id="buildrStatus" class="buildr-status">Securely routed through Netlify Functions.</div>
         </div>
 
         <div class="buildr-mini-actions">
-          <span class="buildr-chip">Decks</span>
-          <span class="buildr-chip">Rooms</span>
-          <span class="buildr-chip">Repairs</span>
-          <span class="buildr-chip">Shopping lists</span>
+          <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to build a 12x20 cedar deck with stairs. Tell me the materials, tools, fasteners, and shopping path.">Deck</button>
+          <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to redesign a living room. Help me plan the layout, furniture, lighting, and shopping list.">Room</button>
+          <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I need to fix a broken outdoor gate. Tell me what parts, tools, and steps I need.">Repair</button>
+          <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="Help me make a shopping list for a weekend home project and organize it by store category.">Shopping list</button>
         </div>
       </div>
 
@@ -1835,8 +1895,8 @@ img[alt*="POZi logo"]{
 
         <div class="buildr-response-stack">
           <div class="buildr-bubble hot">
-            <strong>Your project intent</strong>
-            “I want a 12x20 cedar deck with stairs. I need materials, tools, and what to buy.”
+            <strong>BUILDr live answer</strong>
+            <div id="buildrAnswer" class="buildr-live-answer">Ask BUILDr a project question and the response will appear here.</div>
           </div>
 
           <div class="buildr-bubble">
@@ -3348,5 +3408,74 @@ var embedInput = document.getElementById('buildrEmbedInput');
 if (embedSend) embedSend.addEventListener('click', buildrEmbedSend);
 if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='Enter') buildrEmbedSend(); });
 </script>
+
+<script>
+(function(){
+  const promptEl = document.getElementById('buildrPrompt');
+  const askBtn = document.getElementById('buildrAskBtn');
+  const answerEl = document.getElementById('buildrAnswer');
+  const statusEl = document.getElementById('buildrStatus');
+  const presetBtns = document.querySelectorAll('[data-buildr-preset]');
+
+  if (!promptEl || !askBtn || !answerEl) return;
+
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      promptEl.value = btn.getAttribute('data-buildr-preset') || '';
+      promptEl.focus();
+    });
+  });
+
+  async function askBuildr(){
+    const prompt = (promptEl.value || '').trim();
+
+    if (!prompt) {
+      statusEl.textContent = 'Type a project idea first.';
+      statusEl.className = 'buildr-status err';
+      promptEl.focus();
+      return;
+    }
+
+    askBtn.disabled = true;
+    askBtn.textContent = 'BUILDr is thinking...';
+    statusEl.textContent = 'Sending securely through Netlify Functions.';
+    statusEl.className = 'buildr-status';
+    answerEl.textContent = 'Building a project plan...';
+
+    try {
+      const res = await fetch('/.netlify/functions/buildr-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'BUILDr request failed.');
+      }
+
+      answerEl.textContent = data.reply || 'No response returned.';
+      statusEl.textContent = 'BUILDr response received.';
+      statusEl.className = 'buildr-status ok';
+    } catch (err) {
+      answerEl.textContent = 'BUILDr could not respond yet. Check the Netlify Function and ANTHROPIC_API_KEY environment variable.';
+      statusEl.textContent = err.message || 'Unknown error.';
+      statusEl.className = 'buildr-status err';
+    } finally {
+      askBtn.disabled = false;
+      askBtn.innerHTML = 'Ask BUILDr <span>↗</span>';
+    }
+  }
+
+  askBtn.addEventListener('click', askBuildr);
+  promptEl.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      askBuildr();
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
