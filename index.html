@@ -2068,6 +2068,24 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-first-message-center-final">
+/* First message label: centered before first submit, then JS changes it to NEXT MESSAGE */
+.buildr-followup-label.buildr-first-message-label,
+#buildrMessageLabel{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+  margin:18px auto 14px auto !important;
+  color:#7dffbf !important;
+  font-family:var(--fh) !important;
+  font-size:10px !important;
+  letter-spacing:1.8px !important;
+  text-transform:uppercase !important;
+  font-weight:900 !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -2242,7 +2260,7 @@ img[alt*="POZi logo"]{
               </div>
             </div>
           </div>
-          <div class="buildr-followup-label">Next message</div>
+          <div id="buildrMessageLabel" class="buildr-followup-label buildr-first-message-label">FIRST MESSAGE</div>
           <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Tell BUILDr what you want to build, fix, design, or source next."></textarea>
           <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr <span>↗</span></button>
           <div id="buildrStatus" class="buildr-status">Securely routed through Netlify Functions.</div>
@@ -3871,6 +3889,9 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       promptEl.focus();
       return;
     }
+
+    const messageLabel = document.getElementById('buildrMessageLabel');
+    if (messageLabel) messageLabel.textContent = 'NEXT MESSAGE';
 
     addUserMessage(visiblePrompt);
     conversation.push({ role: 'user', text: visiblePrompt });
