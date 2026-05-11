@@ -67,44 +67,85 @@ function jsonResponse(statusCode, body) {
 }
 
 function detectMode(prompt) {
-  const text = prompt.toLowerCase();
+  const text = String(prompt || "").toLowerCase();
 
   const proWords = [
-    "client", "job", "bid", "quote", "deadline", "crew", "install",
-    "materials", "linear feet", "square feet", "sq ft", "studs",
-    "joists", "rafters", "concrete", "deck", "framing"
+    "client",
+    "job",
+    "bid",
+    "quote",
+    "deadline",
+    "crew",
+    "install",
+    "materials",
+    "linear feet",
+    "square feet",
+    "sq ft",
+    "studs",
+    "joists",
+    "rafters",
+    "concrete",
+    "deck",
+    "framing",
+    "permit",
+    "takeoff",
+    "estimate"
   ];
 
   const consumerWords = [
-    "room", "couch", "sofa", "tv", "speaker", "decor", "lighting",
-    "apartment", "bedroom", "living room", "kitchen", "style"
+    "room",
+    "couch",
+    "sofa",
+    "tv",
+    "speaker",
+    "decor",
+    "lighting",
+    "apartment",
+    "bedroom",
+    "living room",
+    "kitchen",
+    "style",
+    "furniture",
+    "home theater"
   ];
 
   if (proWords.some((word) => text.includes(word))) return "pro";
   if (consumerWords.some((word) => text.includes(word))) return "consumer";
+
   return "general";
 }
 
 function detectProjectType(prompt) {
-  const text = prompt.toLowerCase();
+  const text = String(prompt || "").toLowerCase();
 
   if (text.includes("deck")) return "deck";
-  if (text.includes("sink") || text.includes("plumbing")) return "plumbing";
-  if (text.includes("electrical") || text.includes("outlet") || text.includes("light")) return "electrical";
-  if (text.includes("roof")) return "roofing";
-  if (text.includes("concrete")) return "concrete";
-  if (text.includes("room") || text.includes("furniture")) return "interior_design";
-  if (text.includes("tv") || text.includes("speaker") || text.includes("smart home")) return "electronics";
+  if (text.includes("sink") || text.includes("plumbing") || text.includes("pipe") || text.includes("faucet")) return "plumbing";
+  if (text.includes("electrical") || text.includes("outlet") || text.includes("light switch") || text.includes("breaker")) return "electrical";
+  if (text.includes("roof") || text.includes("shingle")) return "roofing";
+  if (text.includes("concrete") || text.includes("slab") || text.includes("footing")) return "concrete";
+  if (text.includes("room") || text.includes("furniture") || text.includes("sofa") || text.includes("layout")) return "interior_design";
+  if (text.includes("tv") || text.includes("speaker") || text.includes("smart home") || text.includes("home theater")) return "electronics";
+  if (text.includes("fence") || text.includes("gate")) return "fencing";
+  if (text.includes("paint") || text.includes("drywall")) return "finishing";
 
   return "general";
 }
 
-async function logToSupabase({ prompt, reply, mode, project_type, session_id, user_id }) {
+async function logToSupabase({
+  prompt,
+  reply,
+  mode,
+  project_type,
+  session_id,
+  user_id
+}) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.warn("Supabase logging skipped: missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
+    console.warn(
+      "Supabase logging skipped: missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY."
+    );
     return null;
   }
 
@@ -226,7 +267,6 @@ exports.handler = async (event) => {
       mode,
       project_type
     });
-
   } catch (error) {
     console.error("BUILDr function error:", error);
 
