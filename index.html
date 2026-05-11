@@ -1469,7 +1469,7 @@ img[alt*="POZi logo"]{
 .buildr-thunder-core{
   position:relative;
   z-index:0;
-  min-height:760px;
+  min-height:520px;
   overflow:visible;
   display:flex;
   align-items:center;
@@ -1492,10 +1492,9 @@ img[alt*="POZi logo"]{
 .buildr-thunder-img{
   position:relative;
   z-index:1;
-  width:min(1600px,120vw);
+  width:min(920px,78vw);
   max-width:none;
   opacity:.92;
-  transform:translateX(-140px);
   filter:drop-shadow(0 0 70px rgba(116,68,255,.65)) drop-shadow(0 0 34px rgba(0,255,136,.22));
   animation:buildrFloat 6s ease-in-out infinite;
 }
@@ -1789,6 +1788,66 @@ img[alt*="POZi logo"]{
   }
   .buildr-embed{
     border-radius:20px!important;
+  }
+}
+</style>
+
+
+<style id="pozi-thunder-giant-final">
+/* Final thunder placement pass: bigger, left-shifted, and animation-safe */
+.buildr-thunder-core{
+  z-index:0 !important;
+  min-height:760px !important;
+  overflow:visible !important;
+  margin:0 -120px 0 -220px !important;
+}
+
+.buildr-thunder-core::before,
+.buildr-thunder-core::after{
+  display:none !important;
+}
+
+.buildr-thunder-img{
+  z-index:1 !important;
+  width:min(1700px,138vw) !important;
+  max-width:none !important;
+  opacity:.94 !important;
+  animation:buildrFloatLeft 6s ease-in-out infinite !important;
+  filter:
+    drop-shadow(0 0 86px rgba(116,68,255,.72))
+    drop-shadow(0 0 40px rgba(0,255,136,.24)) !important;
+}
+
+@keyframes buildrFloatLeft{
+  0%,100%{transform:translateX(-185px) translateY(0) scale(1);}
+  50%{transform:translateX(-185px) translateY(-8px) scale(1.035);}
+}
+
+@media(max-width:980px){
+  .buildr-thunder-core{
+    min-height:720px !important;
+    margin:0 -130px 0 -250px !important;
+  }
+  .buildr-thunder-img{
+    width:min(1550px,150vw) !important;
+  }
+  @keyframes buildrFloatLeft{
+    0%,100%{transform:translateX(-220px) translateY(0) scale(1);}
+    50%{transform:translateX(-220px) translateY(-8px) scale(1.035);}
+  }
+}
+
+@media(max-width:720px){
+  .buildr-thunder-core{
+    min-height:260px !important;
+    margin:-10px 0 !important;
+  }
+  .buildr-thunder-img{
+    width:min(980px,180vw) !important;
+  }
+  @keyframes buildrFloatLeft{
+    0%,100%{transform:translateX(-110px) translateY(0) scale(1);}
+    50%{transform:translateX(-110px) translateY(-8px) scale(1.035);}
   }
 }
 </style>
