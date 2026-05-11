@@ -1,7 +1,9 @@
 // netlify/functions/buildr-chat.js
-// Secure POZi BUILDr → Anthropic proxy.
-// Keep ANTHROPIC_API_KEY in Netlify Environment Variables.
-// Never put API keys in index.html or public JavaScript.
+// Secure POZi BUILDr → Anthropic proxy + Supabase chat logging.
+// Required Netlify Environment Variables:
+// ANTHROPIC_API_KEY
+// SUPABASE_URL
+// SUPABASE_SERVICE_ROLE_KEY
 
 const BUILDR_SYSTEM_PROMPT = `
 You are BUILDr — POZi's AI project planning and sourcing assistant.
@@ -64,6 +66,78 @@ function jsonResponse(statusCode, body) {
   };
 }
 
+function detectMode(prompt) {
+  const text = prompt.toLowerCase();
+
+  const proWords = [
+    "client", "job", "bid", "quote", "deadline", "crew", "install",
+    "materials", "linear feet", "square feet", "sq ft", "studs",
+    "joists", "rafters", "concrete", "deck", "framing"
+  ];
+
+  const consumerWords = [
+    "room", "couch", "sofa", "tv", "speaker", "decor", "lighting",
+    "apartment", "bedroom", "living room", "kitchen", "style"
+  ];
+
+  if (proWords.some((word) => text.includes(word))) return "pro";
+  if (consumerWords.some((word) => text.includes(word))) return "consumer";
+  return "general";
+}
+
+function detectProjectType(prompt) {
+  const text = prompt.toLowerCase();
+
+  if (text.includes("deck")) return "deck";
+  if (text.includes("sink") || text.includes("plumbing")) return "plumbing";
+  if (text.includes("electrical") || text.includes("outlet") || text.includes("light")) return "electrical";
+  if (text.includes("roof")) return "roofing";
+  if (text.includes("concrete")) return "concrete";
+  if (text.includes("room") || text.includes("furniture")) return "interior_design";
+  if (text.includes("tv") || text.includes("speaker") || text.includes("smart home")) return "electronics";
+
+  return "general";
+}
+
+async function logToSupabase({ prompt, reply, mode, project_type, session_id, user_id }) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.warn("Supabase logging skipped: missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
+    return null;
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/buildr_chats`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": serviceRoleKey,
+      "Authorization": `Bearer ${serviceRoleKey}`,
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify({
+      prompt,
+      reply,
+      mode,
+      project_type,
+      session_id: session_id || null,
+      user_id: user_id || null,
+      source_page: "pozi.live",
+      thumb_rating: null
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.warn("Supabase logging failed:", errorText);
+    return null;
+  }
+
+  const rows = await response.json();
+  return rows?.[0] || null;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return jsonResponse(200, { ok: true });
@@ -77,9 +151,13 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { prompt } = JSON.parse(event.body || "{}");
+    const body = JSON.parse(event.body || "{}");
 
-    if (!prompt || !String(prompt).trim()) {
+    const prompt = String(body.prompt || "").trim();
+    const session_id = body.session_id ? String(body.session_id) : null;
+    const user_id = body.user_id ? String(body.user_id) : null;
+
+    if (!prompt) {
       return jsonResponse(400, {
         ok: false,
         error: "Missing prompt."
@@ -92,6 +170,9 @@ exports.handler = async (event) => {
         error: "Missing ANTHROPIC_API_KEY environment variable."
       });
     }
+
+    const mode = detectMode(prompt);
+    const project_type = detectProjectType(prompt);
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -107,7 +188,7 @@ exports.handler = async (event) => {
         messages: [
           {
             role: "user",
-            content: String(prompt).trim()
+            content: prompt
           }
         ]
       })
@@ -129,9 +210,21 @@ exports.handler = async (event) => {
       data?.completion ||
       "No response returned.";
 
+    const savedChat = await logToSupabase({
+      prompt,
+      reply,
+      mode,
+      project_type,
+      session_id,
+      user_id
+    });
+
     return jsonResponse(200, {
       ok: true,
-      reply
+      reply,
+      chat_id: savedChat?.id || null,
+      mode,
+      project_type
     });
 
   } catch (error) {
