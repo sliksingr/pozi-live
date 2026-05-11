@@ -1963,6 +1963,99 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-buildr-starter-polish">
+/* Polish the first YOU / BUILDr starter cards so both sides match visually */
+.buildr-starter-card{
+  min-height:218px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  padding:20px 18px !important;
+}
+
+.buildr-chat-stream{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  border-radius:18px !important;
+}
+
+.buildr-chat-stream .buildr-starter-card{
+  margin-bottom:0 !important;
+}
+
+.buildr-role-label{
+  align-self:center !important;
+  min-width:72px !important;
+  height:28px !important;
+  padding:0 14px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  border-radius:999px !important;
+  line-height:1 !important;
+}
+
+.buildr-role-label.you{
+  min-width:58px !important;
+}
+
+.buildr-role-label.buildr{
+  min-width:82px !important;
+  letter-spacing:1.7px !important;
+}
+
+.buildr-starter-title{
+  text-align:left !important;
+  max-width:230px;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+.buildr-starter-pills{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+  max-width:230px;
+}
+
+.buildr-starter-pills span{
+  min-width:auto !important;
+  padding:7px 11px !important;
+  font-size:10px !important;
+  border-radius:999px !important;
+}
+
+/* Keep the left starter from looking like an open-ended scroll strip */
+#buildrUserStream .buildr-starter-card{
+  background:
+    radial-gradient(ellipse 85% 65% at 18% 12%, rgba(0,255,136,.14), transparent 62%),
+    radial-gradient(ellipse 70% 55% at 85% 90%, rgba(0,102,255,.13), transparent 62%),
+    rgba(255,255,255,.045) !important;
+}
+
+/* Make the BUILDr side use the same rhythm */
+#buildrAnswer .buildr-starter-card{
+  min-height:218px !important;
+}
+
+@media(max-width:720px){
+  .buildr-starter-card{
+    min-height:190px !important;
+  }
+  .buildr-starter-title,
+  .buildr-starter-pills{
+    max-width:100%;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -2131,9 +2224,9 @@ img[alt*="POZi logo"]{
               <strong class="buildr-role-label you">YOU</strong>
               <div class="buildr-starter-title">Start with a project.</div>
               <div class="buildr-starter-pills">
-                <span>Describe it</span>
-                <span>Add budget</span>
-                <span>Add location</span>
+                <span>Describe</span>
+                <span>Budget</span>
+                <span>Location</span>
               </div>
             </div>
           </div>
