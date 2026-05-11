@@ -1651,6 +1651,82 @@ img[alt*="POZi logo"]{
 }
 [data-theme="light"] .buildr-input-area::placeholder{color:#777790;}
 
+
+/* BUILDr conversational refinement */
+.buildr-chat-stream{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:260px;
+  overflow:auto;
+  margin:0 0 14px;
+  padding:2px;
+  scroll-behavior:smooth;
+}
+.buildr-chat-stream::-webkit-scrollbar{width:6px;}
+.buildr-chat-stream::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.12);
+  border-radius:999px;
+}
+.buildr-msg{
+  border:1px solid rgba(255,255,255,.075);
+  background:rgba(255,255,255,.04);
+  border-radius:14px;
+  padding:12px 13px;
+  font-size:12px;
+  line-height:1.55;
+  color:var(--muted);
+  white-space:pre-wrap;
+}
+.buildr-msg strong{
+  display:block;
+  color:#fff;
+  font-family:var(--fh);
+  font-size:11px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.buildr-msg.user{
+  border-color:rgba(0,255,136,.18);
+  background:rgba(0,255,136,.055);
+}
+.buildr-msg.ai{
+  border-color:rgba(0,102,255,.17);
+  background:rgba(0,102,255,.045);
+}
+.buildr-msg.pending{opacity:.72;}
+.buildr-live-answer .buildr-msg{margin-bottom:10px;}
+.buildr-live-answer .buildr-msg:last-child{margin-bottom:0;}
+.buildr-followup-label{
+  font-family:var(--fh);
+  color:#7dffbf;
+  font-size:10px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin:10px 0 6px;
+  font-weight:800;
+}
+.buildr-input-area{min-height:92px;}
+.buildr-ask-btn{margin-top:10px;}
+[data-theme="light"] .buildr-msg strong{color:#0a0a14;}
+[data-theme="light"] .buildr-msg{
+  background:rgba(0,0,0,.025);
+  border-color:rgba(0,0,0,.07);
+  color:#4d4d68;
+}
+[data-theme="light"] .buildr-msg.user{
+  background:rgba(0,180,90,.055);
+  border-color:rgba(0,160,80,.14);
+}
+[data-theme="light"] .buildr-msg.ai{
+  background:rgba(0,85,255,.045);
+  border-color:rgba(0,85,255,.12);
+}
+@media(max-width:720px){
+  .buildr-chat-stream{max-height:220px;}
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -1871,8 +1947,15 @@ img[alt*="POZi logo"]{
         </p>
 
         <div class="buildr-prompt-box">
-          <div class="buildr-prompt-label">Ask BUILDr</div>
-          <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Example: I want to build a 12x20 cedar deck with stairs. Tell me the materials, tools, and what to buy."></textarea>
+          <div class="buildr-prompt-label">Your side of the build</div>
+          <div id="buildrUserStream" class="buildr-chat-stream" aria-live="polite">
+            <div class="buildr-msg user">
+              <strong>You</strong>
+              Start with a project. After BUILDr answers, keep replying here and the session will build forward.
+            </div>
+          </div>
+          <div class="buildr-followup-label">Next message</div>
+          <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Tell BUILDr what you want to build, fix, design, or source next."></textarea>
           <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr <span>↗</span></button>
           <div id="buildrStatus" class="buildr-status">Securely routed through Netlify Functions.</div>
         </div>
@@ -1895,8 +1978,13 @@ img[alt*="POZi logo"]{
 
         <div class="buildr-response-stack">
           <div class="buildr-bubble hot">
-            <strong>BUILDr live answer</strong>
-            <div id="buildrAnswer" class="buildr-live-answer">Ask BUILDr a project question and the response will appear here.</div>
+            <strong>BUILDr conversation</strong>
+            <div id="buildrAnswer" class="buildr-live-answer">
+              <div class="buildr-msg ai">
+                <strong>BUILDr</strong>
+                Ask a project question and I’ll start organizing it.
+              </div>
+            </div>
           </div>
 
           <div class="buildr-bubble">
@@ -3415,9 +3503,64 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   const askBtn = document.getElementById('buildrAskBtn');
   const answerEl = document.getElementById('buildrAnswer');
   const statusEl = document.getElementById('buildrStatus');
+  const userStreamEl = document.getElementById('buildrUserStream');
   const presetBtns = document.querySelectorAll('[data-buildr-preset]');
 
   if (!promptEl || !askBtn || !answerEl) return;
+
+  const STORAGE_KEY = 'pozi_buildr_session_id';
+  let sessionId = localStorage.getItem(STORAGE_KEY);
+  if (!sessionId) {
+    sessionId = 'buildr_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    localStorage.setItem(STORAGE_KEY, sessionId);
+  }
+
+  const conversation = [];
+
+  function escapeHtml(value){
+    return String(value || '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  function scrollToBottom(el){
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }
+
+  function addUserMessage(text){
+    if (!userStreamEl) return;
+    const msg = document.createElement('div');
+    msg.className = 'buildr-msg user';
+    msg.innerHTML = '<strong>You</strong>' + escapeHtml(text);
+    userStreamEl.appendChild(msg);
+    scrollToBottom(userStreamEl);
+  }
+
+  function addBuildrMessage(text, options = {}){
+    const msg = document.createElement('div');
+    msg.className = 'buildr-msg ai' + (options.pending ? ' pending' : '');
+    msg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml(text);
+    answerEl.appendChild(msg);
+    scrollToBottom(answerEl);
+    return msg;
+  }
+
+  function getConversationPrompt(newPrompt){
+    const previous = conversation
+      .slice(-6)
+      .map((item) => `${item.role === 'user' ? 'User' : 'BUILDr'}: ${item.text}`)
+      .join('\n\n');
+
+    if (!previous) return newPrompt;
+
+    return `Continue this BUILDr session. Keep context from the previous messages.\n\n${previous}\n\nUser: ${newPrompt}`;
+  }
 
   presetBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -3427,26 +3570,39 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   });
 
   async function askBuildr(){
-    const prompt = (promptEl.value || '').trim();
+    const visiblePrompt = (promptEl.value || '').trim();
 
-    if (!prompt) {
-      statusEl.textContent = 'Type a project idea first.';
+    if (!visiblePrompt) {
+      statusEl.textContent = 'Type a project idea or follow-up first.';
       statusEl.className = 'buildr-status err';
       promptEl.focus();
       return;
     }
 
+    addUserMessage(visiblePrompt);
+    conversation.push({ role: 'user', text: visiblePrompt });
+
+    const promptForBackend = getConversationPrompt(visiblePrompt);
+
+    promptEl.value = '';
+    promptEl.placeholder = 'Add the next detail or follow-up...';
+    promptEl.focus();
+
     askBtn.disabled = true;
     askBtn.textContent = 'BUILDr is thinking...';
     statusEl.textContent = 'Sending securely through Netlify Functions.';
     statusEl.className = 'buildr-status';
-    answerEl.textContent = 'Building a project plan...';
+
+    const pendingMsg = addBuildrMessage('Working it out...', { pending: true });
 
     try {
       const res = await fetch('/.netlify/functions/buildr-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({
+          prompt: promptForBackend,
+          session_id: sessionId
+        })
       });
 
       const data = await res.json();
@@ -3455,11 +3611,17 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
         throw new Error(data.error || 'BUILDr request failed.');
       }
 
-      answerEl.textContent = data.reply || 'No response returned.';
-      statusEl.textContent = 'BUILDr response received.';
+      const reply = data.reply || 'No response returned.';
+      pendingMsg.className = 'buildr-msg ai';
+      pendingMsg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml(reply);
+      conversation.push({ role: 'assistant', text: reply });
+
+      statusEl.textContent = 'BUILDr response received. Add another detail to keep going.';
       statusEl.className = 'buildr-status ok';
+      scrollToBottom(answerEl);
     } catch (err) {
-      answerEl.textContent = 'BUILDr could not respond yet. Check the Netlify Function and ANTHROPIC_API_KEY environment variable.';
+      pendingMsg.className = 'buildr-msg ai';
+      pendingMsg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml('I could not respond yet. Check the Netlify Function, Anthropic key, and Supabase logging.');
       statusEl.textContent = err.message || 'Unknown error.';
       statusEl.className = 'buildr-status err';
     } finally {
