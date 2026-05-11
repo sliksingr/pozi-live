@@ -1883,6 +1883,86 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-buildr-starter-bubbles">
+/* Cleaner first-message cards inside BUILDr */
+.buildr-starter-card{
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,255,136,.12), transparent 60%),
+    radial-gradient(ellipse 70% 55% at 85% 90%, rgba(0,102,255,.13), transparent 62%),
+    rgba(255,255,255,.045) !important;
+  border-color:rgba(0,255,136,.18) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.025);
+}
+
+.buildr-role-label{
+  display:inline-flex !important;
+  width:auto !important;
+  margin-bottom:12px !important;
+  padding:6px 10px;
+  border-radius:999px;
+  font-family:var(--fh);
+  font-size:10px !important;
+  letter-spacing:1.8px !important;
+  line-height:1;
+  text-transform:uppercase;
+}
+
+.buildr-role-label.you{
+  color:#06140d !important;
+  background:linear-gradient(135deg,var(--green),#7dffbf);
+  box-shadow:0 0 18px rgba(0,255,136,.24);
+}
+
+.buildr-role-label.buildr{
+  color:#fff !important;
+  background:linear-gradient(135deg,#0066ff,#7c4dff);
+  box-shadow:0 0 18px rgba(0,102,255,.28);
+}
+
+.buildr-starter-title{
+  color:#fff;
+  font-family:var(--fh);
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:-.2px;
+  line-height:1.15;
+  margin-bottom:12px;
+}
+
+.buildr-starter-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.buildr-starter-pills span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.09);
+  color:#dfe3ff;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+}
+
+.buildr-msg.ai.buildr-starter-card{
+  border-color:rgba(0,102,255,.22) !important;
+}
+
+[data-theme="light"] .buildr-starter-title{color:#0a0a14;}
+[data-theme="light"] .buildr-starter-pills span{
+  color:#25304d;
+  background:rgba(0,0,0,.035);
+  border-color:rgba(0,0,0,.08);
+}
+</style>
+
 </head>
 <body>
 
@@ -2047,9 +2127,14 @@ img[alt*="POZi logo"]{
         <div class="buildr-prompt-box">
           <div class="buildr-prompt-label">Your side of the build</div>
           <div id="buildrUserStream" class="buildr-chat-stream" aria-live="polite">
-            <div class="buildr-msg user">
-              <strong>You</strong>
-              Start with a project. After BUILDr answers, keep replying here and the session will build forward.
+            <div class="buildr-msg user buildr-starter-card">
+              <strong class="buildr-role-label you">YOU</strong>
+              <div class="buildr-starter-title">Start with a project.</div>
+              <div class="buildr-starter-pills">
+                <span>Describe it</span>
+                <span>Add budget</span>
+                <span>Add location</span>
+              </div>
             </div>
           </div>
           <div class="buildr-followup-label">Next message</div>
@@ -2078,9 +2163,14 @@ img[alt*="POZi logo"]{
           <div class="buildr-bubble hot">
             <strong>BUILDr conversation</strong>
             <div id="buildrAnswer" class="buildr-live-answer">
-              <div class="buildr-msg ai">
-                <strong>BUILDr</strong>
-                Ask a project question and I’ll start organizing it.
+              <div class="buildr-msg ai buildr-starter-card">
+                <strong class="buildr-role-label buildr">BUILDr</strong>
+                <div class="buildr-starter-title">I’ll turn it into a plan.</div>
+                <div class="buildr-starter-pills">
+                  <span>Materials</span>
+                  <span>Tools</span>
+                  <span>Next steps</span>
+                </div>
               </div>
             </div>
           </div>
