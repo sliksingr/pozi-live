@@ -2086,6 +2086,174 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-buildr-basket-css">
+/* BUILDr → POZi Basket → DataForSEO */
+.buildr-basket-panel{
+  margin-top:14px;
+  background:
+    radial-gradient(ellipse 80% 70% at 15% 10%, rgba(0,255,136,.08), transparent 62%),
+    radial-gradient(ellipse 70% 70% at 90% 95%, rgba(0,102,255,.09), transparent 60%),
+    rgba(255,255,255,.035);
+  border:1px solid rgba(0,255,136,.14);
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 14px 34px rgba(0,0,0,.18);
+}
+
+.buildr-basket-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.buildr-basket-head strong{
+  display:block;
+  color:#fff;
+  font-family:var(--fh);
+  font-size:13px;
+  margin-bottom:4px;
+}
+
+.buildr-basket-head span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.45;
+}
+
+.buildr-basket-btn{
+  flex-shrink:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  background:linear-gradient(135deg,rgba(0,255,136,.96),rgba(0,204,102,.96));
+  color:#000;
+  border-radius:14px;
+  padding:8px 13px 8px 9px;
+  font-family:var(--fh);
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+  box-shadow:0 10px 24px rgba(0,255,136,.18);
+  min-height:44px;
+}
+
+.buildr-basket-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 30px rgba(0,255,136,.24);
+}
+
+.buildr-basket-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+.buildr-basket-logo{
+  width:28px !important;
+  height:28px !important;
+  object-fit:contain;
+  border-radius:8px;
+  filter:drop-shadow(0 0 10px rgba(0,0,0,.18));
+}
+
+.buildr-basket-status{
+  min-height:18px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.45;
+  margin-bottom:10px;
+}
+
+.buildr-basket-status.ok{color:var(--green);}
+.buildr-basket-status.err{color:#ff6680;}
+
+.buildr-basket-results{
+  display:grid;
+  gap:10px;
+  max-height:360px;
+  overflow-y:auto;
+  padding-right:2px;
+}
+
+.buildr-basket-group{
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(0,0,0,.16);
+  border-radius:14px;
+  padding:10px;
+}
+
+.buildr-basket-query{
+  color:#7dffbf;
+  font-family:var(--fh);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.3px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.buildr-shopping-card{
+  display:block;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.035);
+  margin-top:7px;
+  transition:transform .16s, border-color .16s, background .16s;
+}
+
+.buildr-shopping-card:hover{
+  transform:translateY(-1px);
+  border-color:rgba(0,255,136,.20);
+  background:rgba(0,255,136,.045);
+}
+
+.buildr-shopping-title{
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.35;
+  margin-bottom:5px;
+}
+
+.buildr-shopping-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.4;
+}
+
+.buildr-shopping-price{
+  color:var(--green);
+  font-family:var(--fh);
+  font-weight:900;
+  white-space:nowrap;
+}
+
+[data-theme="light"] .buildr-basket-head strong,
+[data-theme="light"] .buildr-shopping-title{color:#0a0a14;}
+
+[data-theme="light"] .buildr-basket-panel,
+[data-theme="light"] .buildr-basket-group,
+[data-theme="light"] .buildr-shopping-card{
+  background:rgba(0,0,0,.025);
+  border-color:rgba(0,0,0,.08);
+}
+
+@media(max-width:720px){
+  .buildr-basket-head{flex-direction:column;}
+  .buildr-basket-btn{width:100%;}
+}
+</style>
+
 </head>
 <body>
 
@@ -2308,6 +2476,22 @@ img[alt*="POZi logo"]{
             Major retailers, local stores, and product links become the next step — not the whole starting point.
           </div>
         </div>
+
+          <div class="buildr-basket-panel" id="buildrBasketPanel">
+            <div class="buildr-basket-head">
+              <div>
+                <strong>Create POZi Basket</strong>
+                <span>Turn BUILDr’s plan into live Google search guidance through DataForSEO.</span>
+              </div>
+              <button id="buildrBasketBtn" class="buildr-basket-btn" type="button">
+                <img src="logo-dark.png" alt="" class="buildr-basket-logo">
+                <span>Create Basket</span>
+              </button>
+            </div>
+            <div id="buildrBasketStatus" class="buildr-basket-status">Ask BUILDr for a project plan first, then create a basket.</div>
+            <div id="buildrBasketResults" class="buildr-basket-results"></div>
+          </div>
+
       </div>
     </div>
 
@@ -3950,6 +4134,152 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       askBuildr();
     }
   });
+})();
+</script>
+
+
+<script id="pozi-buildr-basket-js">
+(function(){
+  const basketBtn = document.getElementById('buildrBasketBtn');
+  const basketStatus = document.getElementById('buildrBasketStatus');
+  const basketResults = document.getElementById('buildrBasketResults');
+  const promptEl = document.getElementById('buildrPrompt');
+  const answerEl = document.getElementById('buildrAnswer');
+
+  if (!basketBtn || !basketStatus || !basketResults) return;
+
+  const POZI_SEARCH_ENDPOINT = '/.netlify/functions/pozi-search';
+
+  function safeHtml(value){
+    return String(value || '').replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];
+    });
+  }
+
+  function textFromBuildr(){
+    if (!answerEl) return '';
+    return (answerEl.innerText || '').replace(/BUILDr\s*/gi, '').trim();
+  }
+
+  function extractBasketItems(text){
+    const raw = String(text || '')
+      .split(/\n|<br>|•|\-|\*|\d+\.\s+/g)
+      .map(x => x.replace(/^[\s:;,.]+|[\s:;,.]+$/g, '').trim())
+      .filter(Boolean);
+
+    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|question|first|then|you|buildr|pro mode|consumer mode|shopping path)$/i;
+    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar)/i;
+    const dimensions = /\b(2x4|4x4|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
+
+    const seen = new Set();
+    return raw.filter(line => {
+      if (line.length < 4 || line.length > 92) return false;
+      if (skip.test(line)) return false;
+      return materialWords.test(line) || dimensions.test(line);
+    }).map(line => line
+      .replace(/^\s*(qty|quantity)\s*[:\-]\s*/i, '')
+      .replace(/\s+\([^)]*\)/g, '')
+      .replace(/^[✓✔]+\s*/, '')
+      .trim()
+    ).filter(line => {
+      const key = line.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 6);
+  }
+
+  function normalizeResults(data){
+    const arr = Array.isArray(data?.results) ? data.results : [];
+    return arr.map(item => ({
+      title: item.title || 'Search result',
+      url: item.url || item.link || '#',
+      domain: item.domain || item.source || '',
+      description: item.description || item.breadcrumb || '',
+      rank: item.rank || ''
+    })).filter(x => x.title && x.url).slice(0, 4);
+  }
+
+  function resultCard(result){
+    const href = result.url && result.url !== '#' ? safeHtml(result.url) : '#';
+    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener">' +
+      '<div class="buildr-shopping-title">' + safeHtml(result.title) + '</div>' +
+      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Google result') + '</span><span class="buildr-shopping-price">' + (result.rank ? 'Rank ' + safeHtml(result.rank) : 'Open') + '</span></div>' +
+      (result.description ? '<div class="buildr-shopping-meta" style="margin-top:6px;display:block">' + safeHtml(result.description).slice(0, 150) + '</div>' : '') +
+    '</a>';
+  }
+
+  async function searchPoziItem(query){
+    const res = await fetch(POZI_SEARCH_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        query: query,
+        location: 'United States',
+        language: 'English',
+        depth: 10
+      })
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data.ok === false) {
+      throw new Error(data.error || 'POZi search failed.');
+    }
+
+    return normalizeResults(data);
+  }
+
+  async function createBasket(){
+    const buildrText = textFromBuildr();
+    const typed = promptEl ? promptEl.value.trim() : '';
+    let items = extractBasketItems(buildrText);
+
+    if (!items.length && typed) items = [typed];
+
+    if (!items.length){
+      basketStatus.textContent = 'Ask BUILDr for a material list first, then create a basket.';
+      basketStatus.className = 'buildr-basket-status err';
+      return;
+    }
+
+    basketBtn.disabled = true;
+    basketBtn.innerHTML = '<img src="logo-dark.png" alt="" class="buildr-basket-logo"><span>Searching...</span>';
+    basketStatus.textContent = 'Creating POZi basket through DataForSEO Google search...';
+    basketStatus.className = 'buildr-basket-status';
+    basketResults.innerHTML = '';
+
+    let rendered = '';
+    let success = 0;
+
+    for (const item of items){
+      try{
+        const results = await searchPoziItem(item);
+        success += results.length ? 1 : 0;
+        rendered += '<div class="buildr-basket-group"><div class="buildr-basket-query">' + safeHtml(item) + '</div>' +
+          (results.length ? results.map(resultCard).join('') : '<div class="buildr-basket-status err">No results returned.</div>') +
+          '</div>';
+      } catch(err){
+        rendered += '<div class="buildr-basket-group"><div class="buildr-basket-query">' + safeHtml(item) + '</div>' +
+          '<div class="buildr-basket-status err">' + safeHtml(err.message || 'Search failed.') + '</div></div>';
+      }
+
+      basketResults.innerHTML = rendered;
+    }
+
+    if (success){
+      basketStatus.textContent = 'Basket created. Review POZi search results below.';
+      basketStatus.className = 'buildr-basket-status ok';
+    } else {
+      basketStatus.textContent = 'Basket created, but DataForSEO did not return usable results. Check Netlify function logs.';
+      basketStatus.className = 'buildr-basket-status err';
+    }
+
+    basketBtn.disabled = false;
+    basketBtn.innerHTML = '<img src="logo-dark.png" alt="" class="buildr-basket-logo"><span>Create Basket</span>';
+  }
+
+  basketBtn.addEventListener('click', createBasket);
 })();
 </script>
 
