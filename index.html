@@ -1468,8 +1468,9 @@ img[alt*="POZi logo"]{
 }
 .buildr-thunder-core{
   position:relative;
-  z-index:1;
-  min-height:330px;
+  z-index:0;
+  min-height:520px;
+  overflow:visible;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1490,11 +1491,11 @@ img[alt*="POZi logo"]{
 .buildr-thunder-core::after{left:50%; transform:translateY(-50%);}
 .buildr-thunder-img{
   position:relative;
-  z-index:2;
-  width:min(470px,42vw);
+  z-index:1;
+  width:min(920px,78vw);
   max-width:none;
-  opacity:.9;
-  filter:drop-shadow(0 0 42px rgba(116,68,255,.58)) drop-shadow(0 0 24px rgba(0,255,136,.18));
+  opacity:.92;
+  filter:drop-shadow(0 0 70px rgba(116,68,255,.65)) drop-shadow(0 0 34px rgba(0,255,136,.22));
   animation:buildrFloat 6s ease-in-out infinite;
 }
 @keyframes buildrFloat{
@@ -1568,8 +1569,8 @@ img[alt*="POZi logo"]{
     padding:18px;
   }
   .buildr-panel{padding:20px; min-height:290px;}
-  .buildr-thunder-core{min-height:290px; margin:0 -34px;}
-  .buildr-thunder-img{width:min(390px,38vw);}
+  .buildr-thunder-core{min-height:460px; margin:0 -72px;}
+  .buildr-thunder-img{width:min(780px,70vw);}
 }
 @media(max-width:720px){
   .buildr-tension-shell{
@@ -1577,12 +1578,12 @@ img[alt*="POZi logo"]{
     padding:20px;
   }
   .buildr-thunder-core{
-    min-height:150px;
-    margin:-8px 0;
+    min-height:240px;
+    margin:-28px 0;
   }
   .buildr-thunder-img{
-    width:min(420px,86vw);
-    opacity:.86;
+    width:min(760px,120vw);
+    opacity:.88;
   }
   .buildr-thunder-core::before,
   .buildr-thunder-core::after{
