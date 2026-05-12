@@ -2695,6 +2695,52 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-search-flow-brand-icons">
+/* Remove fast-path clutter and make the workflow feel branded */
+.pozi-search-dashboard-grid{
+  grid-template-columns:1fr !important;
+}
+
+.pozi-flow-branded div{
+  align-items:center !important;
+  min-height:64px;
+}
+
+.pozi-flow-branded .pozi-flow-icon{
+  width:42px !important;
+  height:42px !important;
+  border-radius:14px !important;
+  background:
+    radial-gradient(ellipse 90% 90% at 50% 20%, rgba(0,255,136,.12), transparent 62%),
+    rgba(0,0,0,.24) !important;
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 0 20px rgba(0,255,136,.08);
+  overflow:hidden;
+  color:#7dffbf !important;
+}
+
+.pozi-flow-branded .pozi-flow-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  padding:4px;
+}
+
+.pozi-flow-branded .pozi-flow-placeholder{
+  font-size:16px !important;
+  font-weight:900 !important;
+  background:
+    radial-gradient(ellipse 90% 90% at 50% 20%, rgba(0,102,255,.18), transparent 62%),
+    rgba(255,255,255,.045) !important;
+}
+
+.pozi-flow-branded span{
+  font-size:13px !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -3037,24 +3083,21 @@ img[alt*="POZi logo"]{
     </div>
 
     <div class="pozi-source-card">
-      <div class="pozi-source-kicker">RECOMMENDED SOURCING</div>
-      <h3>Fast paths.</h3>
-      <div class="pozi-chip-cloud">
-        <button data-pozi-search="drill driver kit">Drill kit</button>
-        <button data-pozi-search="deck screws exterior">Deck screws</button>
-        <button data-pozi-search="pvc pipe fittings">PVC fittings</button>
-        <button data-pozi-search="paint brush set">Paint brush set</button>
-        <button data-pozi-search="extension cord outdoor">Outdoor cord</button>
-      </div>
-    </div>
-
-    <div class="pozi-source-card">
       <div class="pozi-source-kicker">HOW THIS PAGE WORKS</div>
       <h3>BUILDr → Project → Source</h3>
-      <div class="pozi-flow-mini">
-        <div><strong>1</strong><span>BUILDr organizes the project.</span></div>
-        <div><strong>2</strong><span>Create Basket prepares your project items.</span></div>
-        <div><strong>3</strong><span>POZi Search helps source options.</span></div>
+      <div class="pozi-flow-mini pozi-flow-branded">
+        <div>
+          <strong class="pozi-flow-icon"><img src="thunder.PNG" alt=""></strong>
+          <span>BUILDr organizes the project.</span>
+        </div>
+        <div>
+          <strong class="pozi-flow-icon pozi-flow-placeholder">2</strong>
+          <span>Create Basket prepares your project items.</span>
+        </div>
+        <div>
+          <strong class="pozi-flow-icon"><img src="logo-dark.png" alt=""></strong>
+          <span>POZi Search sources options.</span>
+        </div>
       </div>
     </div>
 
