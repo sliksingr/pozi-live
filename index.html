@@ -2669,6 +2669,32 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-search-layout-order-final">
+/* Final POZi Search layout: search first, live results directly below, basket/queue below results */
+.pozi-search-top-grid{
+  grid-template-columns:1fr !important;
+}
+
+.pozi-source-main{
+  width:100% !important;
+}
+
+.pozi-results-panel{
+  margin-top:18px !important;
+  margin-bottom:18px !important;
+}
+
+.pozi-current-basket{
+  margin:18px 0 !important;
+}
+
+/* Hide old sample-note if an older copy remains anywhere */
+.pozi-current-basket .pozi-small-note{
+  display:none !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -2973,21 +2999,6 @@ img[alt*="POZi logo"]{
         </div>
       </div>
     </div>
-
-    <div class="pozi-source-card pozi-current-basket">
-      <div class="pozi-source-kicker">CURRENT BASKET</div>
-      <h3>Ready to source</h3>
-      <div class="pozi-basket-mini-list">
-        <button type="button" class="pozi-basket-mini" data-pozi-search="exterior deck screws">Exterior deck screws</button>
-        <button type="button" class="pozi-basket-mini" data-pozi-search="pressure treated 4x4 post">Pressure treated 4x4 post</button>
-        <button type="button" class="pozi-basket-mini" data-pozi-search="galvanized joist hanger">Galvanized joist hanger</button>
-        <button type="button" class="pozi-basket-mini" data-pozi-search="80lb concrete mix">80lb concrete mix</button>
-      </div>
-      <p class="pozi-small-note">
-        Sample basket chips for testing. Later these can populate from the BUILDr conversation automatically.
-      </p>
-    </div>
-
   </div>
 
   <div class="pozi-results-panel">
@@ -3002,6 +3013,12 @@ img[alt*="POZi logo"]{
       <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
     </div>
   </div>
+
+
+
+    <div class="pozi-source-card pozi-current-basket">
+      <div class="pozi-source-kicker">PROJECT SOURCING</div>
+      
 
   <div class="pozi-search-dashboard-grid">
 
