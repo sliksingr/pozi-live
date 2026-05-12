@@ -1,8 +1,9 @@
-const Anthropic = require('@anthropic-ai/sdk');
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
-});
+// netlify/functions/buildr-chat.js
+// Secure POZi BUILDr → Anthropic proxy + Supabase chat logging.
+// Required Netlify Environment Variables:
+// ANTHROPIC_API_KEY
+// SUPABASE_URL
+// SUPABASE_SERVICE_ROLE_KEY
 
 const BUILDR_SYSTEM_PROMPT = `
 You are BUILDr — POZi's AI project planning and sourcing assistant.
@@ -117,125 +118,226 @@ Your goal:
 Turn messy project ideas into organized sourcing-ready baskets for POZi.
 `;
 
+function jsonResponse(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "POST, OPTIONS"
+    },
+    body: JSON.stringify(body)
+  };
+}
+
+function detectMode(prompt) {
+  const text = String(prompt || "").toLowerCase();
+
+  const proWords = [
+    "client",
+    "job",
+    "bid",
+    "quote",
+    "deadline",
+    "crew",
+    "install",
+    "materials",
+    "linear feet",
+    "square feet",
+    "sq ft",
+    "studs",
+    "joists",
+    "rafters",
+    "concrete",
+    "deck",
+    "framing",
+    "permit",
+    "takeoff",
+    "estimate"
+  ];
+
+  const consumerWords = [
+    "room",
+    "couch",
+    "sofa",
+    "tv",
+    "speaker",
+    "decor",
+    "lighting",
+    "apartment",
+    "bedroom",
+    "living room",
+    "kitchen",
+    "style",
+    "furniture",
+    "home theater"
+  ];
+
+  if (proWords.some((word) => text.includes(word))) return "pro";
+  if (consumerWords.some((word) => text.includes(word))) return "consumer";
+
+  return "general";
+}
+
+function detectProjectType(prompt) {
+  const text = String(prompt || "").toLowerCase();
+
+  if (text.includes("deck")) return "deck";
+  if (text.includes("sink") || text.includes("plumbing") || text.includes("pipe") || text.includes("faucet")) return "plumbing";
+  if (text.includes("electrical") || text.includes("outlet") || text.includes("light switch") || text.includes("breaker")) return "electrical";
+  if (text.includes("roof") || text.includes("shingle")) return "roofing";
+  if (text.includes("concrete") || text.includes("slab") || text.includes("footing")) return "concrete";
+  if (text.includes("room") || text.includes("furniture") || text.includes("sofa") || text.includes("layout")) return "interior_design";
+  if (text.includes("tv") || text.includes("speaker") || text.includes("smart home") || text.includes("home theater")) return "electronics";
+  if (text.includes("fence") || text.includes("gate")) return "fencing";
+  if (text.includes("paint") || text.includes("drywall")) return "finishing";
+
+  return "general";
+}
+
+async function logToSupabase({
+  prompt,
+  reply,
+  mode,
+  project_type,
+  session_id,
+  user_id
+}) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.warn(
+      "Supabase logging skipped: missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY."
+    );
+    return null;
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/buildr_chats`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": serviceRoleKey,
+      "Authorization": `Bearer ${serviceRoleKey}`,
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify({
+      prompt,
+      reply,
+      mode,
+      project_type,
+      session_id: session_id || null,
+      user_id: user_id || null,
+      source_page: "pozi.live",
+      thumb_rating: null
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.warn("Supabase logging failed:", errorText);
+    return null;
+  }
+
+  const rows = await response.json();
+  return rows?.[0] || null;
+}
+
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        ok: false,
-        error: 'Method not allowed'
-      })
-    };
+  if (event.httpMethod === "OPTIONS") {
+    return jsonResponse(200, { ok: true });
+  }
+
+  if (event.httpMethod !== "POST") {
+    return jsonResponse(405, {
+      ok: false,
+      error: "Method not allowed. Use POST."
+    });
   }
 
   try {
-    const body = JSON.parse(event.body || '{}');
+    const body = JSON.parse(event.body || "{}");
 
-    const {
-      prompt,
-      mode = 'consumer',
-      conversation = []
-    } = body;
+    const prompt = String(body.prompt || "").trim();
+    const session_id = body.session_id ? String(body.session_id) : null;
+    const user_id = body.user_id ? String(body.user_id) : null;
 
-    if (!prompt || typeof prompt !== 'string') {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({
-          ok: false,
-          error: 'Missing prompt'
-        })
-      };
+    if (!prompt) {
+      return jsonResponse(400, {
+        ok: false,
+        error: "Missing prompt."
+      });
     }
 
-    const conversationText = Array.isArray(conversation)
-      ? conversation
-          .map((msg) => {
-            const role = msg.role || 'user';
-            const text = msg.text || '';
-            return `${role.toUpperCase()}: ${text}`;
-          })
-          .join('\n')
-      : '';
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return jsonResponse(500, {
+        ok: false,
+        error: "Missing ANTHROPIC_API_KEY environment variable."
+      });
+    }
 
-    const modeInstruction =
-      mode === 'pro'
-        ? `
-PRO MODE:
-- include deeper planning
-- include tradeoffs
-- include sequencing
-- include contractor-level considerations
-- include permitting considerations when relevant
-`
-        : `
-CONSUMER MODE:
-- keep things approachable
-- simplify technical wording
-- prioritize practical next steps
-`;
+    const mode = detectMode(prompt);
+    const project_type = detectProjectType(prompt);
 
-    const fullPrompt = `
-${modeInstruction}
-
-Conversation:
-${conversationText}
-
-Latest User Request:
-${prompt}
-`;
-
-    const response = await anthropic.messages.create({
-      model: 'claude-3-7-sonnet-20250219',
-      max_tokens: 1400,
-      temperature: 0.7,
-      system: BUILDR_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: fullPrompt
-        }
-      ]
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 900,
+        system: BUILDR_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ]
+      })
     });
 
-    const text =
-      response.content &&
-      response.content[0] &&
-      response.content[0].text
-        ? response.content[0].text
-        : 'BUILDr could not generate a response.';
+    const data = await response.json();
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        ok: true,
-        response: text
-      })
-    };
-  } catch (error) {
-    console.error('BUILDr error:', error);
-
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
+    if (!response.ok) {
+      return jsonResponse(response.status, {
         ok: false,
-        error: 'BUILDr failed to generate a response.'
-      })
-    };
+        error: data?.error?.message || "Anthropic request failed.",
+        anthropic_error: data?.error || data
+      });
+    }
+
+    const reply =
+      data?.content?.find((item) => item.type === "text")?.text ||
+      data?.content?.[0]?.text ||
+      data?.completion ||
+      "No response returned.";
+
+    const savedChat = await logToSupabase({
+      prompt,
+      reply,
+      mode,
+      project_type,
+      session_id,
+      user_id
+    });
+
+    return jsonResponse(200, {
+      ok: true,
+      reply,
+      chat_id: savedChat?.id || null,
+      mode,
+      project_type
+    });
+  } catch (error) {
+    console.error("BUILDr function error:", error);
+
+    return jsonResponse(500, {
+      ok: false,
+      error: error.message || "Unknown server error."
+    });
   }
 };
