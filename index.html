@@ -2254,6 +2254,117 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-basket-button-polish-final">
+.buildr-basket-head{
+  align-items:stretch !important;
+  gap:14px !important;
+}
+
+.buildr-basket-btn.buildr-basket-btn-dark,
+#buildrBasketBtn{
+  align-self:stretch !important;
+  min-width:150px !important;
+  max-width:188px !important;
+  min-height:78px !important;
+  padding:10px 12px !important;
+  border-radius:18px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  background:
+    radial-gradient(ellipse 90% 80% at 50% 0%, rgba(0,255,136,.10), transparent 58%),
+    linear-gradient(180deg,#050508,#11111d) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.34),
+    inset 0 0 0 1px rgba(255,255,255,.04) !important;
+  text-align:center !important;
+  white-space:normal !important;
+  line-height:1.05 !important;
+  cursor:pointer !important;
+}
+
+#buildrBasketBtn:hover{
+  transform:translateY(-2px) !important;
+  border-color:rgba(0,255,136,.30) !important;
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.40),
+    0 0 26px rgba(0,255,136,.12),
+    inset 0 0 0 1px rgba(255,255,255,.05) !important;
+}
+
+#buildrBasketBtn:disabled{
+  opacity:.7 !important;
+  cursor:not-allowed !important;
+  transform:none !important;
+}
+
+.buildr-basket-logo-wrap{
+  width:46px !important;
+  height:46px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.045) !important;
+  box-shadow:0 0 18px rgba(0,255,136,.10) !important;
+}
+
+#buildrBasketBtn .buildr-basket-logo{
+  width:42px !important;
+  height:42px !important;
+  max-width:none !important;
+  object-fit:contain !important;
+  border-radius:12px !important;
+  filter:none !important;
+}
+
+.buildr-basket-copy{
+  display:block !important;
+  color:#fff !important;
+  font-family:var(--fh) !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  letter-spacing:.2px !important;
+  line-height:1.05 !important;
+}
+
+@media(max-width:1180px){
+  .buildr-basket-head{
+    flex-direction:column !important;
+  }
+  #buildrBasketBtn{
+    width:100% !important;
+    max-width:none !important;
+    min-height:70px !important;
+    flex-direction:row !important;
+    gap:10px !important;
+  }
+  .buildr-basket-logo-wrap{
+    width:48px !important;
+    height:48px !important;
+  }
+  #buildrBasketBtn .buildr-basket-logo{
+    width:44px !important;
+    height:44px !important;
+  }
+  .buildr-basket-copy{
+    font-size:14px !important;
+  }
+}
+
+@media(max-width:720px){
+  #buildrBasketBtn{
+    min-height:66px !important;
+    border-radius:16px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -2483,9 +2594,9 @@ img[alt*="POZi logo"]{
                 <strong>Create POZi Basket</strong>
                 <span>Turn BUILDr’s plan into live Google search guidance through DataForSEO.</span>
               </div>
-              <button id="buildrBasketBtn" class="buildr-basket-btn" type="button">
-                <img src="logo-dark.png" alt="" class="buildr-basket-logo">
-                <span>Create Basket</span>
+              <button id="buildrBasketBtn" class="buildr-basket-btn buildr-basket-btn-dark" type="button">
+                <span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span>
+                <span class="buildr-basket-copy">Create Basket</span>
               </button>
             </div>
             <div id="buildrBasketStatus" class="buildr-basket-status">Ask BUILDr for a project plan first, then create a basket.</div>
@@ -4244,7 +4355,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     }
 
     basketBtn.disabled = true;
-    basketBtn.innerHTML = '<img src="logo-dark.png" alt="" class="buildr-basket-logo"><span>Searching...</span>';
+    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Searching...</span>';
     basketStatus.textContent = 'Creating POZi basket through DataForSEO Google search...';
     basketStatus.className = 'buildr-basket-status';
     basketResults.innerHTML = '';
@@ -4276,7 +4387,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     }
 
     basketBtn.disabled = false;
-    basketBtn.innerHTML = '<img src="logo-dark.png" alt="" class="buildr-basket-logo"><span>Create Basket</span>';
+    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Create Basket</span>';
   }
 
   basketBtn.addEventListener('click', createBasket);
