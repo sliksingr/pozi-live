@@ -2366,9 +2366,219 @@ img[alt*="POZi logo"]{
 </style>
 
 
-<style id="pozi-basket-green-copy-only">
-#buildrBasketBtn .buildr-basket-copy{
-  color:var(--green) !important;
+<style id="pozi-search-page-redesign">
+/* POZi Search page replaces old Live Inventory language without changing page routing */
+.pozi-search-hero{
+  padding-bottom:42px !important;
+}
+.pozi-search-shell{
+  max-width:1120px;
+  margin:0 auto 90px;
+  padding:0 24px;
+}
+.pozi-search-top-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);
+  gap:18px;
+  margin-bottom:18px;
+}
+.pozi-search-dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+  margin-bottom:18px;
+}
+.pozi-source-card,
+.pozi-results-panel{
+  background:
+    radial-gradient(ellipse 90% 80% at 10% 0%, rgba(0,255,136,.06), transparent 60%),
+    radial-gradient(ellipse 80% 70% at 100% 100%, rgba(0,102,255,.06), transparent 60%),
+    var(--card);
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 18px 48px rgba(0,0,0,.18);
+}
+.pozi-source-main{
+  padding:28px;
+}
+.pozi-source-kicker{
+  color:var(--green);
+  font-family:var(--fh);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.pozi-source-card h2,
+.pozi-source-card h3,
+.pozi-results-panel h3{
+  font-family:var(--fh);
+  color:#fff;
+  font-weight:900;
+  letter-spacing:-.7px;
+  line-height:1.05;
+  margin-bottom:10px;
+}
+.pozi-source-card h2{font-size:clamp(28px,4vw,44px);}
+.pozi-source-card h3,
+.pozi-results-panel h3{font-size:21px;}
+.pozi-source-card p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+}
+.pozi-source-search-card{
+  margin-top:20px;
+  margin-bottom:0;
+  background:rgba(0,0,0,.16);
+  border-color:rgba(0,255,136,.12);
+}
+.pozi-basket-mini-list{
+  display:grid;
+  gap:9px;
+  margin-top:14px;
+}
+.pozi-basket-mini,
+.pozi-project-row,
+.pozi-chip-cloud button{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  color:#fff;
+  border-radius:14px;
+  transition:transform .16s, border-color .16s, background .16s;
+}
+.pozi-basket-mini{
+  text-align:left;
+  padding:11px 12px;
+  font-size:12px;
+  font-weight:800;
+}
+.pozi-basket-mini:hover,
+.pozi-project-row:hover,
+.pozi-chip-cloud button:hover{
+  transform:translateY(-1px);
+  border-color:rgba(0,255,136,.22);
+  background:rgba(0,255,136,.055);
+}
+.pozi-small-note{
+  font-size:11px !important;
+  color:#8d91b2 !important;
+  margin-top:14px;
+}
+.pozi-project-row{
+  display:block;
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  text-align:left;
+  cursor:pointer;
+}
+.pozi-project-row span{
+  display:block;
+  color:#fff;
+  font-family:var(--fh);
+  font-weight:900;
+  font-size:13px;
+  margin-bottom:4px;
+}
+.pozi-project-row em{
+  display:block;
+  color:var(--muted);
+  font-style:normal;
+  font-size:11px;
+  line-height:1.45;
+}
+.pozi-chip-cloud{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:14px;
+}
+.pozi-chip-cloud button{
+  padding:9px 11px;
+  font-size:11px;
+  font-weight:800;
+}
+.pozi-flow-mini{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+.pozi-flow-mini div{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06);
+}
+.pozi-flow-mini strong{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+  flex-shrink:0;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  color:#000;
+  font-family:var(--fh);
+  font-size:12px;
+}
+.pozi-flow-mini span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+}
+.pozi-results-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+}
+.pozi-results-note{
+  color:#8d91b2;
+  font-size:11px;
+  line-height:1.45;
+  text-align:right;
+  max-width:280px;
+}
+[data-theme="light"] .pozi-source-card,
+[data-theme="light"] .pozi-results-panel{
+  background:#fff;
+  border-color:#e0e0ee;
+}
+[data-theme="light"] .pozi-source-card h2,
+[data-theme="light"] .pozi-source-card h3,
+[data-theme="light"] .pozi-results-panel h3,
+[data-theme="light"] .pozi-project-row span{
+  color:#0a0a14;
+}
+[data-theme="light"] .pozi-basket-mini,
+[data-theme="light"] .pozi-project-row,
+[data-theme="light"] .pozi-chip-cloud button,
+[data-theme="light"] .pozi-flow-mini div{
+  background:rgba(0,0,0,.025);
+  border-color:rgba(0,0,0,.08);
+  color:#0a0a14;
+}
+@media(max-width:980px){
+  .pozi-search-top-grid,
+  .pozi-search-dashboard-grid{
+    grid-template-columns:1fr;
+  }
+  .pozi-results-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .pozi-results-note{
+    text-align:left;
+    max-width:none;
+  }
 }
 </style>
 
@@ -2394,7 +2604,7 @@ img[alt*="POZi logo"]{
 
   <div class="nav-links">
     <button class="nl active" data-page="home">Home</button>
-    <button class="nl" id="navLive" data-page="live">Live Inventory</button>
+    <button class="nl" id="navLive" data-page="live">POZi Search</button>
     <button class="nl" data-page="how">How It Works</button>
     <button class="nl" data-page="pricing">Pricing</button>
     
@@ -2417,7 +2627,7 @@ img[alt*="POZi logo"]{
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
   <button class="m-nl" data-page="home">🏠 Home</button>
-  <button class="m-nl" id="mobileLive" data-page="live">⚡ Live Inventory</button>
+  <button class="m-nl" id="mobileLive" data-page="live">⚡ POZi Search</button>
   <button class="m-nl" data-page="how">⚡ How It Works</button>
   <button class="m-nl" data-page="pricing">💰 Pricing</button>
   <button class="m-nl" id="mobileContact">✉ Contact</button>
@@ -2628,7 +2838,7 @@ img[alt*="POZi logo"]{
   </div>
   <div class="footer-links">
     <button class="footer-link" data-page="home">Home</button>
-    <button class="footer-link" id="footerLiveLink" data-page="live">Live Inventory</button>
+    <button class="footer-link" id="footerLiveLink" data-page="live">POZi Search</button>
     <button class="footer-link" data-page="how">How It Works</button>
     <button class="footer-link" data-page="pricing">Pricing</button>
     <button class="footer-link contact-trigger">Contact</button>
@@ -2637,33 +2847,113 @@ img[alt*="POZi logo"]{
 </footer>
 </div><!-- /page-home -->
 
+
 <div id="page-live" class="page">
 <div class="page-top"></div>
 
-<!-- LIVE INVENTORY PAGE -->
-<section class="page-hero">
+<!-- POZi SEARCH PAGE -->
+<section class="page-hero pozi-search-hero">
   <div class="page-bg"></div>
   <div class="page-grid"></div>
-  <div class="badge" style="background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.12);color:var(--green)"><span class="bdot" style="background:var(--green)"></span> LIVE INVENTORY</div>
-  <h1 class="sec-title">Search deeper across nearby inventory.</h1>
-  <p class="sec-sub">Search by product, SKU, brand, or ZIP code. POZi keeps major retailers, local stores, and live inventory results in one place.</p>
+  <div class="badge" style="background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.12);color:var(--green)">
+    <span class="bdot" style="background:var(--green)"></span> POZi SEARCH
+  </div>
+  <h1 class="sec-title">Source the basket.<br><span class="grad">Compare the path.</span></h1>
+  <p class="sec-sub">
+    BUILDr creates the plan. POZi Search helps source the items, compare options, and keep project baskets organized.
+  </p>
 </section>
 
-<section class="live-page-shell">
-  <div class="live-search-card">
-    <div class="live-search-row">
-      <input id="liveSearchInput" class="live-search-input" type="search" placeholder="Search live inventory" autocomplete="off">
-      <input id="liveZipInput" class="live-zip-input" type="text" inputmode="numeric" placeholder="ZIP code" maxlength="10" autocomplete="postal-code">
-      <button id="liveSearchBtn" class="live-search-btn" type="button">Search Deeper</button>
+<section class="pozi-search-shell">
+  <div class="pozi-search-top-grid">
+
+    <div class="pozi-source-card pozi-source-main">
+      <div class="pozi-source-kicker">SEARCH ANYTHING</div>
+      <h2>Find products, materials, tools, or project items.</h2>
+      <p>
+        Search directly, or bring items over from a BUILDr basket. POZi uses sourcing search to steer you toward useful product and retailer results.
+      </p>
+
+      <div class="live-search-card pozi-source-search-card">
+        <div class="live-search-row">
+          <input id="liveSearchInput" class="live-search-input" type="search" placeholder="Search materials, tools, products, or basket items" autocomplete="off">
+          <input id="liveZipInput" class="live-zip-input" type="text" inputmode="numeric" placeholder="ZIP / area" maxlength="10" autocomplete="postal-code">
+          <button id="liveSearchBtn" class="live-search-btn" type="button">Search POZi</button>
+        </div>
+        <div class="live-meta-row">
+          <div id="liveResultsStatus">Search a product or continue from a BUILDr basket.</div>
+          <button class="live-back-btn" type="button" data-page="home">← Back to BUILDr</button>
+        </div>
+      </div>
     </div>
-    <div class="live-meta-row">
-      <div id="liveResultsStatus">Showing sample live inventory. Search to narrow results.</div>
-      <button class="live-back-btn" type="button" data-page="home">← Back to Home</button>
+
+    <div class="pozi-source-card pozi-current-basket">
+      <div class="pozi-source-kicker">CURRENT BASKET</div>
+      <h3>Ready to source</h3>
+      <div class="pozi-basket-mini-list">
+        <button type="button" class="pozi-basket-mini" data-pozi-search="exterior deck screws">Exterior deck screws</button>
+        <button type="button" class="pozi-basket-mini" data-pozi-search="pressure treated 4x4 post">Pressure treated 4x4 post</button>
+        <button type="button" class="pozi-basket-mini" data-pozi-search="galvanized joist hanger">Galvanized joist hanger</button>
+        <button type="button" class="pozi-basket-mini" data-pozi-search="80lb concrete mix">80lb concrete mix</button>
+      </div>
+      <p class="pozi-small-note">
+        Sample basket chips for testing. Later these can populate from the BUILDr conversation automatically.
+      </p>
     </div>
+
   </div>
 
-  <div id="inventoryGrid" class="live-results-grid">
-    <div class="live-empty">Loading live inventory…</div>
+  <div class="pozi-search-dashboard-grid">
+
+    <div class="pozi-source-card">
+      <div class="pozi-source-kicker">RECENT BASKETS</div>
+      <h3>Pick up where you left off.</h3>
+      <div class="pozi-project-row" data-pozi-search="cedar deck materials">
+        <span>Deck build</span><em>Cedar boards, posts, screws</em>
+      </div>
+      <div class="pozi-project-row" data-pozi-search="living room lighting furniture">
+        <span>Living room refresh</span><em>Lighting, furniture, layout</em>
+      </div>
+      <div class="pozi-project-row" data-pozi-search="outdoor gate repair hardware">
+        <span>Gate repair</span><em>Hinges, latch, fasteners</em>
+      </div>
+    </div>
+
+    <div class="pozi-source-card">
+      <div class="pozi-source-kicker">RECOMMENDED SOURCING</div>
+      <h3>Fast paths.</h3>
+      <div class="pozi-chip-cloud">
+        <button data-pozi-search="drill driver kit">Drill kit</button>
+        <button data-pozi-search="deck screws exterior">Deck screws</button>
+        <button data-pozi-search="pvc pipe fittings">PVC fittings</button>
+        <button data-pozi-search="paint brush set">Paint brush set</button>
+        <button data-pozi-search="extension cord outdoor">Outdoor cord</button>
+      </div>
+    </div>
+
+    <div class="pozi-source-card">
+      <div class="pozi-source-kicker">HOW THIS PAGE WORKS</div>
+      <h3>BUILDr → Basket → Source</h3>
+      <div class="pozi-flow-mini">
+        <div><strong>1</strong><span>BUILDr organizes the project.</span></div>
+        <div><strong>2</strong><span>Create Basket prepares the items.</span></div>
+        <div><strong>3</strong><span>POZi Search helps source options.</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="pozi-results-panel">
+    <div class="pozi-results-head">
+      <div>
+        <div class="pozi-source-kicker">SOURCING RESULTS</div>
+        <h3>Product and retailer paths</h3>
+      </div>
+      <div class="pozi-results-note">Early version: sample/local results now, live sourcing hooks next.</div>
+    </div>
+    <div id="inventoryGrid" class="live-results-grid">
+      <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
+    </div>
   </div>
 </section>
 
@@ -2681,6 +2971,7 @@ img[alt*="POZi logo"]{
   <div class="footer-copy">© 2026 POZi</div>
 </footer>
 </div><!-- /page-live -->
+
 
 
 <!-- ════════════════════════════════════════════
@@ -4399,6 +4690,28 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
   basketBtn.addEventListener('click', createBasket);
 })();
+</script>
+
+
+<script id="pozi-search-page-js">
+document.addEventListener('DOMContentLoaded', function(){
+  function runPoziSearchTerm(term){
+    var input = document.getElementById('liveSearchInput');
+    if (input) input.value = term || '';
+    if (typeof runLiveSearch === 'function') {
+      runLiveSearch();
+    } else {
+      var btn = document.getElementById('liveSearchBtn');
+      if (btn) btn.click();
+    }
+  }
+
+  document.querySelectorAll('[data-pozi-search]').forEach(function(el){
+    el.addEventListener('click', function(){
+      runPoziSearchTerm(el.getAttribute('data-pozi-search') || el.textContent.trim());
+    });
+  });
+});
 </script>
 
 </body>
