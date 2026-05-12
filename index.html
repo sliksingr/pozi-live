@@ -2582,6 +2582,93 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="pozi-search-live-wire-css">
+.pozi-results-panel{
+  margin:18px 0 !important;
+}
+
+.pozi-results-panel .live-results-grid,
+#inventoryGrid.live-results-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.pozi-source-result-card{
+  display:block;
+  min-height:142px;
+  padding:16px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(ellipse 80% 70% at 12% 0%, rgba(0,255,136,.055), transparent 60%),
+    rgba(255,255,255,.035);
+  transition:transform .16s, border-color .16s, background .16s;
+}
+
+.pozi-source-result-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(0,255,136,.24);
+  background:rgba(0,255,136,.045);
+}
+
+.pozi-source-result-card strong{
+  display:block;
+  color:#fff;
+  font-size:14px;
+  line-height:1.35;
+  margin:9px 0 7px;
+}
+
+.pozi-source-result-card p{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.55;
+}
+
+.pozi-result-topline{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:#7dffbf;
+  font-family:var(--fh);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+}
+
+.pozi-result-topline em{
+  color:#8d91b2;
+  font-style:normal;
+  max-width:52%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.pozi-live-loading{
+  grid-column:1/-1;
+  padding:26px;
+  border-radius:18px;
+  border:1px solid rgba(0,255,136,.13);
+  background:rgba(0,255,136,.035);
+  color:#7dffbf;
+  font-family:var(--fh);
+  font-size:13px;
+  font-weight:900;
+  text-align:center;
+}
+
+@media(max-width:720px){
+  .pozi-results-panel .live-results-grid,
+  #inventoryGrid.live-results-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -2858,7 +2945,7 @@ img[alt*="POZi logo"]{
   <div class="badge" style="background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.12);color:var(--green)">
     <span class="bdot" style="background:var(--green)"></span> POZi SEARCH
   </div>
-  <h1 class="sec-title">Source the basket.<br><span class="grad">Compare the path.</span></h1>
+  <h1 class="sec-title">Source your project.<br><span class="grad">Compare the path.</span></h1>
   <p class="sec-sub">
     BUILDr creates the plan. POZi Search helps source the items, compare options, and keep project baskets organized.
   </p>
@@ -2903,6 +2990,19 @@ img[alt*="POZi logo"]{
 
   </div>
 
+  <div class="pozi-results-panel">
+    <div class="pozi-results-head">
+      <div>
+        <div class="pozi-source-kicker">SOURCING RESULTS</div>
+        <h3>Product and retailer paths</h3>
+      </div>
+      <div class="pozi-results-note">Live POZi sourcing results appear here after you search.</div>
+    </div>
+    <div id="inventoryGrid" class="live-results-grid">
+      <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
+    </div>
+  </div>
+
   <div class="pozi-search-dashboard-grid">
 
     <div class="pozi-source-card">
@@ -2933,28 +3033,16 @@ img[alt*="POZi logo"]{
 
     <div class="pozi-source-card">
       <div class="pozi-source-kicker">HOW THIS PAGE WORKS</div>
-      <h3>BUILDr → Basket → Source</h3>
+      <h3>BUILDr → Project → Source</h3>
       <div class="pozi-flow-mini">
         <div><strong>1</strong><span>BUILDr organizes the project.</span></div>
-        <div><strong>2</strong><span>Create Basket prepares the items.</span></div>
+        <div><strong>2</strong><span>Create Basket prepares your project items.</span></div>
         <div><strong>3</strong><span>POZi Search helps source options.</span></div>
       </div>
     </div>
 
   </div>
 
-  <div class="pozi-results-panel">
-    <div class="pozi-results-head">
-      <div>
-        <div class="pozi-source-kicker">SOURCING RESULTS</div>
-        <h3>Product and retailer paths</h3>
-      </div>
-      <div class="pozi-results-note">Early version: sample/local results now, live sourcing hooks next.</div>
-    </div>
-    <div id="inventoryGrid" class="live-results-grid">
-      <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
-    </div>
-  </div>
 </section>
 
 <footer>
@@ -3613,8 +3701,8 @@ var DEMO_DB = [
     var st = document.getElementById('liveResultsStatus');
     if (!g) return;
     if (!rows || !rows.length){
-      g.innerHTML = '<div class="live-empty">No inventory matches for “' + (query || '') + '”. Try a broader search like drill, lumber, paint, PVC, or extension cord.</div>';
-      if (st) st.textContent = 'No matches found.';
+      g.innerHTML = '<div class="live-empty">No sourcing matches for “' + (query || '') + '”. Try a broader search like drill, lumber, paint, PVC, or extension cord.</div>';
+      if (st) st.textContent = 'Search POZi to source project items.';
       return;
     }
     if (st) st.textContent = query ? ('Showing deeper results for “' + query + '”.') : 'Showing sample live inventory.';
@@ -4693,25 +4781,168 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 </script>
 
 
-<script id="pozi-search-page-js">
-document.addEventListener('DOMContentLoaded', function(){
-  function runPoziSearchTerm(term){
-    var input = document.getElementById('liveSearchInput');
-    if (input) input.value = term || '';
-    if (typeof runLiveSearch === 'function') {
-      runLiveSearch();
-    } else {
-      var btn = document.getElementById('liveSearchBtn');
-      if (btn) btn.click();
+
+
+
+<script id="pozi-search-live-wire-js">
+(function(){
+  const ENDPOINT = '/.netlify/functions/pozi-search';
+
+  function $(id){ return document.getElementById(id); }
+
+  function safe(value){
+    return String(value || '').replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];
+    });
+  }
+
+  function getResultsContainer(){
+    return $('inventoryGrid');
+  }
+
+  function setStatus(text){
+    const status = $('liveResultsStatus');
+    if (status) status.textContent = text;
+  }
+
+  function normalizeResults(data){
+    const possible =
+      data?.results ||
+      data?.items ||
+      data?.organic ||
+      data?.data ||
+      data?.tasks?.[0]?.result?.[0]?.items ||
+      [];
+
+    const arr = Array.isArray(possible) ? possible : [];
+
+    return arr.map(function(item, index){
+      return {
+        title: item.title || item.name || item.product_name || 'POZi result',
+        url: item.url || item.link || item.product_link || item.redirect_url || '#',
+        domain: item.domain || item.source || item.seller || item.store || item.website || '',
+        description: item.description || item.snippet || item.breadcrumb || item.text || '',
+        rank: item.rank_group || item.rank_absolute || item.rank || (index + 1)
+      };
+    }).filter(function(item){
+      return item.title && item.url && item.url !== '#';
+    }).slice(0, 12);
+  }
+
+  function renderLoading(query){
+    const grid = getResultsContainer();
+    if (!grid) return;
+    grid.innerHTML = '<div class="pozi-live-loading">Searching POZi for “' + safe(query) + '”...</div>';
+  }
+
+  function renderResults(query, results){
+    const grid = getResultsContainer();
+    if (!grid) return;
+
+    if (!results.length){
+      grid.innerHTML =
+        '<div class="live-empty">No sourcing matches for “' + safe(query) + '”. Try a broader product or material search.</div>';
+      return;
+    }
+
+    grid.innerHTML = results.map(function(item){
+      return (
+        '<a class="pozi-source-result-card" href="' + safe(item.url) + '" target="_blank" rel="noopener">' +
+          '<div class="pozi-result-topline">' +
+            '<span>Result ' + safe(item.rank) + '</span>' +
+            '<em>' + safe(item.domain || 'Open result') + '</em>' +
+          '</div>' +
+          '<strong>' + safe(item.title) + '</strong>' +
+          (item.description ? '<p>' + safe(item.description).slice(0, 180) + '</p>' : '') +
+        '</a>'
+      );
+    }).join('');
+  }
+
+  async function runPoziSearch(){
+    const input = $('liveSearchInput');
+    const zip = $('liveZipInput');
+    const query = input ? input.value.trim() : '';
+    const area = zip ? zip.value.trim() : '';
+
+    if (!query){
+      setStatus('Type a product, material, tool, or project item first.');
+      const grid = getResultsContainer();
+      if (grid) grid.innerHTML = '<div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>';
+      return;
+    }
+
+    const fullQuery = area ? query + ' near ' + area : query;
+
+    setStatus('Searching POZi sourcing results...');
+    renderLoading(fullQuery);
+
+    try{
+      const res = await fetch(ENDPOINT, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          query: fullQuery,
+          location: area || 'United States',
+          language: 'English',
+          depth: 10
+        })
+      });
+
+      const data = await res.json().catch(function(){ return {}; });
+
+      if (!res.ok || data.ok === false){
+        throw new Error(data.error || 'POZi search failed.');
+      }
+
+      const results = normalizeResults(data);
+      setStatus(results.length ? 'POZi found sourcing paths for your project.' : 'No sourcing matches found.');
+      renderResults(fullQuery, results);
+    } catch(err){
+      setStatus('POZi Search could not finish yet. Check the pozi-search Netlify function logs.');
+      const grid = getResultsContainer();
+      if (grid) {
+        grid.innerHTML = '<div class="live-empty">POZi Search error: ' + safe(err.message || 'Search failed.') + '</div>';
+      }
     }
   }
 
-  document.querySelectorAll('[data-pozi-search]').forEach(function(el){
-    el.addEventListener('click', function(){
-      runPoziSearchTerm(el.getAttribute('data-pozi-search') || el.textContent.trim());
+  document.addEventListener('DOMContentLoaded', function(){
+    const btn = $('liveSearchBtn');
+    const input = $('liveSearchInput');
+
+    if (btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        runPoziSearch();
+      }, true);
+    }
+
+    if (input){
+      input.addEventListener('keydown', function(e){
+        if (e.key === 'Enter'){
+          e.preventDefault();
+          runPoziSearch();
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-pozi-search]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.preventDefault();
+        const term = el.getAttribute('data-pozi-search') || el.textContent.trim();
+        const input = $('liveSearchInput');
+        if (input) input.value = term;
+        runPoziSearch();
+        const panel = document.querySelector('.pozi-results-panel');
+        if (panel) panel.scrollIntoView({behavior:'smooth', block:'start'});
+      }, true);
     });
   });
-});
+
+  window.runPoziSearch = runPoziSearch;
+})();
 </script>
 
 </body>
