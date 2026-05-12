@@ -2766,6 +2766,25 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="basket-core-workflow-fix">
+.pozi-flow-placeholder img,
+.workflow-icon img[src*="basket-core"]{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  display:block;
+}
+
+.pozi-flow-placeholder{
+  padding:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -3116,7 +3135,7 @@ img[alt*="POZi logo"]{
           <span>BUILDr organizes the project.</span>
         </div>
         <div>
-          <strong class="pozi-flow-icon pozi-flow-placeholder">◎</strong>
+          <strong class="pozi-flow-icon pozi-flow-placeholder"><img src="basket-core.png" alt="Create Basket"></strong>
           <span>Create the basket when ready.</span>
         </div>
         <div>
