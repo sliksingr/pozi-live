@@ -2,7 +2,7 @@
 // Secure POZi → DataForSEO proxy.
 
 const DATAFORSEO_ENDPOINT =
-  "https://api.dataforseo.com/v3/serp/google/organic/live/advanced";
+  "https://api.dataforseo.com/v3/serp/google/organic/live/regular";
 
 function jsonResponse(statusCode, body) {
   return {
