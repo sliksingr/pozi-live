@@ -1,17 +1,8 @@
 const Anthropic = require('@anthropic-ai/sdk');
-const { createClient } = require('@supabase/supabase-js');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
 });
-
-const supabase =
-  process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY
-      )
-    : null;
 
 const BUILDR_SYSTEM_PROMPT = `
 You are BUILDr — POZi's AI project planning and sourcing assistant.
@@ -220,21 +211,6 @@ ${prompt}
       response.content[0].text
         ? response.content[0].text
         : 'BUILDr could not generate a response.';
-
-    if (supabase) {
-      try {
-        await supabase.from('buildr_logs').insert([
-          {
-            prompt,
-            response: text,
-            mode,
-            created_at: new Date().toISOString()
-          }
-        ]);
-      } catch (logError) {
-        console.error('Supabase logging error:', logError);
-      }
-    }
 
     return {
       statusCode: 200,
