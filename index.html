@@ -2786,8 +2786,8 @@ img[alt*="POZi logo"]{
 </style>
 
 
-<style id="pozi-search-workflow-icons-consistency-final">
-/* POZi Search workflow icons — consistent black tile, no green haze, centered artwork */
+<style id="pozi-search-workflow-icons-final-tuned">
+/* Final tuned workflow icon alignment */
 .pozi-flow-branded div{
   align-items:center !important;
   min-height:72px !important;
@@ -2811,7 +2811,6 @@ img[alt*="POZi logo"]{
   padding:0 !important;
 }
 
-/* Default workflow image behavior */
 .pozi-flow-branded .pozi-flow-icon img,
 .pozi-flow-branded .pozi-flow-placeholder img{
   max-width:none !important;
@@ -2821,16 +2820,16 @@ img[alt*="POZi logo"]{
   border-radius:0 !important;
 }
 
-/* Top Thunder: centered better and clear, but not blown out */
+/* Thunder icon: move left and enlarge */
 .pozi-flow-branded .pozi-flow-icon img[src*="thunder"]{
-  width:118% !important;
-  height:118% !important;
+  width:136% !important;
+  height:136% !important;
   object-fit:cover !important;
-  object-position:44% center !important;
+  object-position:32% center !important;
   transform:none !important;
 }
 
-/* Middle Basket Core: keep the good larger punched-out look */
+/* Basket Core stays perfect */
 .pozi-flow-branded .pozi-flow-placeholder img[src*="basket-core"],
 .pozi-flow-branded .pozi-flow-icon img[src*="basket-core"]{
   width:142% !important;
@@ -2840,10 +2839,10 @@ img[alt*="POZi logo"]{
   transform:scale(1.04) !important;
 }
 
-/* Bottom POZi Storm: same black tile, clear, contained enough to not crop awkwardly */
+/* Bottom POZi storm slightly smaller to fit frame */
 .pozi-flow-branded .pozi-flow-icon img[src*="logo-dark"]{
-  width:118% !important;
-  height:118% !important;
+  width:100% !important;
+  height:100% !important;
   object-fit:cover !important;
   object-position:center center !important;
   transform:none !important;
