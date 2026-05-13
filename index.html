@@ -2767,7 +2767,27 @@ img[alt*="POZi logo"]{
 </style>
 
 
-<style id="pozi-search-workflow-icons-final-user-pass">
+<style id="basket-core-workflow-fix">
+.pozi-flow-placeholder img,
+.workflow-icon img[src*="basket-core"]{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  display:block;
+}
+
+.pozi-flow-placeholder{
+  padding:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+</style>
+
+
+<style id="pozi-search-workflow-icons-final-tuned">
+/* Final tuned workflow icon alignment */
 .pozi-flow-branded div{
   align-items:center !important;
   min-height:72px !important;
@@ -2800,7 +2820,7 @@ img[alt*="POZi logo"]{
   border-radius:0 !important;
 }
 
-/* Thunder image: larger and moved left */
+/* Thunder icon: larger and shifted left */
 .pozi-flow-branded .pozi-flow-icon img[src*="thunder"]{
   width:148% !important;
   height:148% !important;
@@ -2809,7 +2829,7 @@ img[alt*="POZi logo"]{
   transform:none !important;
 }
 
-/* Basket core remains strong and centered */
+/* Basket Core stays perfect */
 .pozi-flow-branded .pozi-flow-placeholder img[src*="basket-core"],
 .pozi-flow-branded .pozi-flow-icon img[src*="basket-core"]{
   width:142% !important;
@@ -2819,10 +2839,10 @@ img[alt*="POZi logo"]{
   transform:scale(1.04) !important;
 }
 
-/* Bottom POZi storm reduced about 20% */
+/* Bottom POZi storm smaller to fit frame */
 .pozi-flow-branded .pozi-flow-icon img[src*="logo-dark"]{
-  width:82% !important;
-  height:82% !important;
+  width:80% !important;
+  height:80% !important;
   object-fit:cover !important;
   object-position:center center !important;
   transform:none !important;
@@ -3184,7 +3204,7 @@ img[alt*="POZi logo"]{
           <span>BUILDr organizes the project.</span>
         </div>
         <div>
-          <strong class="pozi-flow-icon pozi-flow-placeholder">◎</strong>
+          <strong class="pozi-flow-icon pozi-flow-placeholder"><img src="basket-core.png" alt="Create Basket"></strong>
           <span>Create the basket when ready.</span>
         </div>
         <div>
