@@ -4734,16 +4734,34 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     });
   });
 
-
   function stopBuildrVoiceInput(){
     var input = document.getElementById('buildrPrompt');
+    var btn = document.getElementById('buildrAskBtn');
     if (!input) return;
     try {
       input.blur();
       input.setAttribute('readonly', 'readonly');
+      input.setAttribute('inputmode', 'none');
+
+      if (btn && typeof btn.focus === 'function') {
+        btn.focus({ preventScroll:true });
+      } else if (document.activeElement && document.activeElement.blur) {
+        document.activeElement.blur();
+      }
+
+      setTimeout(function(){
+        try {
+          input.blur();
+          if (btn && typeof btn.focus === 'function') {
+            btn.focus({ preventScroll:true });
+          }
+        } catch(e) {}
+      }, 60);
+
       setTimeout(function(){
         input.removeAttribute('readonly');
-      }, 350);
+        input.removeAttribute('inputmode');
+      }, 900);
     } catch(e) {}
   }
 
@@ -4768,7 +4786,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
     promptEl.value = '';
     promptEl.placeholder = 'Add the next detail or follow-up...';
-    promptEl.focus();
+    stopBuildrVoiceInput();
 
     askBtn.disabled = true;
     askBtn.textContent = 'BUILDr is thinking...';
@@ -4815,6 +4833,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   askBtn.addEventListener('click', askBuildr);
   promptEl.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      stopBuildrVoiceInput();
       askBuildr();
     }
   });
@@ -5135,7 +5154,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     var btn = document.getElementById('buildrAskBtn');
     if (!btn) return;
     ['pointerdown','touchstart','mousedown','click'].forEach(function(evt){
-      btn.addEventListener(evt, stopBuildrVoiceInput, { passive:true, capture:true });
+      btn.addEventListener(evt, stopBuildrVoiceInput, { passive:false, capture:true });
     });
   })();
 
