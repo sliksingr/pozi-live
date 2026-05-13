@@ -4734,7 +4734,21 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     });
   });
 
+
+  function stopBuildrVoiceInput(){
+    var input = document.getElementById('buildrPrompt');
+    if (!input) return;
+    try {
+      input.blur();
+      input.setAttribute('readonly', 'readonly');
+      setTimeout(function(){
+        input.removeAttribute('readonly');
+      }, 350);
+    } catch(e) {}
+  }
+
   async function askBuildr(){
+    stopBuildrVoiceInput();
     const visiblePrompt = (promptEl.value || '').trim();
 
     if (!visiblePrompt) {
@@ -5115,6 +5129,16 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   });
 
   window.runPoziSearch = runPoziSearch;
+
+  // Stop mobile keyboard dictation/microphone as soon as Ask BUILDr is tapped.
+  (function buildrAskBtnMicStopCapture(){
+    var btn = document.getElementById('buildrAskBtn');
+    if (!btn) return;
+    ['pointerdown','touchstart','mousedown','click'].forEach(function(evt){
+      btn.addEventListener(evt, stopBuildrVoiceInput, { passive:true, capture:true });
+    });
+  })();
+
 })();
 </script>
 
