@@ -2854,6 +2854,72 @@ img[alt*="POZi logo"]{
 }
 </style>
 
+
+<style id="buildr-output-premium-lock-css">
+.buildr-output-panel{
+  overflow:hidden;
+  transition:min-height .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+.buildr-output-items{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:0;
+  max-height:0;
+  opacity:0;
+  overflow:hidden;
+  transition:max-height .34s ease, opacity .22s ease, margin-top .22s ease;
+}
+.buildr-output-items.has-items{
+  margin-top:12px;
+  max-height:520px;
+  opacity:1;
+}
+.buildr-output-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 11px;
+  border-radius:999px;
+  border:1px solid rgba(0,255,136,.18);
+  background:linear-gradient(135deg,rgba(0,255,136,.075),rgba(0,102,255,.055));
+  color:#eafff5;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.2;
+  box-shadow:0 8px 18px rgba(0,0,0,.16);
+  animation:buildrItemIn .26s ease both;
+}
+.buildr-output-pill::before{
+  content:'•';
+  color:var(--green);
+  font-size:16px;
+  line-height:0;
+}
+@keyframes buildrItemIn{
+  from{opacity:0; transform:translateY(6px) scale(.97);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+#buildrBasketBtn.is-ready{
+  opacity:1 !important;
+  border-color:rgba(0,255,136,.42) !important;
+  animation:buildrBasketReadyPulse 2.2s ease-in-out infinite;
+}
+#buildrBasketBtn.is-ready .buildr-basket-copy{color:#fff !important;}
+#buildrBasketBtn.is-locked{
+  filter:grayscale(.25);
+}
+#buildrBasketBtn.is-created{
+  opacity:.86 !important;
+  cursor:default !important;
+  animation:none !important;
+}
+@keyframes buildrBasketReadyPulse{
+  0%,100%{box-shadow:0 18px 40px rgba(0,0,0,.40),0 0 18px rgba(0,255,136,.10),inset 0 0 0 1px rgba(255,255,255,.05);}
+  50%{box-shadow:0 20px 48px rgba(0,0,0,.44),0 0 32px rgba(0,255,136,.25),inset 0 0 0 1px rgba(255,255,255,.06);}
+}
+[data-theme="light"] .buildr-output-pill{color:#0a0a14;background:linear-gradient(135deg,rgba(0,160,80,.08),rgba(0,85,255,.05));border-color:rgba(0,160,80,.22);}
+</style>
 </head>
 <body>
 
@@ -3066,14 +3132,9 @@ img[alt*="POZi logo"]{
             </div>
           </div>
 
-          <div class="buildr-bubble">
+          <div id="buildrOutputPanel" class="buildr-bubble buildr-output-panel">
             <strong>BUILDr output</strong>
-            Materials, quantities, tool needs, options, and a smarter shopping path are organized before sourcing.
-          </div>
-
-          <div class="buildr-bubble">
-            <strong>Then POZi helps source it</strong>
-            Major retailers, local stores, and product links become the next step — not the whole starting point.
+            <div id="buildrOutputItems" class="buildr-output-items" aria-live="polite"></div>
           </div>
         </div>
 
@@ -3081,14 +3142,14 @@ img[alt*="POZi logo"]{
             <div class="buildr-basket-head">
               <div>
                 <strong>Create POZi Basket</strong>
-                <span>Turn BUILDr’s plan into live Google search guidance through DataForSEO.</span>
+                <span>Locked until BUILDr finishes compiling your basket-ready item list.</span>
               </div>
-              <button id="buildrBasketBtn" class="buildr-basket-btn buildr-basket-btn-dark" type="button">
+              <button id="buildrBasketBtn" class="buildr-basket-btn buildr-basket-btn-dark" type="button" disabled aria-disabled="true">
                 <span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span>
                 <span class="buildr-basket-copy">Create Basket</span>
               </button>
             </div>
-            <div id="buildrBasketStatus" class="buildr-basket-status">Ask BUILDr for a project plan first, then create a basket.</div>
+            <div id="buildrBasketStatus" class="buildr-basket-status">BUILDr will unlock this when your item list is ready.</div>
             <div id="buildrBasketResults" class="buildr-basket-results"></div>
           </div>
 
@@ -4815,6 +4876,9 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       pendingMsg.className = 'buildr-msg ai';
       pendingMsg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml(reply);
       conversation.push({ role: 'assistant', text: reply });
+      if (window.POZiBuildrBasket && typeof window.POZiBuildrBasket.refresh === 'function') {
+        window.POZiBuildrBasket.refresh();
+      }
 
       statusEl.textContent = 'BUILDr response received. Add another detail to keep going.';
       statusEl.className = 'buildr-status ok';
@@ -4848,10 +4912,14 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   const basketResults = document.getElementById('buildrBasketResults');
   const promptEl = document.getElementById('buildrPrompt');
   const answerEl = document.getElementById('buildrAnswer');
+  const outputItems = document.getElementById('buildrOutputItems');
 
   if (!basketBtn || !basketStatus || !basketResults) return;
 
   const POZI_SEARCH_ENDPOINT = '/.netlify/functions/pozi-search';
+  let basketCreated = false;
+  let basketReady = false;
+  let readyItems = [];
 
   function safeHtml(value){
     return String(value || '').replace(/[&<>"']/g, function(m){
@@ -4870,17 +4938,17 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       .map(x => x.replace(/^[\s:;,.]+|[\s:;,.]+$/g, '').trim())
       .filter(Boolean);
 
-    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|question|first|then|you|buildr|pro mode|consumer mode|shopping path)$/i;
-    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar)/i;
-    const dimensions = /\b(2x4|4x4|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
+    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|question|first|then|you|buildr|pro mode|consumer mode|shopping path|project list ready|basket ready|ready to create basket)$/i;
+    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar|hanger|flashing|sill|plate|rafter|shingle|underlayment|adhesive|glue)/i;
+    const dimensions = /\b(2x4|2x6|2x8|2x10|4x4|6x6|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
 
     const seen = new Set();
     return raw.filter(line => {
-      if (line.length < 4 || line.length > 92) return false;
+      if (line.length < 4 || line.length > 96) return false;
       if (skip.test(line)) return false;
       return materialWords.test(line) || dimensions.test(line);
     }).map(line => line
-      .replace(/^\s*(qty|quantity)\s*[:\-]\s*/i, '')
+      .replace(/^\s*(qty|quantity|item)\s*[:\-]\s*/i, '')
       .replace(/\s+\([^)]*\)/g, '')
       .replace(/^[✓✔]+\s*/, '')
       .trim()
@@ -4889,7 +4957,58 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).slice(0, 6);
+    }).slice(0, 10);
+  }
+
+  function setBasketLocked(reason){
+    if (basketCreated) return;
+    basketReady = false;
+    basketBtn.disabled = true;
+    basketBtn.setAttribute('aria-disabled','true');
+    basketBtn.classList.add('is-locked');
+    basketBtn.classList.remove('is-ready');
+    basketStatus.textContent = reason || 'BUILDr will unlock this when your item list is ready.';
+    basketStatus.className = 'buildr-basket-status';
+  }
+
+  function setBasketReady(items){
+    if (basketCreated) return;
+    basketReady = true;
+    readyItems = items.slice(0, 10);
+    basketBtn.disabled = false;
+    basketBtn.setAttribute('aria-disabled','false');
+    basketBtn.classList.remove('is-locked');
+    basketBtn.classList.add('is-ready');
+    basketStatus.textContent = 'Project list ready. Create your basket when you’re finished.';
+    basketStatus.className = 'buildr-basket-status ok';
+  }
+
+  function renderOutputItems(items){
+    if (!outputItems) return;
+    if (!items.length){
+      outputItems.innerHTML = '';
+      outputItems.classList.remove('has-items');
+      return;
+    }
+    outputItems.innerHTML = items.map((item, i) => '<span class="buildr-output-pill" style="animation-delay:' + Math.min(i * 45, 360) + 'ms">' + safeHtml(item) + '</span>').join('');
+    outputItems.classList.add('has-items');
+  }
+
+  function refreshBasketState(){
+    const buildrText = textFromBuildr();
+    const items = extractBasketItems(buildrText);
+    readyItems = items;
+    renderOutputItems(items);
+
+    const readyLanguage = /(basket-ready|basket ready|project list ready|shopping list|material list|materials list|create (your )?basket|ready to source|ready for sourcing|final list|compiled)/i.test(buildrText);
+
+    if (items.length >= 3 && readyLanguage){
+      setBasketReady(items);
+    } else if (items.length > 0){
+      setBasketLocked('BUILDr is compiling ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '. Keep refining until the list is ready.');
+    } else {
+      setBasketLocked('BUILDr will unlock this when your item list is ready.');
+    }
   }
 
   function normalizeResults(data){
@@ -4934,21 +5053,25 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   }
 
   async function createBasket(){
-    const buildrText = textFromBuildr();
-    const typed = promptEl ? promptEl.value.trim() : '';
-    let items = extractBasketItems(buildrText);
+    refreshBasketState();
 
-    if (!items.length && typed) items = [typed];
+    if (basketCreated){
+      basketStatus.textContent = 'Basket already created for this compiled list.';
+      basketStatus.className = 'buildr-basket-status ok';
+      return;
+    }
 
-    if (!items.length){
-      basketStatus.textContent = 'Ask BUILDr for a material list first, then create a basket.';
+    if (!basketReady || !readyItems.length){
+      basketStatus.textContent = 'Finish the BUILDr dialogue first. The basket unlocks when the compiled item list is ready.';
       basketStatus.className = 'buildr-basket-status err';
       return;
     }
 
+    const items = readyItems.slice(0, 10);
     basketBtn.disabled = true;
+    basketBtn.classList.remove('is-ready');
     basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Searching...</span>';
-    basketStatus.textContent = 'Creating POZi basket through DataForSEO Google search...';
+    basketStatus.textContent = 'Creating one POZi basket from the compiled BUILDr list...';
     basketStatus.className = 'buildr-basket-status';
     basketResults.innerHTML = '';
 
@@ -4970,18 +5093,24 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       basketResults.innerHTML = rendered;
     }
 
+    basketCreated = true;
+    basketBtn.disabled = true;
+    basketBtn.classList.add('is-created');
+    basketBtn.setAttribute('aria-disabled','true');
+    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Basket Created</span>';
+
     if (success){
-      basketStatus.textContent = 'Basket created. Review POZi search results below.';
+      basketStatus.textContent = 'Basket created once. Review POZi search results below.';
       basketStatus.className = 'buildr-basket-status ok';
     } else {
-      basketStatus.textContent = 'Basket created, but DataForSEO did not return usable results. Check Netlify function logs.';
+      basketStatus.textContent = 'Basket created once, but search did not return usable results. Check Netlify function logs.';
       basketStatus.className = 'buildr-basket-status err';
     }
-
-    basketBtn.disabled = false;
-    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Create Basket</span>';
   }
 
+  window.POZiBuildrBasket = { refresh: refreshBasketState };
+  setBasketLocked('BUILDr will unlock this when your item list is ready.');
+  refreshBasketState();
   basketBtn.addEventListener('click', createBasket);
 })();
 </script>
