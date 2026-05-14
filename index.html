@@ -2919,6 +2919,80 @@ img[alt*="POZi logo"]{
   50%{box-shadow:0 20px 48px rgba(0,0,0,.44),0 0 32px rgba(0,255,136,.25),inset 0 0 0 1px rgba(255,255,255,.06);}
 }
 [data-theme="light"] .buildr-output-pill{color:#0a0a14;background:linear-gradient(135deg,rgba(0,160,80,.08),rgba(0,85,255,.05));border-color:rgba(0,160,80,.22);}
+
+.buildr-notes-panel{
+  overflow:hidden;
+  border-color:rgba(255,204,0,.18);
+  background:linear-gradient(135deg,rgba(255,204,0,.045),rgba(0,102,255,.035));
+}
+.buildr-notes-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:0;
+  max-height:0;
+  opacity:0;
+  overflow:auto;
+  transition:max-height .34s ease, opacity .22s ease, margin-top .22s ease;
+  scroll-behavior:smooth;
+}
+.buildr-notes-list.has-notes{
+  margin-top:12px;
+  max-height:260px;
+  opacity:1;
+}
+.buildr-notes-list::-webkit-scrollbar{width:6px;}
+.buildr-notes-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px;}
+.buildr-note-pill{
+  width:100%;
+  text-align:left;
+  display:block;
+  border-radius:14px;
+  border:1px solid rgba(255,204,0,.16);
+  background:rgba(255,255,255,.045);
+  color:#fff7d8;
+  padding:10px 12px;
+  font-size:11px;
+  line-height:1.45;
+  cursor:pointer;
+  animation:buildrItemIn .26s ease both;
+  transition:border-color .18s ease, background .18s ease, max-height .22s ease;
+}
+.buildr-note-pill:hover{border-color:rgba(255,204,0,.34);background:rgba(255,204,0,.07);}
+.buildr-note-pill::before{
+  content:'Build note';
+  display:block;
+  color:#ffdc63;
+  font-family:var(--fh);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.1px;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.buildr-note-pill:not(.expanded){
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.buildr-note-pill.expanded{
+  white-space:normal;
+  color:#fff;
+  border-color:rgba(0,255,136,.26);
+  background:linear-gradient(135deg,rgba(255,204,0,.075),rgba(0,255,136,.045));
+}
+.buildr-note-empty,
+.buildr-output-empty{
+  color:rgba(192,192,216,.72);
+  font-size:11px;
+  line-height:1.55;
+  margin-top:8px;
+}
+[data-theme="light"] .buildr-notes-panel{background:linear-gradient(135deg,rgba(255,204,0,.08),rgba(0,85,255,.035));border-color:rgba(160,120,0,.18);}
+[data-theme="light"] .buildr-note-pill{color:#221f10;background:rgba(0,0,0,.025);border-color:rgba(160,120,0,.18);}
+[data-theme="light"] .buildr-note-pill.expanded{color:#0a0a14;background:linear-gradient(135deg,rgba(255,204,0,.12),rgba(0,160,80,.05));}
+@media(max-width:720px){.buildr-notes-list.has-notes{max-height:320px}.buildr-note-pill:not(.expanded){white-space:normal;}}
+
 </style>
 </head>
 <body>
@@ -3135,6 +3209,13 @@ img[alt*="POZi logo"]{
           <div id="buildrOutputPanel" class="buildr-bubble buildr-output-panel">
             <strong>BUILDr output</strong>
             <div id="buildrOutputItems" class="buildr-output-items" aria-live="polite"></div>
+            <div id="buildrOutputEmpty" class="buildr-output-empty">Basket-ready items will appear here as BUILDr compiles them.</div>
+          </div>
+
+          <div id="buildrNotesPanel" class="buildr-bubble buildr-notes-panel">
+            <strong>Build Notes</strong>
+            <div id="buildrNotesList" class="buildr-notes-list" aria-live="polite"></div>
+            <div id="buildrNotesEmpty" class="buildr-note-empty">Project guidance will appear here when BUILDr adds build notes.</div>
           </div>
         </div>
 
@@ -4913,8 +4994,19 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   const promptEl = document.getElementById('buildrPrompt');
   const answerEl = document.getElementById('buildrAnswer');
   const outputItems = document.getElementById('buildrOutputItems');
+  const outputEmpty = document.getElementById('buildrOutputEmpty');
+  const notesList = document.getElementById('buildrNotesList');
+  const notesEmpty = document.getElementById('buildrNotesEmpty');
 
   if (!basketBtn || !basketStatus || !basketResults) return;
+
+  if (notesList) {
+    notesList.addEventListener('click', function(event){
+      const note = event.target.closest('.buildr-note-pill');
+      if (!note) return;
+      note.classList.toggle('expanded');
+    });
+  }
 
   const POZI_SEARCH_ENDPOINT = '/.netlify/functions/pozi-search';
   let basketCreated = false;
@@ -4932,21 +5024,75 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     return (answerEl.innerText || '').replace(/BUILDr\s*/gi, '').trim();
   }
 
+  function sectionAfter(text, markers){
+    const source = String(text || '');
+    let bestIndex = -1;
+    let bestMarker = '';
+    markers.forEach(function(marker){
+      const re = new RegExp(marker, 'i');
+      const match = source.match(re);
+      if (match && (bestIndex === -1 || match.index < bestIndex)) {
+        bestIndex = match.index;
+        bestMarker = match[0];
+      }
+    });
+    if (bestIndex === -1) return '';
+    return source.slice(bestIndex + bestMarker.length);
+  }
+
+  function cleanLine(line){
+    return String(line || '')
+      .replace(/^\s*(?:[-*•]|\d+\.|✓|✔)\s*/g, '')
+      .replace(/^[\s:;,.]+|[\s:;,.]+$/g, '')
+      .trim();
+  }
+
+  function uniqueLines(lines, limit){
+    const seen = new Set();
+    return lines.map(cleanLine).filter(function(line){
+      if (!line || line.length < 4) return false;
+      const key = line.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, limit || 10);
+  }
+
+  function extractBuildNotes(text){
+    let section = sectionAfter(text, ['build notes\\s*:', 'builder notes\\s*:', 'project notes\\s*:']);
+    if (!section) return [];
+    section = section.split(/\n\s*(?:POZi\s+)?Basket Items\s*:/i)[0];
+    section = section.split(/\n\s*Your project basket is ready/i)[0];
+    section = section.split(/\n\s*Press Create Basket/i)[0];
+
+    return uniqueLines(section.split(/\n|<br>|•/g), 8).filter(function(line){
+      return !/^(build notes|builder notes|project notes|pozi basket items|basket items)$/i.test(line);
+    });
+  }
+
   function extractBasketItems(text){
-    const raw = String(text || '')
-      .split(/\n|<br>|•|\-|\*|\d+\.\s+/g)
-      .map(x => x.replace(/^[\s:;,.]+|[\s:;,.]+$/g, '').trim())
+    const fullText = String(text || '');
+    let basketSection = sectionAfter(fullText, ['(?:POZi\\s+)?Basket Items\\s*:']);
+    if (basketSection) {
+      basketSection = basketSection.split(/\n\s*Your project basket is ready/i)[0];
+      basketSection = basketSection.split(/\n\s*Press Create Basket/i)[0];
+    }
+
+    const source = basketSection || fullText;
+    const raw = source
+      .split(/\n|<br>|•|\- |\* |\d+\.\s+/g)
+      .map(cleanLine)
       .filter(Boolean);
 
-    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|question|first|then|you|buildr|pro mode|consumer mode|shopping path|project list ready|basket ready|ready to create basket)$/i;
-    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar|hanger|flashing|sill|plate|rafter|shingle|underlayment|adhesive|glue)/i;
+    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|notes|build notes|question|first|then|you|buildr|pro mode|consumer mode|shopping path|project list ready|basket ready|ready to create basket|your project basket is ready|press create basket.*)$/i;
+    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar|hanger|flashing|sill|plate|rafter|shingle|underlayment|glue|conduit|clip|clamp|fitting|valve|drain|fabric|stone|sand|base|stringer|tread|riser)/i;
     const dimensions = /\b(2x4|2x6|2x8|2x10|4x4|6x6|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
 
     const seen = new Set();
     return raw.filter(line => {
       if (line.length < 4 || line.length > 96) return false;
       if (skip.test(line)) return false;
-      return materialWords.test(line) || dimensions.test(line);
+      return basketSection ? true : (materialWords.test(line) || dimensions.test(line));
     }).map(line => line
       .replace(/^\s*(qty|quantity|item)\s*[:\-]\s*/i, '')
       .replace(/\s+\([^)]*\)/g, '')
@@ -4988,17 +5134,36 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     if (!items.length){
       outputItems.innerHTML = '';
       outputItems.classList.remove('has-items');
+      if (outputEmpty) outputEmpty.style.display = '';
       return;
     }
     outputItems.innerHTML = items.map((item, i) => '<span class="buildr-output-pill" style="animation-delay:' + Math.min(i * 45, 360) + 'ms">' + safeHtml(item) + '</span>').join('');
     outputItems.classList.add('has-items');
+    if (outputEmpty) outputEmpty.style.display = 'none';
+  }
+
+  function renderBuildNotes(notes){
+    if (!notesList) return;
+    if (!notes.length){
+      notesList.innerHTML = '';
+      notesList.classList.remove('has-notes');
+      if (notesEmpty) notesEmpty.style.display = '';
+      return;
+    }
+    notesList.innerHTML = notes.map(function(note, i){
+      return '<button type="button" class="buildr-note-pill" style="animation-delay:' + Math.min(i * 45, 360) + 'ms">' + safeHtml(note) + '</button>';
+    }).join('');
+    notesList.classList.add('has-notes');
+    if (notesEmpty) notesEmpty.style.display = 'none';
   }
 
   function refreshBasketState(){
     const buildrText = textFromBuildr();
     const items = extractBasketItems(buildrText);
+    const notes = extractBuildNotes(buildrText);
     readyItems = items;
     renderOutputItems(items);
+    renderBuildNotes(notes);
 
     const readyLanguage = /(basket-ready|basket ready|project list ready|shopping list|material list|materials list|create (your )?basket|ready to source|ready for sourcing|final list|compiled)/i.test(buildrText);
 
