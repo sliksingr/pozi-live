@@ -3255,7 +3255,11 @@ img[alt*="POZi logo"]{
           </div>
           <div id="buildrMessageLabel" class="buildr-followup-label buildr-first-message-label">FIRST MESSAGE</div>
           <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Tell BUILDr what you want to build, fix, design, or source next."></textarea>
-          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr <span>↗</span></button>
+          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr
+<div class="builder-mini-disclaimer" style="margin-top:10px;font-size:11px;color:#8888aa;line-height:1.6;text-align:center;">
+⚡ BUILDr may make mistakes. Always verify measurements, local code, materials, permits, and safety requirements before building.
+</div>
+ <span>↗</span></button>
           <div id="buildrStatus" class="buildr-status">Securely routed through Netlify Functions.</div>
         </div>
 
@@ -3335,7 +3339,7 @@ img[alt*="POZi logo"]{
     </div>
     <div class="footer-slogans">How business is finished &middot; All in one place</div>
   </div>
-  <div class="footer-links">
+  <div class="footer-links"><a href="#" class="footer-link" onclick="openDisclaimerModal();return false;">Disclaimer</a>
     <button class="footer-link" data-page="home">Home</button>
     <button class="footer-link" id="footerLiveLink" data-page="live">POZi Search</button>
     <button class="footer-link" data-page="how">How It Works</button>
@@ -5700,6 +5704,44 @@ window.poziOpenRetailWindow = function(card, url){
   return false;
 };
 window.poziMarkExternalOpen = window.poziOpenRetailWindow;
+</script>
+
+<!-- Disclaimer Modal -->
+<div class="modal-overlay" id="disclaimerModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeDisclaimerModal()">×</button>
+      <div class="modal-live">
+        <div class="modal-live-dot"></div>
+        <div class="modal-live-lbl">POZi Disclaimer</div>
+      </div>
+      <div class="modal-title">Important Information</div>
+      <div class="modal-sub">
+        BUILDr and POZi are planning and sourcing tools designed to help organize projects and compare inventory.
+      </div>
+    </div>
+
+    <div class="modal-body" style="color:#c0c0d8;line-height:1.8;font-size:13px;">
+      <p><strong>BUILDr may make mistakes.</strong> Always verify measurements, quantities, materials, local building codes, permits, safety requirements, and manufacturer instructions before purchasing or beginning a project.</p>
+
+      <p>Electrical, plumbing, excavation, roofing, structural, gas, load-bearing, and safety-critical work should be reviewed by qualified professionals where appropriate.</p>
+
+      <p>POZi does not directly sell products. Pricing, inventory, delivery, pickup availability, warranties, and returns are handled by third-party retailers.</p>
+
+      <p>Retailer inventory and pricing may change without notice.</p>
+
+      <p>POZi is currently evolving and some features are in beta.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function openDisclaimerModal(){
+  document.getElementById('disclaimerModal').classList.add('open');
+}
+function closeDisclaimerModal(){
+  document.getElementById('disclaimerModal').classList.remove('open');
+}
 </script>
 </body>
 </html>
