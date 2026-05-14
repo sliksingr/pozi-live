@@ -3074,7 +3074,7 @@ img[alt*="POZi logo"]{
           <button id="heroSearchBtn" class="hero-search-btn">Search POZi</button>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-          <button id="heroLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px">Live Location Lookup</button>
+          <button id="heroLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px">Use my location</button>
         </div>
         <div class="hero-search-meta">
           <div class="hero-free-pill" id="heroFreeSearchPill">10 guest searches remaining</div>
@@ -3293,6 +3293,9 @@ img[alt*="POZi logo"]{
           <input id="liveSearchInput" class="live-search-input" type="search" placeholder="Search materials, tools, products, or basket items" autocomplete="off">
           <input id="liveZipInput" class="live-zip-input" type="text" inputmode="numeric" placeholder="ZIP / area" maxlength="10" autocomplete="postal-code">
           <button id="liveSearchBtn" class="live-search-btn" type="button">Search POZi</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button id="liveLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px" type="button">Use my location</button>
         </div>
         <div class="live-meta-row">
           <div id="liveResultsStatus">Search a product or continue from a BUILDr basket.</div>
@@ -3920,11 +3923,11 @@ img[alt*="POZi logo"]{
 
   /* ── SHARED SEARCH ENGINE (HOME + LIVE INVENTORY) ── */
 var STORES = [
-  { key:'hd_rv', chain:'Home Depot', name:'Home Depot', loc:'Roseville', addr:'10001 Fairway Dr, Roseville CA', icon:'🏠', color:'#f96302', bg:'rgba(249,99,2,.12)', platform:'homedepot_search', params:{store_no:'6688',zipcode:'95678'}, link:function(q){return 'https://www.homedepot.com/s/'+encodeURIComponent(q)+'?store=6688';} },
-  { key:'lo_rv', chain:"Lowe's", name:"Lowe's", loc:'Roseville', addr:'10201 Fairway Dr, Roseville CA', icon:'🔵', color:'#4f8dff', bg:'rgba(79,141,255,.12)', platform:'lowes_search', params:{store_no:'1207'}, link:function(q){return 'https://www.lowes.com/search?searchTerm='+encodeURIComponent(q)+'&storeId=1207';} },
-  { key:'ace_gv', chain:'Ace Hardware', name:'B&C Ace Hardware', loc:'Grass Valley', addr:'Grass Valley, CA 95945', icon:'🔴', color:'#ff4d73', bg:'rgba(255,77,115,.12)', platform:'acehardware_search', params:{zipcode:'95945'}, link:function(q){return 'https://www.acehardware.com/search?query='+encodeURIComponent(q);} },
-  { key:'hfl_gv', chain:'POZi Local', name:'Hills Flat Lumber', loc:'Grass Valley', addr:'Grass Valley, CA', icon:'🌲', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} },
-  { key:'atz_gv', chain:'POZi Local', name:'A to Z Supply', loc:'Grass Valley', addr:'Grass Valley, CA', icon:'🛠', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} }
+  { key:'hd_rv', chain:'Home Depot', name:'Home Depot', loc:'Roseville', addr:'10001 Fairway Dr, Roseville CA', lat:38.7907, lng:-121.2910, icon:'🏠', color:'#f96302', bg:'rgba(249,99,2,.12)', platform:'homedepot_search', params:{store_no:'6688',zipcode:'95678'}, link:function(q){return 'https://www.homedepot.com/s/'+encodeURIComponent(q)+'?store=6688';} },
+  { key:'lo_rv', chain:"Lowe's", name:"Lowe's", loc:'Roseville', addr:'10201 Fairway Dr, Roseville CA', lat:38.7919, lng:-121.2895, icon:'🔵', color:'#4f8dff', bg:'rgba(79,141,255,.12)', platform:'lowes_search', params:{store_no:'1207'}, link:function(q){return 'https://www.lowes.com/search?searchTerm='+encodeURIComponent(q)+'&storeId=1207';} },
+  { key:'ace_gv', chain:'Ace Hardware', name:'B&C Ace Hardware', loc:'Grass Valley', addr:'Grass Valley, CA 95945', lat:39.2191, lng:-121.0611, icon:'🔴', color:'#ff4d73', bg:'rgba(255,77,115,.12)', platform:'acehardware_search', params:{zipcode:'95945'}, link:function(q){return 'https://www.acehardware.com/search?query='+encodeURIComponent(q);} },
+  { key:'hfl_gv', chain:'POZi Local', name:'Hills Flat Lumber', loc:'Grass Valley', addr:'Grass Valley, CA', lat:39.2191, lng:-121.0611, icon:'🌲', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} },
+  { key:'atz_gv', chain:'POZi Local', name:'A to Z Supply', loc:'Grass Valley', addr:'Grass Valley, CA', lat:39.2191, lng:-121.0611, icon:'🛠', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} }
 ];
 var DEMO_DB = [
   {store_key:'hfl_gv', name:'2x4x8 Framing Stud', brand:'Hills Flat Lumber', sku:'LUM-2X4-8-GV', price:6.49, inventory_quantity:186, category:'Lumber'},
@@ -3942,30 +3945,88 @@ var DEMO_DB = [
   {store_key:'lo_rv', name:'Project Source Paint Brush Set', brand:'Project Source', sku:'PS-BRUSH-SET', price:14.98, inventory_quantity:7, category:'Paint', in_stock:true},
   {store_key:'lo_rv', name:'Southwire 50-ft Extension Cord', brand:'Southwire', sku:'SW-50EXT', price:29.98, inventory_quantity:5, category:'Electrical', in_stock:true}
 ];
+  var POZI_SEARCH_RADIUS_MILES = 50;
+  var poziUserLocation = null;
+  var POZI_ZIP_COORDS = {
+    '95945': { lat:39.2191, lng:-121.0611, label:'Grass Valley, CA' },
+    '95949': { lat:39.1027, lng:-121.0751, label:'Grass Valley / Alta Sierra, CA' },
+    '95678': { lat:38.7521, lng:-121.2880, label:'Roseville, CA' },
+    '95661': { lat:38.7345, lng:-121.2458, label:'Roseville, CA' },
+    '95677': { lat:38.7916, lng:-121.2358, label:'Rocklin, CA' },
+    '95648': { lat:38.8916, lng:-121.2930, label:'Lincoln, CA' },
+    '95814': { lat:38.5816, lng:-121.4944, label:'Sacramento, CA' }
+  };
+
   function heroStoreMeta(storeKey){
     for (var i=0;i<STORES.length;i++){ if (STORES[i].key === storeKey) return STORES[i]; }
     return null;
   }
+
+  function poziZipCenter(zip){
+    var clean = String(zip || '').trim().match(/\d{5}/);
+    if (!clean) return null;
+    return POZI_ZIP_COORDS[clean[0]] || null;
+  }
+
+  function poziSearchCenter(zip){
+    return poziZipCenter(zip) || poziUserLocation || null;
+  }
+
+  function poziMiles(a, b){
+    if (!a || !b || typeof a.lat !== 'number' || typeof a.lng !== 'number' || typeof b.lat !== 'number' || typeof b.lng !== 'number') return null;
+    var R = 3958.8;
+    var dLat = (b.lat - a.lat) * Math.PI / 180;
+    var dLng = (b.lng - a.lng) * Math.PI / 180;
+    var lat1 = a.lat * Math.PI / 180;
+    var lat2 = b.lat * Math.PI / 180;
+    var x = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
+    return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+  }
+
+  function poziDecorateRowDistance(row, zip){
+    var center = poziSearchCenter(zip);
+    var sm = heroStoreMeta(row.store_key) || row;
+    var d = center && sm ? poziMiles(center, sm) : null;
+    var copy = Object.assign({}, row);
+    if (typeof d === 'number' && isFinite(d)) {
+      copy.distance_miles = Math.round(d);
+      copy.within_radius = d <= POZI_SEARCH_RADIUS_MILES;
+    }
+    return copy;
+  }
+
+  function poziSortRowsByDistance(rows, zip){
+    var center = poziSearchCenter(zip);
+    if (!center) return rows;
+    return rows.map(function(row){ return poziDecorateRowDistance(row, zip); }).sort(function(a,b){
+      var ad = typeof a.distance_miles === 'number' ? a.distance_miles : 99999;
+      var bd = typeof b.distance_miles === 'number' ? b.distance_miles : 99999;
+      return ad - bd;
+    });
+  }
+
+  function poziLocationLabel(zip){
+    var zc = poziZipCenter(zip);
+    if (zc) return zc.label || zip;
+    if (poziUserLocation) return 'your location';
+    return zip || '';
+  }
   function heroDemoRows(query, zip){
     var q = (query || '').toLowerCase().trim();
-    var z = (zip || '').toLowerCase().trim();
     if (!q) return [];
     var rows = DEMO_DB.filter(function(x){
       var hay = [x.name, x.brand, x.sku, x.category].join(' ').toLowerCase();
-      if (z){
-        var sm = heroStoreMeta(x.store_key);
-        var loc = sm ? [sm.loc || '', sm.addr || ''].join(' ').toLowerCase() : '';
-        if (loc.indexOf(z) === -1 && z.length >= 3) return false;
-      }
       return hay.indexOf(q) > -1 || q.split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
-    }).slice(0, 8).map(function(x){
+    });
+    rows = poziSortRowsByDistance(rows, zip).slice(0, 8).map(function(x){
       var sm = heroStoreMeta(x.store_key) || {};
       return {
         product_name: x.name,
         store_name: sm.name || x.brand || 'POZi',
         store_location: sm.loc || '',
         sku: x.sku || '',
-        quantity: Number(x.inventory_quantity || 0)
+        quantity: Number(x.inventory_quantity || 0),
+        distance_miles: x.distance_miles
       };
     });
     return rows;
@@ -3994,9 +4055,10 @@ var DEMO_DB = [
       var store = r.store_name || r.store || 'Unknown store';
       var city = r.store_location || r.city || r.location || '';
       var sku = r.sku || r.barcode || r.upc || '';
+      var miles = (typeof r.distance_miles === 'number') ? (' · ' + r.distance_miles + ' mi') : '';
       return '<div class="hero-result">' +
         '<div><div class="hero-result-name">' + name + '</div>' +
-        '<div class="hero-result-meta">' + store + (city ? ' · ' + city : '') + (sku ? ' · ' + sku : '') + '</div></div>' +
+        '<div class="hero-result-meta">' + store + (city ? ' · ' + city : '') + miles + (sku ? ' · ' + sku : '') + '</div></div>' +
         '<div class="hero-result-qty ' + heroQtyClass(qty) + '">' + heroQtyLabel(qty) + '</div>' +
       '</div>';
     }).join('');
@@ -4020,7 +4082,7 @@ var DEMO_DB = [
       if (st) st.textContent = 'Search POZi to source project items.';
       return;
     }
-    if (st) st.textContent = query ? ('Showing deeper results for “' + query + '”.') : 'Showing sample live inventory.';
+    if (st) st.textContent = query ? ('Showing closest available matches for “' + query + '”.') : 'Showing sample live inventory.';
     g.innerHTML = rows.map(function(x){
       var sm = heroStoreMeta(x.store_key) || {};
       var qty = Number(x.inventory_quantity || x.quantity || 0);
@@ -4028,7 +4090,7 @@ var DEMO_DB = [
       var price = (typeof x.price === 'number') ? ('$' + x.price.toFixed(2)) : '';
       return '<div class="live-result-card">' +
         '<div class="live-result-top"><div><div class="live-result-name">' + (x.name || x.product_name || 'Unnamed item') + '</div>' +
-        '<div class="live-result-store">' + (sm.name || x.store_name || x.brand || 'POZi') + (sm.loc ? ' · ' + sm.loc : '') + '</div></div>' +
+        '<div class="live-result-store">' + (sm.name || x.store_name || x.brand || 'POZi') + (sm.loc ? ' · ' + sm.loc : '') + (typeof x.distance_miles === 'number' ? ' · ' + x.distance_miles + ' mi' : '') + '</div></div>' +
         '<div class="live-result-price">' + price + '</div></div>' +
         '<div class="live-result-sku">' + (x.sku || '') + '</div>' +
         '<div class="live-result-qty ' + cls + '">' + heroQtyLabel(qty) + '</div>' +
@@ -4046,16 +4108,13 @@ var DEMO_DB = [
     if (!q){ renderLiveDefault(); return; }
     var rows = DEMO_DB.filter(function(x){
       var hay = [x.name, x.brand, x.sku, x.category].join(' ').toLowerCase();
-      var ok = hay.indexOf(q.toLowerCase()) > -1 || q.toLowerCase().split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
-      if (!ok) return false;
-      if (zip){
-        var sm = heroStoreMeta(x.store_key);
-        var loc = sm ? [sm.loc || '', sm.addr || ''].join(' ').toLowerCase() : '';
-        if (zip.length >= 3 && loc.indexOf(zip.toLowerCase()) === -1) return false;
-      }
-      return true;
+      return hay.indexOf(q.toLowerCase()) > -1 || q.toLowerCase().split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
     });
-    renderLiveResults(rows, q + (zip ? ' near ' + zip : ''));
+    rows = poziSortRowsByDistance(rows, zip);
+    var label = q;
+    var locLabel = poziLocationLabel(zip);
+    if (locLabel) label += ' near ' + locLabel + ' (closest first, about 50 miles)';
+    renderLiveResults(rows, label);
   }
 
   async function runHeroSearch(){
@@ -4089,40 +4148,77 @@ var DEMO_DB = [
           .from('inventory')
           .select('*')
           .or('product_name.ilike.%' + q + '%,sku.ilike.%' + q + '%,store_name.ilike.%' + q + '%,barcode.ilike.%' + q + '%');
-        if (zip) query = query.or('store_location.ilike.%' + zip + '%,zip.ilike.%' + zip + '%');
+        // ZIP/location is used for local ranking/fallback, not hard filtering.
         var out = await query.limit(8);
         rows = out.data || [];
       }
       if (!rows.length) rows = heroDemoRows(q, zip);
-      renderHeroResults(rows, q + (zip ? ' near ' + zip : ''));
+      else rows = poziSortRowsByDistance(rows, zip);
+      var locLabel = poziLocationLabel(zip);
+      renderHeroResults(rows, q + (locLabel ? ' near ' + locLabel : ''));
       recordHeroSearch();
     }catch(e){
-      renderHeroResults(heroDemoRows(q, zip), q + (zip ? ' near ' + zip : ''));
+      var locLabel = poziLocationLabel(zip);
+      renderHeroResults(heroDemoRows(q, zip), q + (locLabel ? ' near ' + locLabel : ''));
     } finally {
       btn.textContent = 'Search POZi';
     }
   }
 
 
-  async function heroLocationLookup(){
-    var mobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
-      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-      || window.innerWidth <= 768;
-    if (mobile) { openPoziGo(); return; }
-    var zipInput = document.getElementById('heroZipInput');
-    var sub = document.getElementById('heroSearchSub');
+  function requestPoziLocation(options){
+    options = options || {};
+    var statusEl = options.statusEl || null;
+    var zipInput = options.zipInput || null;
+    var after = options.after || function(){};
     if (!navigator.geolocation){
-      if (sub) sub.textContent = 'Location not available on this browser. Try a ZIP code instead.';
+      if (statusEl) statusEl.textContent = 'Location not available on this browser. Try a ZIP code instead.';
       return;
     }
-    if (sub) sub.textContent = 'Finding your location...';
+    if (statusEl) statusEl.textContent = 'Finding your location...';
     navigator.geolocation.getCurrentPosition(function(pos){
-      if (zipInput && !zipInput.value.trim()) zipInput.value = '';
-      if (sub) sub.textContent = 'Location found. Add a search term or ZIP code to narrow results.';
-      runHeroSearch();
+      poziUserLocation = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        label: 'your location'
+      };
+      if (zipInput) {
+        zipInput.value = '';
+        zipInput.placeholder = 'Using your location';
+        zipInput.dataset.locationActive = 'true';
+      }
+      if (statusEl) statusEl.textContent = 'Using your location. Results show closest matches first within about 50 miles.';
+      after();
     }, function(){
-      if (sub) sub.textContent = 'Location lookup was denied. You can still search by ZIP code.';
+      if (statusEl) statusEl.textContent = 'Location lookup was denied. You can still search by ZIP code.';
     }, { enableHighAccuracy:true, timeout:8000, maximumAge:60000 });
+  }
+
+  async function heroLocationLookup(){
+    var zipInput = document.getElementById('heroZipInput');
+    var sub = document.getElementById('heroSearchSub');
+    requestPoziLocation({
+      zipInput: zipInput,
+      statusEl: sub,
+      after: function(){
+        var input = document.getElementById('heroSearchInput');
+        if (input && input.value.trim()) runHeroSearch();
+      }
+    });
+  }
+
+  async function liveLocationLookup(){
+    var zipInput = document.getElementById('liveZipInput');
+    var sub = document.getElementById('liveResultsStatus');
+    requestPoziLocation({
+      zipInput: zipInput,
+      statusEl: sub,
+      after: function(){
+        var input = document.getElementById('liveSearchInput');
+        if (input && input.value.trim()) runLiveSearch();
+        else renderLiveDefault();
+      }
+    });
   }
 
   function syncHeroSearchMode(){
@@ -4362,6 +4458,7 @@ var DEMO_DB = [
     if (heroZipInput) heroZipInput.addEventListener('keydown', function(e){
       if (e.key === 'Enter') runHeroSearch();
     });
+    if (heroZipInput) heroZipInput.addEventListener('input', function(){ delete heroZipInput.dataset.locationActive; });
     if (heroSearchInput) heroSearchInput.addEventListener('input', function(){
       if (!heroSearchInput.value.trim()){
         var results = document.getElementById('heroResults');
@@ -4382,9 +4479,12 @@ var DEMO_DB = [
     var liveSearchBtn = document.getElementById('liveSearchBtn');
     var liveSearchInput = document.getElementById('liveSearchInput');
     var liveZipInput = document.getElementById('liveZipInput');
+    var liveLocateBtn = document.getElementById('liveLocateBtn');
     if (liveSearchBtn) liveSearchBtn.addEventListener('click', runLiveSearch);
     if (liveSearchInput) liveSearchInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') runLiveSearch(); });
     if (liveZipInput) liveZipInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') runLiveSearch(); });
+    if (liveZipInput) liveZipInput.addEventListener('input', function(){ delete liveZipInput.dataset.locationActive; });
+    if (liveLocateBtn) liveLocateBtn.addEventListener('click', liveLocationLookup);
 
     // Demo buttons now stay in-page
     ['navDemo','mobileDemo','heroDemoBtn'].forEach(function (id) {
