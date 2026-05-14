@@ -5374,11 +5374,11 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
   function resultCard(result){
     const href = result.url && result.url !== '#' ? safeHtml(result.url) : '#';
-    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener" onclick="return window.poziMarkExternalOpen ? window.poziMarkExternalOpen(this) : true;" aria-label="Open retailer result in a new tab">' +
+    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener" onclick="return window.poziOpenRetailWindow ? window.poziOpenRetailWindow(this, this.href) : true;" aria-label="Open retailer result in a focused retailer window">' +
       '<div class="buildr-shopping-title">' + safeHtml(result.title) + '</div>' +
-      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Retailer result') + '</span><span class="pozi-result-open-label">Opens retailer ↗</span></div>' +
+      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Retailer result') + '</span><span class="pozi-result-open-label">Opens retailer window ↗</span></div>' +
       (result.description ? '<div class="buildr-shopping-meta" style="margin-top:6px;display:block">' + safeHtml(result.description).slice(0, 150) + '</div>' : '') +
-      '<div class="pozi-open-pill">Open result</div>' +
+      '<div class="pozi-open-pill">Open window</div>' +
     '</a>';
   }
 
@@ -5533,13 +5533,14 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
     grid.innerHTML = results.map(function(item){
       return (
-        '<a class="pozi-source-result-card" href="' + safe(item.url) + '" target="_blank" rel="noopener">' +
+        '<a class="pozi-source-result-card" href="' + safe(item.url) + '" target="_blank" rel="noopener" onclick="return window.poziOpenRetailWindow ? window.poziOpenRetailWindow(this, this.href) : true;" aria-label="Open retailer result in a focused retailer window">' +
           '<div class="pozi-result-topline">' +
             '<span>Result ' + safe(item.rank) + '</span>' +
             '<em>' + safe(item.domain || 'Open result') + '</em>' +
           '</div>' +
           '<strong>' + safe(item.title) + '</strong>' +
           (item.description ? '<p>' + safe(item.description).slice(0, 180) + '</p>' : '') +
+          '<div class="pozi-open-pill">Open window</div>' +
         '</a>'
       );
     }).join('');
@@ -5643,18 +5644,62 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
 
 <script>
-// Keeps POZi as the command center while retailer links open directly in a new tab.
-window.poziMarkExternalOpen = function(card){
+// Keeps POZi as the command center while retailer links open in a focused desktop window.
+// Desktop: opens a smaller retailer window so POZi remains visible behind it.
+// Mobile/tablet: keeps normal browser behavior because mobile browsers ignore popup sizing.
+window.poziOpenRetailWindow = function(card, url){
   try{
     sessionStorage.setItem('pozi_last_external_click', String(Date.now()));
     sessionStorage.setItem('pozi_last_external_title', (card && card.textContent ? card.textContent.trim().slice(0,120) : 'Retailer result'));
   }catch(e){}
+
   if (card && card.classList) card.classList.add('pozi-opening');
+
   var status = document.getElementById('liveResultsStatus');
-  if (status) status.textContent = 'Opening retailer in a new tab. Your POZi search stays here.';
+  var targetUrl = url || (card && card.href) || '#';
+  var isMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    || window.innerWidth <= 820;
+
+  if (isMobile){
+    if (status) status.textContent = 'Opening retailer. Your POZi results stay saved here.';
+    setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
+    return true;
+  }
+
+  var w = Math.min(1180, Math.max(900, Math.round(window.screen.availWidth * 0.72)));
+  var h = Math.min(860, Math.max(680, Math.round(window.screen.availHeight * 0.82)));
+  var left = Math.max(24, Math.round((window.screen.availWidth - w) / 2));
+  var top = Math.max(24, Math.round((window.screen.availHeight - h) / 2));
+
+  var features = [
+    'popup=yes',
+    'width=' + w,
+    'height=' + h,
+    'left=' + left,
+    'top=' + top,
+    'resizable=yes',
+    'scrollbars=yes',
+    'toolbar=yes',
+    'location=yes',
+    'menubar=no',
+    'status=no'
+  ].join(',');
+
+  var retailWindow = window.open(targetUrl, 'pozi_retail_window', features);
+
+  if (!retailWindow){
+    if (status) status.textContent = 'Popup blocked. Opening retailer in a new tab instead.';
+    setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
+    return true;
+  }
+
+  try { retailWindow.focus(); } catch(e) {}
+  if (status) status.textContent = 'Retailer opened in a focused window. POZi stays ready behind it.';
   setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
-  return true;
+  return false;
 };
+window.poziMarkExternalOpen = window.poziOpenRetailWindow;
 </script>
 </body>
 </html>
