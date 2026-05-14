@@ -2667,6 +2667,91 @@ img[alt*="POZi logo"]{
     grid-template-columns:1fr;
   }
 }
+
+
+/* POZi retailer handoff polish: direct open, premium feedback */
+.pozi-source-result-card,
+.buildr-shopping-card{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+.pozi-source-result-card::before,
+.buildr-shopping-card::before{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  background:linear-gradient(120deg, rgba(0,255,136,.22), rgba(0,102,255,.16), rgba(0,255,136,.04));
+  opacity:0;
+  transition:opacity .22s ease;
+  z-index:-1;
+}
+
+.pozi-source-result-card::after,
+.buildr-shopping-card::after{
+  content:'';
+  position:absolute;
+  top:-40%;
+  left:-60%;
+  width:42%;
+  height:180%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
+  transform:rotate(18deg) translateX(-140%);
+  transition:transform .55s ease;
+  pointer-events:none;
+}
+
+.pozi-source-result-card:hover,
+.buildr-shopping-card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(0,255,136,.32);
+  box-shadow:0 16px 44px rgba(0,0,0,.30), 0 0 0 1px rgba(0,255,136,.08), 0 0 28px rgba(0,255,136,.075);
+}
+
+.pozi-source-result-card:hover::before,
+.buildr-shopping-card:hover::before{opacity:1;}
+
+.pozi-source-result-card:hover::after,
+.buildr-shopping-card:hover::after{transform:rotate(18deg) translateX(420%);}
+
+.pozi-source-result-card.pozi-opening,
+.buildr-shopping-card.pozi-opening{
+  border-color:rgba(0,255,136,.55);
+  box-shadow:0 0 0 1px rgba(0,255,136,.18), 0 0 34px rgba(0,255,136,.16);
+}
+
+.pozi-open-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  width:max-content;
+  margin-top:10px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(0,255,136,.075);
+  border:1px solid rgba(0,255,136,.16);
+  color:var(--green);
+  font-family:var(--fh);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+
+.pozi-open-pill::after{content:'↗'; font-size:11px; opacity:.9;}
+
+.pozi-result-topline .pozi-result-open-label,
+.buildr-shopping-meta .pozi-result-open-label{
+  color:var(--green);
+  white-space:nowrap;
+}
+
+[data-theme="light"] .pozi-source-result-card:hover,
+[data-theme="light"] .buildr-shopping-card:hover{
+  box-shadow:0 14px 36px rgba(0,0,0,.12), 0 0 0 1px rgba(0,160,80,.10), 0 0 22px rgba(0,160,80,.08);
+}
 </style>
 
 
@@ -5289,10 +5374,11 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
   function resultCard(result){
     const href = result.url && result.url !== '#' ? safeHtml(result.url) : '#';
-    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener">' +
+    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener" onclick="return window.poziMarkExternalOpen ? window.poziMarkExternalOpen(this) : true;" aria-label="Open retailer result in a new tab">' +
       '<div class="buildr-shopping-title">' + safeHtml(result.title) + '</div>' +
-      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Google result') + '</span><span class="buildr-shopping-price">' + (result.rank ? 'Rank ' + safeHtml(result.rank) : 'Open') + '</span></div>' +
+      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Retailer result') + '</span><span class="pozi-result-open-label">Opens retailer ↗</span></div>' +
       (result.description ? '<div class="buildr-shopping-meta" style="margin-top:6px;display:block">' + safeHtml(result.description).slice(0, 150) + '</div>' : '') +
+      '<div class="pozi-open-pill">Open result</div>' +
     '</a>';
   }
 
@@ -5555,5 +5641,20 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 })();
 </script>
 
+
+<script>
+// Keeps POZi as the command center while retailer links open directly in a new tab.
+window.poziMarkExternalOpen = function(card){
+  try{
+    sessionStorage.setItem('pozi_last_external_click', String(Date.now()));
+    sessionStorage.setItem('pozi_last_external_title', (card && card.textContent ? card.textContent.trim().slice(0,120) : 'Retailer result'));
+  }catch(e){}
+  if (card && card.classList) card.classList.add('pozi-opening');
+  var status = document.getElementById('liveResultsStatus');
+  if (status) status.textContent = 'Opening retailer in a new tab. Your POZi search stays here.';
+  setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
+  return true;
+};
+</script>
 </body>
 </html>
