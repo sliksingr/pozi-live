@@ -3256,42 +3256,42 @@ img[alt*="POZi logo"]{
           </div>
           <div id="buildrMessageLabel" class="buildr-followup-label buildr-first-message-label">FIRST MESSAGE</div>
           <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Tell BUILDr what you want to build, fix, design, or source next."></textarea>
-          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr
-</div>
+          
+          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr</button>
+
+          <div class="builder-subtle-note" style="
+            margin:12px auto 8px;
+            max-width:260px;
+            text-align:center;
+            font-size:11px;
+            line-height:1.55;
+            color:#8c8fa8;
+            padding:0 8px;
+          ">
+            <div>BUILDr can make mistakes. Always verify measurements, code, permits, and safety requirements.</div>
+            <button type="button" onclick="openDisclaimerModal(); return false;" style="
+              margin-top:8px;
+              display:inline-flex;
+              align-items:center;
+              justify-content:center;
+              border:1px solid rgba(0,255,136,0.24);
+              background:rgba(0,255,136,0.06);
+              color:#00ff88;
+              border-radius:999px;
+              padding:6px 12px;
+              font-family:var(--fh);
+              font-size:10px;
+              font-weight:700;
+              letter-spacing:.4px;
+              cursor:pointer;
+            ">View Full Disclaimer</button>
+          </div>
+        </div>
 
         <div class="buildr-mini-actions">
+
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to build a 12x20 cedar deck with stairs. Tell me the materials, tools, fasteners, and shopping path.">Deck</button>
-<div class="builder-subtle-note" style="
-  margin:12px auto 8px;
-  max-width:260px;
-  text-align:center;
-  font-size:11px;
-  line-height:1.55;
-  color:#8c8fa8;
-  padding:0 8px;
-">
-  <div>BUILDr can make mistakes. Always verify measurements, code, permits, and safety requirements.</div>
-  <button type="button" onclick="openDisclaimerModal(); return false;" style="
-    margin-top:8px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    border:1px solid rgba(0,255,136,0.24);
-    background:rgba(0,255,136,0.06);
-    color:#00ff88;
-    border-radius:999px;
-    padding:6px 12px;
-    font-family:var(--fh);
-    font-size:10px;
-    font-weight:700;
-    letter-spacing:.4px;
-    cursor:pointer;
-  ">View Full Disclaimer</button>
-</div>
-
-</div>
-
-          <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to redesign a living room. Help me plan the layout, furniture, lighting, and shopping list.">Room</button>
+<button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to redesign a living room. Help me plan the layout, furniture, lighting, and shopping list.">Room</button>
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I need to fix a broken outdoor gate. Tell me what parts, tools, and steps I need.">Repair</button>
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="Help me make a shopping list for a weekend home project and organize it by store category.">Shopping list</button>
         </div>
