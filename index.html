@@ -9,6 +9,7 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>POZi — It’s All in One Place</title>
+<!-- POZi How It Works build notes folded into existing flow v3 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap">
 <style>
@@ -3268,7 +3269,25 @@ line-height:1.5;
 color:#8c8fa8;
 padding:0 8px;
 ">
+
 ⚡ BUILDr can make mistakes. Always verify measurements, code, permits, and safety requirements.
+<div style="margin-top:8px;">
+  <a href="#" onclick="openDisclaimerModal(); return false;"
+     style="
+       display:inline-block;
+       font-size:11px;
+       color:#27ff9a;
+       text-decoration:none;
+       border:1px solid rgba(39,255,154,0.22);
+       padding:5px 10px;
+       border-radius:999px;
+       transition:all 0.2s ease;
+       background:rgba(39,255,154,0.04);
+     ">
+     View Full Disclaimer
+  </a>
+</div>
+
 </div>
 
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to redesign a living room. Help me plan the layout, furniture, lighting, and shopping list.">Room</button>
@@ -3500,7 +3519,7 @@ padding:0 8px;
         From <span class="grad-g">Idea</span> to <span class="grad">Inventory</span>
       </h2>
       <p class="sec-sub">
-        POZi helps turn projects, ideas, repairs, and shopping plans into organized sourcing paths, practical guidance, and actionable material workflows.
+        POZi helps turn projects, ideas, repairs, and shopping plans into organized guidance, build notes, and actionable material workflows.
       </p>
     </div>
 
@@ -3527,14 +3546,15 @@ padding:0 8px;
     <div class="saving-card" style="margin-bottom:40px;">
       <div class="bc-sub-header">
         <div class="bc-sub-icon">⚡</div>
-        <div class="bc-sub-title">Search Smarter</div>
+        <div class="bc-sub-title">
+Search Smarter</div>
       </div>
 
       <div class="grid-3">
         <div>
           <div class="saving-stat">1</div>
           <div class="saving-title">Create the Plan</div>
-          <div class="saving-desc">BUILDr turns your idea into an organized shopping or material workflow.</div>
+          <div class="saving-desc">BUILDr turns your idea into a practical project workflow with notes, guidance, and basket-ready materials.</div>
         </div>
         <div>
           <div class="saving-stat">2</div>
@@ -3544,7 +3564,7 @@ padding:0 8px;
         <div>
           <div class="saving-stat">3</div>
           <div class="saving-title">Find What You Need</div>
-          <div class="saving-desc">POZi helps connect your project to local stores, major retailers, inventory sources, and basket-ready purchasing paths.</div>
+          <div class="saving-desc">POZi shows where to source the materials through local stores, major retailers, inventory sources, and purchasing paths.</div>
         </div>
       </div>
     </div>
