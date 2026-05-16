@@ -1735,6 +1735,82 @@ img[alt*="POZi logo"]{
 .buildr-thunder-core::after{
   display:none !important;
 }
+
+/* ===== LIGHT MODE REFINEMENTS ===== */
+
+body.light-mode footer,
+body.light footer,
+.light-mode footer {
+  background:#f4f4f8 !important;
+  border-top:1px solid rgba(0,0,0,0.08);
+}
+
+/* Footer logo area stays readable on light mode */
+.light-mode footer .footer-logo img,
+.light-mode .footer-logo img {
+  filter:none !important;
+}
+
+/* BUILDr section readability improvements */
+.light-mode .buildr-panel,
+.light-mode .buildr-card,
+.light-mode .buildr-output-card,
+.light-mode .build-notes-card {
+  color:#222 !important;
+}
+
+/* Darker body text */
+.light-mode .buildr-panel p,
+.light-mode .buildr-card p,
+.light-mode .buildr-output-card p,
+.light-mode .build-notes-card p,
+.light-mode .builder-subtle-note {
+  color:#5d6170 !important;
+}
+
+/* Darker green headings for readability */
+.light-mode .section-label,
+.light-mode .buildr-section-title,
+.light-mode .mini-heading {
+  color:#36c977 !important;
+}
+
+/* Darker placeholder text */
+.light-mode textarea,
+.light-mode input,
+.light-mode textarea::placeholder,
+.light-mode input::placeholder {
+  color:#666 !important;
+}
+
+/* Slightly darker chips/buttons */
+.light-mode .mini-chip,
+.light-mode .tag,
+.light-mode .quick-chip {
+  color:#555 !important;
+  border-color:rgba(0,0,0,0.12) !important;
+}
+
+/* Keep Ask BUILDr button readable */
+.light-mode .buildr-ask-btn {
+  color:#111 !important;
+  font-weight:700;
+}
+
+/* Build Notes + Output cards */
+.light-mode .build-notes-card,
+.light-mode .buildr-output-card {
+  border-color:rgba(0,0,0,0.08) !important;
+}
+
+/* Footer text visibility */
+.light-mode footer,
+.light-mode footer a,
+.light-mode footer p,
+.light-mode footer span {
+  color:#4f5363 !important;
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -3080,6 +3156,8 @@ img[alt*="POZi logo"]{
 @media(max-width:720px){.buildr-notes-list.has-notes{max-height:320px}.buildr-note-pill:not(.expanded){white-space:normal;}}
 
 </style>
+
+<!-- Light mode readability refinement build -->
 </head>
 <body>
 
