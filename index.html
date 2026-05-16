@@ -9,7 +9,6 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>POZi — It’s All in One Place</title>
-<!-- POZi How It Works build notes folded into existing flow v3 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap">
 <style>
@@ -2668,91 +2667,6 @@ img[alt*="POZi logo"]{
     grid-template-columns:1fr;
   }
 }
-
-
-/* POZi retailer handoff polish: direct open, premium feedback */
-.pozi-source-result-card,
-.buildr-shopping-card{
-  position:relative;
-  overflow:hidden;
-  isolation:isolate;
-}
-
-.pozi-source-result-card::before,
-.buildr-shopping-card::before{
-  content:'';
-  position:absolute;
-  inset:-1px;
-  border-radius:inherit;
-  background:linear-gradient(120deg, rgba(0,255,136,.22), rgba(0,102,255,.16), rgba(0,255,136,.04));
-  opacity:0;
-  transition:opacity .22s ease;
-  z-index:-1;
-}
-
-.pozi-source-result-card::after,
-.buildr-shopping-card::after{
-  content:'';
-  position:absolute;
-  top:-40%;
-  left:-60%;
-  width:42%;
-  height:180%;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
-  transform:rotate(18deg) translateX(-140%);
-  transition:transform .55s ease;
-  pointer-events:none;
-}
-
-.pozi-source-result-card:hover,
-.buildr-shopping-card:hover{
-  transform:translateY(-3px);
-  border-color:rgba(0,255,136,.32);
-  box-shadow:0 16px 44px rgba(0,0,0,.30), 0 0 0 1px rgba(0,255,136,.08), 0 0 28px rgba(0,255,136,.075);
-}
-
-.pozi-source-result-card:hover::before,
-.buildr-shopping-card:hover::before{opacity:1;}
-
-.pozi-source-result-card:hover::after,
-.buildr-shopping-card:hover::after{transform:rotate(18deg) translateX(420%);}
-
-.pozi-source-result-card.pozi-opening,
-.buildr-shopping-card.pozi-opening{
-  border-color:rgba(0,255,136,.55);
-  box-shadow:0 0 0 1px rgba(0,255,136,.18), 0 0 34px rgba(0,255,136,.16);
-}
-
-.pozi-open-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  width:max-content;
-  margin-top:10px;
-  padding:7px 10px;
-  border-radius:999px;
-  background:rgba(0,255,136,.075);
-  border:1px solid rgba(0,255,136,.16);
-  color:var(--green);
-  font-family:var(--fh);
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.8px;
-  text-transform:uppercase;
-}
-
-.pozi-open-pill::after{content:'↗'; font-size:11px; opacity:.9;}
-
-.pozi-result-topline .pozi-result-open-label,
-.buildr-shopping-meta .pozi-result-open-label{
-  color:var(--green);
-  white-space:nowrap;
-}
-
-[data-theme="light"] .pozi-source-result-card:hover,
-[data-theme="light"] .buildr-shopping-card:hover{
-  box-shadow:0 14px 36px rgba(0,0,0,.12), 0 0 0 1px rgba(0,160,80,.10), 0 0 22px rgba(0,160,80,.08);
-}
 </style>
 
 
@@ -2940,146 +2854,6 @@ img[alt*="POZi logo"]{
 }
 </style>
 
-
-<style id="buildr-output-premium-lock-css">
-.buildr-output-panel{
-  overflow:hidden;
-  transition:min-height .28s ease, border-color .28s ease, box-shadow .28s ease;
-}
-.buildr-output-items{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:0;
-  max-height:0;
-  opacity:0;
-  overflow:hidden;
-  transition:max-height .34s ease, opacity .22s ease, margin-top .22s ease;
-}
-.buildr-output-items.has-items{
-  margin-top:12px;
-  max-height:520px;
-  opacity:1;
-}
-.buildr-output-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:8px 11px;
-  border-radius:999px;
-  border:1px solid rgba(0,255,136,.18);
-  background:linear-gradient(135deg,rgba(0,255,136,.075),rgba(0,102,255,.055));
-  color:#eafff5;
-  font-size:11px;
-  font-weight:800;
-  line-height:1.2;
-  box-shadow:0 8px 18px rgba(0,0,0,.16);
-  animation:buildrItemIn .26s ease both;
-}
-.buildr-output-pill::before{
-  content:'•';
-  color:var(--green);
-  font-size:16px;
-  line-height:0;
-}
-@keyframes buildrItemIn{
-  from{opacity:0; transform:translateY(6px) scale(.97);}
-  to{opacity:1; transform:translateY(0) scale(1);}
-}
-#buildrBasketBtn.is-ready{
-  opacity:1 !important;
-  border-color:rgba(0,255,136,.42) !important;
-  animation:buildrBasketReadyPulse 2.2s ease-in-out infinite;
-}
-#buildrBasketBtn.is-ready .buildr-basket-copy{color:#fff !important;}
-#buildrBasketBtn.is-locked{
-  filter:grayscale(.25);
-}
-#buildrBasketBtn.is-created{
-  opacity:.86 !important;
-  cursor:default !important;
-  animation:none !important;
-}
-@keyframes buildrBasketReadyPulse{
-  0%,100%{box-shadow:0 18px 40px rgba(0,0,0,.40),0 0 18px rgba(0,255,136,.10),inset 0 0 0 1px rgba(255,255,255,.05);}
-  50%{box-shadow:0 20px 48px rgba(0,0,0,.44),0 0 32px rgba(0,255,136,.25),inset 0 0 0 1px rgba(255,255,255,.06);}
-}
-[data-theme="light"] .buildr-output-pill{color:#0a0a14;background:linear-gradient(135deg,rgba(0,160,80,.08),rgba(0,85,255,.05));border-color:rgba(0,160,80,.22);}
-
-.buildr-notes-panel{
-  overflow:hidden;
-  border-color:rgba(255,204,0,.18);
-  background:linear-gradient(135deg,rgba(255,204,0,.045),rgba(0,102,255,.035));
-}
-.buildr-notes-list{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  margin-top:0;
-  max-height:0;
-  opacity:0;
-  overflow:auto;
-  transition:max-height .34s ease, opacity .22s ease, margin-top .22s ease;
-  scroll-behavior:smooth;
-}
-.buildr-notes-list.has-notes{
-  margin-top:12px;
-  max-height:260px;
-  opacity:1;
-}
-.buildr-notes-list::-webkit-scrollbar{width:6px;}
-.buildr-notes-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px;}
-.buildr-note-pill{
-  width:100%;
-  text-align:left;
-  display:block;
-  border-radius:14px;
-  border:1px solid rgba(255,204,0,.16);
-  background:rgba(255,255,255,.045);
-  color:#fff7d8;
-  padding:10px 12px;
-  font-size:11px;
-  line-height:1.45;
-  cursor:pointer;
-  animation:buildrItemIn .26s ease both;
-  transition:border-color .18s ease, background .18s ease, max-height .22s ease;
-}
-.buildr-note-pill:hover{border-color:rgba(255,204,0,.34);background:rgba(255,204,0,.07);}
-.buildr-note-pill::before{
-  content:'Build note';
-  display:block;
-  color:#ffdc63;
-  font-family:var(--fh);
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:1.1px;
-  text-transform:uppercase;
-  margin-bottom:4px;
-}
-.buildr-note-pill:not(.expanded){
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.buildr-note-pill.expanded{
-  white-space:normal;
-  color:#fff;
-  border-color:rgba(0,255,136,.26);
-  background:linear-gradient(135deg,rgba(255,204,0,.075),rgba(0,255,136,.045));
-}
-.buildr-note-empty,
-.buildr-output-empty{
-  color:rgba(192,192,216,.72);
-  font-size:11px;
-  line-height:1.55;
-  margin-top:8px;
-}
-[data-theme="light"] .buildr-notes-panel{background:linear-gradient(135deg,rgba(255,204,0,.08),rgba(0,85,255,.035));border-color:rgba(160,120,0,.18);}
-[data-theme="light"] .buildr-note-pill{color:#221f10;background:rgba(0,0,0,.025);border-color:rgba(160,120,0,.18);}
-[data-theme="light"] .buildr-note-pill.expanded{color:#0a0a14;background:linear-gradient(135deg,rgba(255,204,0,.12),rgba(0,160,80,.05));}
-@media(max-width:720px){.buildr-notes-list.has-notes{max-height:320px}.buildr-note-pill:not(.expanded){white-space:normal;}}
-
-</style>
 </head>
 <body>
 
@@ -3125,8 +2899,8 @@ img[alt*="POZi logo"]{
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
   <button class="m-nl" data-page="home">🏠 Home</button>
-  <button class="m-nl" id="mobileLive" data-page="live">⚡ POZi Search</button>
-  <button class="m-nl" data-page="how">⚡ How It Works</button>
+  <button class="m-nl" id="mobileLive" data-page="live">POZi Search</button>
+  <button class="m-nl" data-page="how">How It Works</button>
   <button class="m-nl" data-page="pricing">💰 Pricing</button>
   <button class="m-nl" id="mobileContact">✉ Contact</button>
   <div class="m-divider"></div>
@@ -3160,7 +2934,7 @@ img[alt*="POZi logo"]{
           <button id="heroSearchBtn" class="hero-search-btn">Search POZi</button>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-          <button id="heroLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px">Use my location</button>
+          <button id="heroLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px">Live Location Lookup</button>
         </div>
         <div class="hero-search-meta">
           <div class="hero-free-pill" id="heroFreeSearchPill">10 guest searches remaining</div>
@@ -3256,42 +3030,13 @@ img[alt*="POZi logo"]{
           </div>
           <div id="buildrMessageLabel" class="buildr-followup-label buildr-first-message-label">FIRST MESSAGE</div>
           <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Tell BUILDr what you want to build, fix, design, or source next."></textarea>
-          
-          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr</button>
-
-          <div class="builder-subtle-note" style="
-            margin:12px auto 8px;
-            max-width:260px;
-            text-align:center;
-            font-size:11px;
-            line-height:1.55;
-            color:#8c8fa8;
-            padding:0 8px;
-          ">
-            <div>BUILDr can make mistakes. Always verify measurements, code, permits, and safety requirements.</div>
-            <button type="button" onclick="openDisclaimerModal(); return false;" style="
-              margin-top:8px;
-              display:inline-flex;
-              align-items:center;
-              justify-content:center;
-              border:1px solid rgba(0,255,136,0.24);
-              background:rgba(0,255,136,0.06);
-              color:#00ff88;
-              border-radius:999px;
-              padding:6px 12px;
-              font-family:var(--fh);
-              font-size:10px;
-              font-weight:700;
-              letter-spacing:.4px;
-              cursor:pointer;
-            ">View Full Disclaimer</button>
-          </div>
+          <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr <span>↗</span></button>
+          <div id="buildrStatus" class="buildr-status">Securely routed through Netlify Functions.</div>
         </div>
 
         <div class="buildr-mini-actions">
-
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to build a 12x20 cedar deck with stairs. Tell me the materials, tools, fasteners, and shopping path.">Deck</button>
-<button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to redesign a living room. Help me plan the layout, furniture, lighting, and shopping list.">Room</button>
+          <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I want to redesign a living room. Help me plan the layout, furniture, lighting, and shopping list.">Room</button>
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="I need to fix a broken outdoor gate. Tell me what parts, tools, and steps I need.">Repair</button>
           <button class="buildr-chip buildr-chip-fill" type="button" data-buildr-preset="Help me make a shopping list for a weekend home project and organize it by store category.">Shopping list</button>
         </div>
@@ -3321,16 +3066,14 @@ img[alt*="POZi logo"]{
             </div>
           </div>
 
-          <div id="buildrOutputPanel" class="buildr-bubble buildr-output-panel">
+          <div class="buildr-bubble">
             <strong>BUILDr output</strong>
-            <div id="buildrOutputItems" class="buildr-output-items" aria-live="polite"></div>
-            <div id="buildrOutputEmpty" class="buildr-output-empty">Basket-ready items will appear here as BUILDr compiles them.</div>
+            Materials, quantities, tool needs, options, and a smarter shopping path are organized before sourcing.
           </div>
 
-          <div id="buildrNotesPanel" class="buildr-bubble buildr-notes-panel">
-            <strong>Build Notes</strong>
-            <div id="buildrNotesList" class="buildr-notes-list" aria-live="polite"></div>
-            <div id="buildrNotesEmpty" class="buildr-note-empty">Project guidance will appear here when BUILDr adds build notes.</div>
+          <div class="buildr-bubble">
+            <strong>Then POZi helps source it</strong>
+            Major retailers, local stores, and product links become the next step — not the whole starting point.
           </div>
         </div>
 
@@ -3338,24 +3081,21 @@ img[alt*="POZi logo"]{
             <div class="buildr-basket-head">
               <div>
                 <strong>Create POZi Basket</strong>
-                <span>Locked until BUILDr finishes compiling your basket-ready item list.</span>
+                <span>Turn BUILDr’s plan into live Google search guidance through DataForSEO.</span>
               </div>
-              <button id="buildrBasketBtn" class="buildr-basket-btn buildr-basket-btn-dark" type="button" disabled aria-disabled="true">
+              <button id="buildrBasketBtn" class="buildr-basket-btn buildr-basket-btn-dark" type="button">
                 <span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span>
                 <span class="buildr-basket-copy">Create Basket</span>
               </button>
             </div>
-            <div id="buildrBasketStatus" class="buildr-basket-status">BUILDr will unlock this when your item list is ready.</div>
+            <div id="buildrBasketStatus" class="buildr-basket-status">Ask BUILDr for a project plan first, then create a basket.</div>
             <div id="buildrBasketResults" class="buildr-basket-results"></div>
           </div>
 
       </div>
     </div>
 
-  
-
-</div>
-</div>
+  </div>
 </section>
 
 
@@ -3368,7 +3108,7 @@ img[alt*="POZi logo"]{
     </div>
     <div class="footer-slogans">How business is finished &middot; All in one place</div>
   </div>
-  <div class="footer-links"><a href="#" class="footer-link" onclick="openDisclaimerModal();return false;">Disclaimer</a>
+  <div class="footer-links">
     <button class="footer-link" data-page="home">Home</button>
     <button class="footer-link" id="footerLiveLink" data-page="live">POZi Search</button>
     <button class="footer-link" data-page="how">How It Works</button>
@@ -3411,9 +3151,6 @@ img[alt*="POZi logo"]{
           <input id="liveSearchInput" class="live-search-input" type="search" placeholder="Search materials, tools, products, or basket items" autocomplete="off">
           <input id="liveZipInput" class="live-zip-input" type="text" inputmode="numeric" placeholder="ZIP / area" maxlength="10" autocomplete="postal-code">
           <button id="liveSearchBtn" class="live-search-btn" type="button">Search POZi</button>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-          <button id="liveLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px" type="button">Use my location</button>
         </div>
         <div class="live-meta-row">
           <div id="liveResultsStatus">Search a product or continue from a BUILDr basket.</div>
@@ -3520,7 +3257,7 @@ img[alt*="POZi logo"]{
         From <span class="grad-g">Idea</span> to <span class="grad">Inventory</span>
       </h2>
       <p class="sec-sub">
-        POZi helps turn projects, ideas, repairs, and shopping plans into organized guidance, build notes, and actionable material workflows.
+        POZi helps turn projects, ideas, repairs, and shopping plans into organized product searches and actionable material lists.
       </p>
     </div>
 
@@ -3546,26 +3283,25 @@ img[alt*="POZi logo"]{
 
     <div class="saving-card" style="margin-bottom:40px;">
       <div class="bc-sub-header">
-        <div class="bc-sub-icon">⚡</div>
-        <div class="bc-sub-title">
-Search Smarter</div>
+        <div class="bc-sub-icon"></div>
+        <div class="bc-sub-title">Search Smarter</div>
       </div>
 
       <div class="grid-3">
         <div>
           <div class="saving-stat">1</div>
           <div class="saving-title">Create the Plan</div>
-          <div class="saving-desc">BUILDr turns your idea into a practical project workflow with notes, guidance, and basket-ready materials.</div>
+          <div class="saving-desc">BUILDr turns your idea into an organized shopping or material workflow.</div>
         </div>
         <div>
           <div class="saving-stat">2</div>
           <div class="saving-title">Compare Options</div>
-          <div class="saving-desc">Review products, sourcing paths, retailer options, and organized project recommendations.</div>
+          <div class="saving-desc">Review products, alternatives, price ranges, and recommendations.</div>
         </div>
         <div>
           <div class="saving-stat">3</div>
           <div class="saving-title">Find What You Need</div>
-          <div class="saving-desc">POZi shows where to source the materials through local stores, major retailers, inventory sources, and purchasing paths.</div>
+          <div class="saving-desc">POZi helps connect you to major retailers, local stores, and inventory sources.</div>
         </div>
       </div>
     </div>
@@ -3897,7 +3633,7 @@ Search Smarter</div>
         </select>
       </div>
       <div><label class="form-label">Tell us about your business</label><textarea id="cfMsg" class="form-field" placeholder="What inventory challenges are you facing? What systems do you use?" rows="3" style="resize:vertical"></textarea></div>
-      <button class="btn-p" id="contactSubmit" style="width:100%;margin:0;text-align:center;padding:15px;font-size:15px">Send Inquiry ⚡</button>
+      <button class="btn-p" id="contactSubmit" style="width:100%;margin:0;text-align:center;padding:15px;font-size:15px">Send Inquiry </button>
       <div class="form-status" id="cfStatus"></div>
       <p style="text-align:center;font-size:12px;color:#3a3a55">Or email us at <a href="mailto:hello@pozi.live" style="color:#00c96e">hello@pozi.live</a></p>
     </div>
@@ -3915,7 +3651,7 @@ Search Smarter</div>
     <div class="go-divider"><div class="go-div-line"></div><div class="go-div-txt">OR SEND TO YOUR PHONE</div><div class="go-div-line"></div></div>
     <div class="go-sms-row">
       <input id="goPhone" type="tel" class="form-field" placeholder="Your phone number" inputmode="tel" style="flex:1">
-      <button class="go-send" id="goSend">Send ⚡</button>
+      <button class="go-send" id="goSend">Send </button>
     </div>
     <div class="go-status" id="goStatus"></div>
     <button class="go-close" id="goClose">Close</button>
@@ -4019,7 +3755,7 @@ Search Smarter</div>
     var ph = document.getElementById('goPhone').value.trim();
     var st = document.getElementById('goStatus');
     if (!ph) { st.style.color = '#ff3355'; st.textContent = 'Please enter a phone number.'; return; }
-    window.open('sms:' + ph + '?body=' + encodeURIComponent('Check live inventory near you with POZi Go ⚡ https://pozi.live/pozi-go.html'));
+    window.open('sms:' + ph + '?body=' + encodeURIComponent('Check live inventory near you with POZi Go https://pozi.live/pozi-go.html'));
     st.style.color = '#00c96e'; st.textContent = '✓ Opening your SMS app...';
   }
 
@@ -4042,11 +3778,11 @@ Search Smarter</div>
 
   /* ── SHARED SEARCH ENGINE (HOME + LIVE INVENTORY) ── */
 var STORES = [
-  { key:'hd_rv', chain:'Home Depot', name:'Home Depot', loc:'Roseville', addr:'10001 Fairway Dr, Roseville CA', lat:38.7907, lng:-121.2910, icon:'🏠', color:'#f96302', bg:'rgba(249,99,2,.12)', platform:'homedepot_search', params:{store_no:'6688',zipcode:'95678'}, link:function(q){return 'https://www.homedepot.com/s/'+encodeURIComponent(q)+'?store=6688';} },
-  { key:'lo_rv', chain:"Lowe's", name:"Lowe's", loc:'Roseville', addr:'10201 Fairway Dr, Roseville CA', lat:38.7919, lng:-121.2895, icon:'🔵', color:'#4f8dff', bg:'rgba(79,141,255,.12)', platform:'lowes_search', params:{store_no:'1207'}, link:function(q){return 'https://www.lowes.com/search?searchTerm='+encodeURIComponent(q)+'&storeId=1207';} },
-  { key:'ace_gv', chain:'Ace Hardware', name:'B&C Ace Hardware', loc:'Grass Valley', addr:'Grass Valley, CA 95945', lat:39.2191, lng:-121.0611, icon:'🔴', color:'#ff4d73', bg:'rgba(255,77,115,.12)', platform:'acehardware_search', params:{zipcode:'95945'}, link:function(q){return 'https://www.acehardware.com/search?query='+encodeURIComponent(q);} },
-  { key:'hfl_gv', chain:'POZi Local', name:'Hills Flat Lumber', loc:'Grass Valley', addr:'Grass Valley, CA', lat:39.2191, lng:-121.0611, icon:'🌲', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} },
-  { key:'atz_gv', chain:'POZi Local', name:'A to Z Supply', loc:'Grass Valley', addr:'Grass Valley, CA', lat:39.2191, lng:-121.0611, icon:'🛠', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} }
+  { key:'hd_rv', chain:'Home Depot', name:'Home Depot', loc:'Roseville', addr:'10001 Fairway Dr, Roseville CA', icon:'🏠', color:'#f96302', bg:'rgba(249,99,2,.12)', platform:'homedepot_search', params:{store_no:'6688',zipcode:'95678'}, link:function(q){return 'https://www.homedepot.com/s/'+encodeURIComponent(q)+'?store=6688';} },
+  { key:'lo_rv', chain:"Lowe's", name:"Lowe's", loc:'Roseville', addr:'10201 Fairway Dr, Roseville CA', icon:'🔵', color:'#4f8dff', bg:'rgba(79,141,255,.12)', platform:'lowes_search', params:{store_no:'1207'}, link:function(q){return 'https://www.lowes.com/search?searchTerm='+encodeURIComponent(q)+'&storeId=1207';} },
+  { key:'ace_gv', chain:'Ace Hardware', name:'B&C Ace Hardware', loc:'Grass Valley', addr:'Grass Valley, CA 95945', icon:'🔴', color:'#ff4d73', bg:'rgba(255,77,115,.12)', platform:'acehardware_search', params:{zipcode:'95945'}, link:function(q){return 'https://www.acehardware.com/search?query='+encodeURIComponent(q);} },
+  { key:'hfl_gv', chain:'POZi Local', name:'Hills Flat Lumber', loc:'Grass Valley', addr:'Grass Valley, CA', icon:'🌲', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} },
+  { key:'atz_gv', chain:'POZi Local', name:'A to Z Supply', loc:'Grass Valley', addr:'Grass Valley, CA', icon:'🛠', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} }
 ];
 var DEMO_DB = [
   {store_key:'hfl_gv', name:'2x4x8 Framing Stud', brand:'Hills Flat Lumber', sku:'LUM-2X4-8-GV', price:6.49, inventory_quantity:186, category:'Lumber'},
@@ -4064,88 +3800,30 @@ var DEMO_DB = [
   {store_key:'lo_rv', name:'Project Source Paint Brush Set', brand:'Project Source', sku:'PS-BRUSH-SET', price:14.98, inventory_quantity:7, category:'Paint', in_stock:true},
   {store_key:'lo_rv', name:'Southwire 50-ft Extension Cord', brand:'Southwire', sku:'SW-50EXT', price:29.98, inventory_quantity:5, category:'Electrical', in_stock:true}
 ];
-  var POZI_SEARCH_RADIUS_MILES = 50;
-  var poziUserLocation = null;
-  var POZI_ZIP_COORDS = {
-    '95945': { lat:39.2191, lng:-121.0611, label:'Grass Valley, CA' },
-    '95949': { lat:39.1027, lng:-121.0751, label:'Grass Valley / Alta Sierra, CA' },
-    '95678': { lat:38.7521, lng:-121.2880, label:'Roseville, CA' },
-    '95661': { lat:38.7345, lng:-121.2458, label:'Roseville, CA' },
-    '95677': { lat:38.7916, lng:-121.2358, label:'Rocklin, CA' },
-    '95648': { lat:38.8916, lng:-121.2930, label:'Lincoln, CA' },
-    '95814': { lat:38.5816, lng:-121.4944, label:'Sacramento, CA' }
-  };
-
   function heroStoreMeta(storeKey){
     for (var i=0;i<STORES.length;i++){ if (STORES[i].key === storeKey) return STORES[i]; }
     return null;
   }
-
-  function poziZipCenter(zip){
-    var clean = String(zip || '').trim().match(/\d{5}/);
-    if (!clean) return null;
-    return POZI_ZIP_COORDS[clean[0]] || null;
-  }
-
-  function poziSearchCenter(zip){
-    return poziZipCenter(zip) || poziUserLocation || null;
-  }
-
-  function poziMiles(a, b){
-    if (!a || !b || typeof a.lat !== 'number' || typeof a.lng !== 'number' || typeof b.lat !== 'number' || typeof b.lng !== 'number') return null;
-    var R = 3958.8;
-    var dLat = (b.lat - a.lat) * Math.PI / 180;
-    var dLng = (b.lng - a.lng) * Math.PI / 180;
-    var lat1 = a.lat * Math.PI / 180;
-    var lat2 = b.lat * Math.PI / 180;
-    var x = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
-    return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-  }
-
-  function poziDecorateRowDistance(row, zip){
-    var center = poziSearchCenter(zip);
-    var sm = heroStoreMeta(row.store_key) || row;
-    var d = center && sm ? poziMiles(center, sm) : null;
-    var copy = Object.assign({}, row);
-    if (typeof d === 'number' && isFinite(d)) {
-      copy.distance_miles = Math.round(d);
-      copy.within_radius = d <= POZI_SEARCH_RADIUS_MILES;
-    }
-    return copy;
-  }
-
-  function poziSortRowsByDistance(rows, zip){
-    var center = poziSearchCenter(zip);
-    if (!center) return rows;
-    return rows.map(function(row){ return poziDecorateRowDistance(row, zip); }).sort(function(a,b){
-      var ad = typeof a.distance_miles === 'number' ? a.distance_miles : 99999;
-      var bd = typeof b.distance_miles === 'number' ? b.distance_miles : 99999;
-      return ad - bd;
-    });
-  }
-
-  function poziLocationLabel(zip){
-    var zc = poziZipCenter(zip);
-    if (zc) return zc.label || zip;
-    if (poziUserLocation) return 'your location';
-    return zip || '';
-  }
   function heroDemoRows(query, zip){
     var q = (query || '').toLowerCase().trim();
+    var z = (zip || '').toLowerCase().trim();
     if (!q) return [];
     var rows = DEMO_DB.filter(function(x){
       var hay = [x.name, x.brand, x.sku, x.category].join(' ').toLowerCase();
+      if (z){
+        var sm = heroStoreMeta(x.store_key);
+        var loc = sm ? [sm.loc || '', sm.addr || ''].join(' ').toLowerCase() : '';
+        if (loc.indexOf(z) === -1 && z.length >= 3) return false;
+      }
       return hay.indexOf(q) > -1 || q.split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
-    });
-    rows = poziSortRowsByDistance(rows, zip).slice(0, 8).map(function(x){
+    }).slice(0, 8).map(function(x){
       var sm = heroStoreMeta(x.store_key) || {};
       return {
         product_name: x.name,
         store_name: sm.name || x.brand || 'POZi',
         store_location: sm.loc || '',
         sku: x.sku || '',
-        quantity: Number(x.inventory_quantity || 0),
-        distance_miles: x.distance_miles
+        quantity: Number(x.inventory_quantity || 0)
       };
     });
     return rows;
@@ -4174,10 +3852,9 @@ var DEMO_DB = [
       var store = r.store_name || r.store || 'Unknown store';
       var city = r.store_location || r.city || r.location || '';
       var sku = r.sku || r.barcode || r.upc || '';
-      var miles = (typeof r.distance_miles === 'number') ? (' · ' + r.distance_miles + ' mi') : '';
       return '<div class="hero-result">' +
         '<div><div class="hero-result-name">' + name + '</div>' +
-        '<div class="hero-result-meta">' + store + (city ? ' · ' + city : '') + miles + (sku ? ' · ' + sku : '') + '</div></div>' +
+        '<div class="hero-result-meta">' + store + (city ? ' · ' + city : '') + (sku ? ' · ' + sku : '') + '</div></div>' +
         '<div class="hero-result-qty ' + heroQtyClass(qty) + '">' + heroQtyLabel(qty) + '</div>' +
       '</div>';
     }).join('');
@@ -4201,7 +3878,7 @@ var DEMO_DB = [
       if (st) st.textContent = 'Search POZi to source project items.';
       return;
     }
-    if (st) st.textContent = query ? ('Showing closest available matches for “' + query + '”.') : 'Showing sample live inventory.';
+    if (st) st.textContent = query ? ('Showing deeper results for “' + query + '”.') : 'Showing sample live inventory.';
     g.innerHTML = rows.map(function(x){
       var sm = heroStoreMeta(x.store_key) || {};
       var qty = Number(x.inventory_quantity || x.quantity || 0);
@@ -4209,7 +3886,7 @@ var DEMO_DB = [
       var price = (typeof x.price === 'number') ? ('$' + x.price.toFixed(2)) : '';
       return '<div class="live-result-card">' +
         '<div class="live-result-top"><div><div class="live-result-name">' + (x.name || x.product_name || 'Unnamed item') + '</div>' +
-        '<div class="live-result-store">' + (sm.name || x.store_name || x.brand || 'POZi') + (sm.loc ? ' · ' + sm.loc : '') + (typeof x.distance_miles === 'number' ? ' · ' + x.distance_miles + ' mi' : '') + '</div></div>' +
+        '<div class="live-result-store">' + (sm.name || x.store_name || x.brand || 'POZi') + (sm.loc ? ' · ' + sm.loc : '') + '</div></div>' +
         '<div class="live-result-price">' + price + '</div></div>' +
         '<div class="live-result-sku">' + (x.sku || '') + '</div>' +
         '<div class="live-result-qty ' + cls + '">' + heroQtyLabel(qty) + '</div>' +
@@ -4227,13 +3904,16 @@ var DEMO_DB = [
     if (!q){ renderLiveDefault(); return; }
     var rows = DEMO_DB.filter(function(x){
       var hay = [x.name, x.brand, x.sku, x.category].join(' ').toLowerCase();
-      return hay.indexOf(q.toLowerCase()) > -1 || q.toLowerCase().split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
+      var ok = hay.indexOf(q.toLowerCase()) > -1 || q.toLowerCase().split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
+      if (!ok) return false;
+      if (zip){
+        var sm = heroStoreMeta(x.store_key);
+        var loc = sm ? [sm.loc || '', sm.addr || ''].join(' ').toLowerCase() : '';
+        if (zip.length >= 3 && loc.indexOf(zip.toLowerCase()) === -1) return false;
+      }
+      return true;
     });
-    rows = poziSortRowsByDistance(rows, zip);
-    var label = q;
-    var locLabel = poziLocationLabel(zip);
-    if (locLabel) label += ' near ' + locLabel + ' (closest first, about 50 miles)';
-    renderLiveResults(rows, label);
+    renderLiveResults(rows, q + (zip ? ' near ' + zip : ''));
   }
 
   async function runHeroSearch(){
@@ -4267,77 +3947,40 @@ var DEMO_DB = [
           .from('inventory')
           .select('*')
           .or('product_name.ilike.%' + q + '%,sku.ilike.%' + q + '%,store_name.ilike.%' + q + '%,barcode.ilike.%' + q + '%');
-        // ZIP/location is used for local ranking/fallback, not hard filtering.
+        if (zip) query = query.or('store_location.ilike.%' + zip + '%,zip.ilike.%' + zip + '%');
         var out = await query.limit(8);
         rows = out.data || [];
       }
       if (!rows.length) rows = heroDemoRows(q, zip);
-      else rows = poziSortRowsByDistance(rows, zip);
-      var locLabel = poziLocationLabel(zip);
-      renderHeroResults(rows, q + (locLabel ? ' near ' + locLabel : ''));
+      renderHeroResults(rows, q + (zip ? ' near ' + zip : ''));
       recordHeroSearch();
     }catch(e){
-      var locLabel = poziLocationLabel(zip);
-      renderHeroResults(heroDemoRows(q, zip), q + (locLabel ? ' near ' + locLabel : ''));
+      renderHeroResults(heroDemoRows(q, zip), q + (zip ? ' near ' + zip : ''));
     } finally {
       btn.textContent = 'Search POZi';
     }
   }
 
 
-  function requestPoziLocation(options){
-    options = options || {};
-    var statusEl = options.statusEl || null;
-    var zipInput = options.zipInput || null;
-    var after = options.after || function(){};
-    if (!navigator.geolocation){
-      if (statusEl) statusEl.textContent = 'Location not available on this browser. Try a ZIP code instead.';
-      return;
-    }
-    if (statusEl) statusEl.textContent = 'Finding your location...';
-    navigator.geolocation.getCurrentPosition(function(pos){
-      poziUserLocation = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        label: 'your location'
-      };
-      if (zipInput) {
-        zipInput.value = '';
-        zipInput.placeholder = 'Using your location';
-        zipInput.dataset.locationActive = 'true';
-      }
-      if (statusEl) statusEl.textContent = 'Using your location. Results show closest matches first within about 50 miles.';
-      after();
-    }, function(){
-      if (statusEl) statusEl.textContent = 'Location lookup was denied. You can still search by ZIP code.';
-    }, { enableHighAccuracy:true, timeout:8000, maximumAge:60000 });
-  }
-
   async function heroLocationLookup(){
+    var mobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+      || window.innerWidth <= 768;
+    if (mobile) { openPoziGo(); return; }
     var zipInput = document.getElementById('heroZipInput');
     var sub = document.getElementById('heroSearchSub');
-    requestPoziLocation({
-      zipInput: zipInput,
-      statusEl: sub,
-      after: function(){
-        var input = document.getElementById('heroSearchInput');
-        if (input && input.value.trim()) runHeroSearch();
-      }
-    });
-  }
-
-  async function liveLocationLookup(){
-    var zipInput = document.getElementById('liveZipInput');
-    var sub = document.getElementById('liveResultsStatus');
-    requestPoziLocation({
-      zipInput: zipInput,
-      statusEl: sub,
-      after: function(){
-        var input = document.getElementById('liveSearchInput');
-        if (input && input.value.trim()) runLiveSearch();
-        else renderLiveDefault();
-      }
-    });
+    if (!navigator.geolocation){
+      if (sub) sub.textContent = 'Location not available on this browser. Try a ZIP code instead.';
+      return;
+    }
+    if (sub) sub.textContent = 'Finding your location...';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      if (zipInput && !zipInput.value.trim()) zipInput.value = '';
+      if (sub) sub.textContent = 'Location found. Add a search term or ZIP code to narrow results.';
+      runHeroSearch();
+    }, function(){
+      if (sub) sub.textContent = 'Location lookup was denied. You can still search by ZIP code.';
+    }, { enableHighAccuracy:true, timeout:8000, maximumAge:60000 });
   }
 
   function syncHeroSearchMode(){
@@ -4577,7 +4220,6 @@ var DEMO_DB = [
     if (heroZipInput) heroZipInput.addEventListener('keydown', function(e){
       if (e.key === 'Enter') runHeroSearch();
     });
-    if (heroZipInput) heroZipInput.addEventListener('input', function(){ delete heroZipInput.dataset.locationActive; });
     if (heroSearchInput) heroSearchInput.addEventListener('input', function(){
       if (!heroSearchInput.value.trim()){
         var results = document.getElementById('heroResults');
@@ -4598,12 +4240,9 @@ var DEMO_DB = [
     var liveSearchBtn = document.getElementById('liveSearchBtn');
     var liveSearchInput = document.getElementById('liveSearchInput');
     var liveZipInput = document.getElementById('liveZipInput');
-    var liveLocateBtn = document.getElementById('liveLocateBtn');
     if (liveSearchBtn) liveSearchBtn.addEventListener('click', runLiveSearch);
     if (liveSearchInput) liveSearchInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') runLiveSearch(); });
     if (liveZipInput) liveZipInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') runLiveSearch(); });
-    if (liveZipInput) liveZipInput.addEventListener('input', function(){ delete liveZipInput.dataset.locationActive; });
-    if (liveLocateBtn) liveLocateBtn.addEventListener('click', liveLocationLookup);
 
     // Demo buttons now stay in-page
     ['navDemo','mobileDemo','heroDemoBtn'].forEach(function (id) {
@@ -5176,9 +4815,6 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       pendingMsg.className = 'buildr-msg ai';
       pendingMsg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml(reply);
       conversation.push({ role: 'assistant', text: reply });
-      if (window.POZiBuildrBasket && typeof window.POZiBuildrBasket.refresh === 'function') {
-        window.POZiBuildrBasket.refresh();
-      }
 
       statusEl.textContent = 'BUILDr response received. Add another detail to keep going.';
       statusEl.className = 'buildr-status ok';
@@ -5212,25 +4848,10 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   const basketResults = document.getElementById('buildrBasketResults');
   const promptEl = document.getElementById('buildrPrompt');
   const answerEl = document.getElementById('buildrAnswer');
-  const outputItems = document.getElementById('buildrOutputItems');
-  const outputEmpty = document.getElementById('buildrOutputEmpty');
-  const notesList = document.getElementById('buildrNotesList');
-  const notesEmpty = document.getElementById('buildrNotesEmpty');
 
   if (!basketBtn || !basketStatus || !basketResults) return;
 
-  if (notesList) {
-    notesList.addEventListener('click', function(event){
-      const note = event.target.closest('.buildr-note-pill');
-      if (!note) return;
-      note.classList.toggle('expanded');
-    });
-  }
-
   const POZI_SEARCH_ENDPOINT = '/.netlify/functions/pozi-search';
-  let basketCreated = false;
-  let basketReady = false;
-  let readyItems = [];
 
   function safeHtml(value){
     return String(value || '').replace(/[&<>"']/g, function(m){
@@ -5243,77 +4864,23 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     return (answerEl.innerText || '').replace(/BUILDr\s*/gi, '').trim();
   }
 
-  function sectionAfter(text, markers){
-    const source = String(text || '');
-    let bestIndex = -1;
-    let bestMarker = '';
-    markers.forEach(function(marker){
-      const re = new RegExp(marker, 'i');
-      const match = source.match(re);
-      if (match && (bestIndex === -1 || match.index < bestIndex)) {
-        bestIndex = match.index;
-        bestMarker = match[0];
-      }
-    });
-    if (bestIndex === -1) return '';
-    return source.slice(bestIndex + bestMarker.length);
-  }
-
-  function cleanLine(line){
-    return String(line || '')
-      .replace(/^\s*(?:[-*•]|\d+\.|✓|✔)\s*/g, '')
-      .replace(/^[\s:;,.]+|[\s:;,.]+$/g, '')
-      .trim();
-  }
-
-  function uniqueLines(lines, limit){
-    const seen = new Set();
-    return lines.map(cleanLine).filter(function(line){
-      if (!line || line.length < 4) return false;
-      const key = line.toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    }).slice(0, limit || 10);
-  }
-
-  function extractBuildNotes(text){
-    let section = sectionAfter(text, ['build notes\\s*:', 'builder notes\\s*:', 'project notes\\s*:']);
-    if (!section) return [];
-    section = section.split(/\n\s*(?:POZi\s+)?Basket Items\s*:/i)[0];
-    section = section.split(/\n\s*Your project basket is ready/i)[0];
-    section = section.split(/\n\s*Press Create Basket/i)[0];
-
-    return uniqueLines(section.split(/\n|<br>|•/g), 8).filter(function(line){
-      return !/^(build notes|builder notes|project notes|pozi basket items|basket items)$/i.test(line);
-    });
-  }
-
   function extractBasketItems(text){
-    const fullText = String(text || '');
-    let basketSection = sectionAfter(fullText, ['(?:POZi\\s+)?Basket Items\\s*:']);
-    if (basketSection) {
-      basketSection = basketSection.split(/\n\s*Your project basket is ready/i)[0];
-      basketSection = basketSection.split(/\n\s*Press Create Basket/i)[0];
-    }
-
-    const source = basketSection || fullText;
-    const raw = source
-      .split(/\n|<br>|•|\- |\* |\d+\.\s+/g)
-      .map(cleanLine)
+    const raw = String(text || '')
+      .split(/\n|<br>|•|\-|\*|\d+\.\s+/g)
+      .map(x => x.replace(/^[\s:;,.]+|[\s:;,.]+$/g, '').trim())
       .filter(Boolean);
 
-    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|notes|build notes|question|first|then|you|buildr|pro mode|consumer mode|shopping path|project list ready|basket ready|ready to create basket|your project basket is ready|press create basket.*)$/i;
-    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar|hanger|flashing|sill|plate|rafter|shingle|underlayment|glue|conduit|clip|clamp|fitting|valve|drain|fabric|stone|sand|base|stringer|tread|riser)/i;
-    const dimensions = /\b(2x4|2x6|2x8|2x10|4x4|6x6|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
+    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|question|first|then|you|buildr|pro mode|consumer mode|shopping path)$/i;
+    const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar)/i;
+    const dimensions = /\b(2x4|4x4|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
 
     const seen = new Set();
     return raw.filter(line => {
-      if (line.length < 4 || line.length > 96) return false;
+      if (line.length < 4 || line.length > 92) return false;
       if (skip.test(line)) return false;
-      return basketSection ? true : (materialWords.test(line) || dimensions.test(line));
+      return materialWords.test(line) || dimensions.test(line);
     }).map(line => line
-      .replace(/^\s*(qty|quantity|item)\s*[:\-]\s*/i, '')
+      .replace(/^\s*(qty|quantity)\s*[:\-]\s*/i, '')
       .replace(/\s+\([^)]*\)/g, '')
       .replace(/^[✓✔]+\s*/, '')
       .trim()
@@ -5322,77 +4889,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).slice(0, 10);
-  }
-
-  function setBasketLocked(reason){
-    if (basketCreated) return;
-    basketReady = false;
-    basketBtn.disabled = true;
-    basketBtn.setAttribute('aria-disabled','true');
-    basketBtn.classList.add('is-locked');
-    basketBtn.classList.remove('is-ready');
-    basketStatus.textContent = reason || 'BUILDr will unlock this when your item list is ready.';
-    basketStatus.className = 'buildr-basket-status';
-  }
-
-  function setBasketReady(items){
-    if (basketCreated) return;
-    basketReady = true;
-    readyItems = items.slice(0, 10);
-    basketBtn.disabled = false;
-    basketBtn.setAttribute('aria-disabled','false');
-    basketBtn.classList.remove('is-locked');
-    basketBtn.classList.add('is-ready');
-    basketStatus.textContent = 'Project list ready. Create your basket when you’re finished.';
-    basketStatus.className = 'buildr-basket-status ok';
-  }
-
-  function renderOutputItems(items){
-    if (!outputItems) return;
-    if (!items.length){
-      outputItems.innerHTML = '';
-      outputItems.classList.remove('has-items');
-      if (outputEmpty) outputEmpty.style.display = '';
-      return;
-    }
-    outputItems.innerHTML = items.map((item, i) => '<span class="buildr-output-pill" style="animation-delay:' + Math.min(i * 45, 360) + 'ms">' + safeHtml(item) + '</span>').join('');
-    outputItems.classList.add('has-items');
-    if (outputEmpty) outputEmpty.style.display = 'none';
-  }
-
-  function renderBuildNotes(notes){
-    if (!notesList) return;
-    if (!notes.length){
-      notesList.innerHTML = '';
-      notesList.classList.remove('has-notes');
-      if (notesEmpty) notesEmpty.style.display = '';
-      return;
-    }
-    notesList.innerHTML = notes.map(function(note, i){
-      return '<button type="button" class="buildr-note-pill" style="animation-delay:' + Math.min(i * 45, 360) + 'ms">' + safeHtml(note) + '</button>';
-    }).join('');
-    notesList.classList.add('has-notes');
-    if (notesEmpty) notesEmpty.style.display = 'none';
-  }
-
-  function refreshBasketState(){
-    const buildrText = textFromBuildr();
-    const items = extractBasketItems(buildrText);
-    const notes = extractBuildNotes(buildrText);
-    readyItems = items;
-    renderOutputItems(items);
-    renderBuildNotes(notes);
-
-    const readyLanguage = /(basket-ready|basket ready|project list ready|shopping list|material list|materials list|create (your )?basket|ready to source|ready for sourcing|final list|compiled)/i.test(buildrText);
-
-    if (items.length >= 3 && readyLanguage){
-      setBasketReady(items);
-    } else if (items.length > 0){
-      setBasketLocked('BUILDr is compiling ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '. Keep refining until the list is ready.');
-    } else {
-      setBasketLocked('BUILDr will unlock this when your item list is ready.');
-    }
+    }).slice(0, 6);
   }
 
   function normalizeResults(data){
@@ -5408,11 +4905,10 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
   function resultCard(result){
     const href = result.url && result.url !== '#' ? safeHtml(result.url) : '#';
-    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener" onclick="return window.poziOpenRetailWindow ? window.poziOpenRetailWindow(this, this.href) : true;" aria-label="Open retailer result in a focused retailer window">' +
+    return '<a class="buildr-shopping-card" href="' + href + '" target="_blank" rel="noopener">' +
       '<div class="buildr-shopping-title">' + safeHtml(result.title) + '</div>' +
-      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Retailer result') + '</span><span class="pozi-result-open-label">Opens retailer window ↗</span></div>' +
+      '<div class="buildr-shopping-meta"><span>' + safeHtml(result.domain || 'Google result') + '</span><span class="buildr-shopping-price">' + (result.rank ? 'Rank ' + safeHtml(result.rank) : 'Open') + '</span></div>' +
       (result.description ? '<div class="buildr-shopping-meta" style="margin-top:6px;display:block">' + safeHtml(result.description).slice(0, 150) + '</div>' : '') +
-      '<div class="pozi-open-pill">Open window</div>' +
     '</a>';
   }
 
@@ -5438,25 +4934,21 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   }
 
   async function createBasket(){
-    refreshBasketState();
+    const buildrText = textFromBuildr();
+    const typed = promptEl ? promptEl.value.trim() : '';
+    let items = extractBasketItems(buildrText);
 
-    if (basketCreated){
-      basketStatus.textContent = 'Basket already created for this compiled list.';
-      basketStatus.className = 'buildr-basket-status ok';
-      return;
-    }
+    if (!items.length && typed) items = [typed];
 
-    if (!basketReady || !readyItems.length){
-      basketStatus.textContent = 'Finish the BUILDr dialogue first. The basket unlocks when the compiled item list is ready.';
+    if (!items.length){
+      basketStatus.textContent = 'Ask BUILDr for a material list first, then create a basket.';
       basketStatus.className = 'buildr-basket-status err';
       return;
     }
 
-    const items = readyItems.slice(0, 10);
     basketBtn.disabled = true;
-    basketBtn.classList.remove('is-ready');
     basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Searching...</span>';
-    basketStatus.textContent = 'Creating one POZi basket from the compiled BUILDr list...';
+    basketStatus.textContent = 'Creating POZi basket through DataForSEO Google search...';
     basketStatus.className = 'buildr-basket-status';
     basketResults.innerHTML = '';
 
@@ -5478,24 +4970,18 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       basketResults.innerHTML = rendered;
     }
 
-    basketCreated = true;
-    basketBtn.disabled = true;
-    basketBtn.classList.add('is-created');
-    basketBtn.setAttribute('aria-disabled','true');
-    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Basket Created</span>';
-
     if (success){
-      basketStatus.textContent = 'Basket created once. Review POZi search results below.';
+      basketStatus.textContent = 'Basket created. Review POZi search results below.';
       basketStatus.className = 'buildr-basket-status ok';
     } else {
-      basketStatus.textContent = 'Basket created once, but search did not return usable results. Check Netlify function logs.';
+      basketStatus.textContent = 'Basket created, but DataForSEO did not return usable results. Check Netlify function logs.';
       basketStatus.className = 'buildr-basket-status err';
     }
+
+    basketBtn.disabled = false;
+    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Create Basket</span>';
   }
 
-  window.POZiBuildrBasket = { refresh: refreshBasketState };
-  setBasketLocked('BUILDr will unlock this when your item list is ready.');
-  refreshBasketState();
   basketBtn.addEventListener('click', createBasket);
 })();
 </script>
@@ -5567,14 +5053,13 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
     grid.innerHTML = results.map(function(item){
       return (
-        '<a class="pozi-source-result-card" href="' + safe(item.url) + '" target="_blank" rel="noopener" onclick="return window.poziOpenRetailWindow ? window.poziOpenRetailWindow(this, this.href) : true;" aria-label="Open retailer result in a focused retailer window">' +
+        '<a class="pozi-source-result-card" href="' + safe(item.url) + '" target="_blank" rel="noopener">' +
           '<div class="pozi-result-topline">' +
             '<span>Result ' + safe(item.rank) + '</span>' +
             '<em>' + safe(item.domain || 'Open result') + '</em>' +
           '</div>' +
           '<strong>' + safe(item.title) + '</strong>' +
           (item.description ? '<p>' + safe(item.description).slice(0, 180) + '</p>' : '') +
-          '<div class="pozi-open-pill">Open window</div>' +
         '</a>'
       );
     }).join('');
@@ -5676,102 +5161,5 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 })();
 </script>
 
-
-<script>
-// Keeps POZi as the command center while retailer links open in a focused desktop window.
-// Desktop: opens a smaller retailer window so POZi remains visible behind it.
-// Mobile/tablet: keeps normal browser behavior because mobile browsers ignore popup sizing.
-window.poziOpenRetailWindow = function(card, url){
-  try{
-    sessionStorage.setItem('pozi_last_external_click', String(Date.now()));
-    sessionStorage.setItem('pozi_last_external_title', (card && card.textContent ? card.textContent.trim().slice(0,120) : 'Retailer result'));
-  }catch(e){}
-
-  if (card && card.classList) card.classList.add('pozi-opening');
-
-  var status = document.getElementById('liveResultsStatus');
-  var targetUrl = url || (card && card.href) || '#';
-  var isMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
-    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-    || window.innerWidth <= 820;
-
-  if (isMobile){
-    if (status) status.textContent = 'Opening retailer. Your POZi results stay saved here.';
-    setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
-    return true;
-  }
-
-  var w = Math.min(1180, Math.max(900, Math.round(window.screen.availWidth * 0.72)));
-  var h = Math.min(860, Math.max(680, Math.round(window.screen.availHeight * 0.82)));
-  var left = Math.max(24, Math.round((window.screen.availWidth - w) / 2));
-  var top = Math.max(24, Math.round((window.screen.availHeight - h) / 2));
-
-  var features = [
-    'popup=yes',
-    'width=' + w,
-    'height=' + h,
-    'left=' + left,
-    'top=' + top,
-    'resizable=yes',
-    'scrollbars=yes',
-    'toolbar=yes',
-    'location=yes',
-    'menubar=no',
-    'status=no'
-  ].join(',');
-
-  var retailWindow = window.open(targetUrl, 'pozi_retail_window', features);
-
-  if (!retailWindow){
-    if (status) status.textContent = 'Popup blocked. Opening retailer in a new tab instead.';
-    setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
-    return true;
-  }
-
-  try { retailWindow.focus(); } catch(e) {}
-  if (status) status.textContent = 'Retailer opened in a focused window. POZi stays ready behind it.';
-  setTimeout(function(){ if (card && card.classList) card.classList.remove('pozi-opening'); }, 900);
-  return false;
-};
-window.poziMarkExternalOpen = window.poziOpenRetailWindow;
-</script>
-
-<!-- Disclaimer Modal -->
-<div class="modal-overlay" id="disclaimerModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <button class="modal-close" onclick="closeDisclaimerModal()">×</button>
-      <div class="modal-live">
-        <div class="modal-live-dot"></div>
-        <div class="modal-live-lbl">POZi Disclaimer</div>
-      </div>
-      <div class="modal-title">Important Information</div>
-      <div class="modal-sub">
-        BUILDr and POZi are planning and sourcing tools designed to help organize projects and compare inventory.
-      </div>
-    </div>
-
-    <div class="modal-body" style="color:#c0c0d8;line-height:1.8;font-size:13px;">
-      <p><strong>BUILDr may make mistakes.</strong> Always verify measurements, quantities, materials, local building codes, permits, safety requirements, and manufacturer instructions before purchasing or beginning a project.</p>
-
-      <p>Electrical, plumbing, excavation, roofing, structural, gas, load-bearing, and safety-critical work should be reviewed by qualified professionals where appropriate.</p>
-
-      <p>POZi does not directly sell products. Pricing, inventory, delivery, pickup availability, warranties, and returns are handled by third-party retailers.</p>
-
-      <p>Retailer inventory and pricing may change without notice.</p>
-
-      <p>POZi is currently evolving and some features are in beta.</p>
-    </div>
-  </div>
-</div>
-
-<script>
-function openDisclaimerModal(){
-  document.getElementById('disclaimerModal').classList.add('open');
-}
-function closeDisclaimerModal(){
-  document.getElementById('disclaimerModal').classList.remove('open');
-}
-</script>
 </body>
 </html>
