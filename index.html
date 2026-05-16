@@ -1736,79 +1736,105 @@ img[alt*="POZi logo"]{
   display:none !important;
 }
 
-/* ===== LIGHT MODE REFINEMENTS ===== */
 
-body.light-mode footer,
-body.light footer,
-.light-mode footer {
-  background:#f4f4f8 !important;
-  border-top:1px solid rgba(0,0,0,0.08);
+
+/* ===== LIGHT MODE REFINEMENTS v2 — uses actual [data-theme="light"] selector ===== */
+
+/* Footer should become light in light mode, not a black stripe */
+[data-theme="light"] footer {
+  background:#ffffff !important;
+  border-top:1px solid #d9dbe8 !important;
+  box-shadow:0 -8px 28px rgba(20,24,40,0.06) !important;
 }
 
-/* Footer logo area stays readable on light mode */
-.light-mode footer .footer-logo img,
-.light-mode .footer-logo img {
-  filter:none !important;
+[data-theme="light"] .footer-name,
+[data-theme="light"] .footer-copy,
+[data-theme="light"] .footer-slogans,
+[data-theme="light"] .footer-link,
+[data-theme="light"] footer a,
+[data-theme="light"] footer button,
+[data-theme="light"] footer span,
+[data-theme="light"] footer div {
+  color:#3f4252 !important;
 }
 
-/* BUILDr section readability improvements */
-.light-mode .buildr-panel,
-.light-mode .buildr-card,
-.light-mode .buildr-output-card,
-.light-mode .build-notes-card {
-  color:#222 !important;
+[data-theme="light"] .footer-link:hover,
+[data-theme="light"] footer a:hover,
+[data-theme="light"] footer button:hover {
+  color:#008f55 !important;
 }
 
-/* Darker body text */
-.light-mode .buildr-panel p,
-.light-mode .buildr-card p,
-.light-mode .buildr-output-card p,
-.light-mode .build-notes-card p,
-.light-mode .builder-subtle-note {
-  color:#5d6170 !important;
+/* Keep the light-mode logo visible on the light footer */
+[data-theme="light"] footer .logo-dark { display:none !important; }
+[data-theme="light"] footer .logo-light { display:block !important; }
+
+/* BUILDr light-mode readability: make faint gray text darker */
+[data-theme="light"] .buildr-bubble,
+[data-theme="light"] .buildr-output-panel,
+[data-theme="light"] .buildr-notes-panel,
+[data-theme="light"] .buildr-basket-panel,
+[data-theme="light"] .buildr-live-answer,
+[data-theme="light"] .buildr-msg,
+[data-theme="light"] .buildr-card,
+[data-theme="light"] .buildr-panel {
+  color:#1d2130 !important;
 }
 
-/* Darker green headings for readability */
-.light-mode .section-label,
-.light-mode .buildr-section-title,
-.light-mode .mini-heading {
-  color:#36c977 !important;
+[data-theme="light"] .buildr-output-empty,
+[data-theme="light"] .buildr-note-empty,
+[data-theme="light"] .buildr-basket-status,
+[data-theme="light"] .buildr-basket-head span,
+[data-theme="light"] .builder-subtle-note,
+[data-theme="light"] .buildr-panel p,
+[data-theme="light"] .buildr-bubble p,
+[data-theme="light"] .buildr-card p,
+[data-theme="light"] .buildr-live-answer,
+[data-theme="light"] .buildr-input-area,
+[data-theme="light"] .buildr-input-area::placeholder {
+  color:#5c6072 !important;
+  opacity:1 !important;
 }
 
-/* Darker placeholder text */
-.light-mode textarea,
-.light-mode input,
-.light-mode textarea::placeholder,
-.light-mode input::placeholder {
-  color:#666 !important;
+/* Headings/titles inside BUILDr should stay strong */
+[data-theme="light"] .buildr-bubble strong,
+[data-theme="light"] .buildr-output-panel strong,
+[data-theme="light"] .buildr-notes-panel strong,
+[data-theme="light"] .buildr-basket-panel strong,
+[data-theme="light"] .buildr-panel-title,
+[data-theme="light"] .buildr-starter-title {
+  color:#111421 !important;
 }
 
-/* Slightly darker chips/buttons */
-.light-mode .mini-chip,
-.light-mode .tag,
-.light-mode .quick-chip {
-  color:#555 !important;
-  border-color:rgba(0,0,0,0.12) !important;
+/* The super-light green labels in BUILDr need more contrast */
+[data-theme="light"] .buildr-kicker,
+[data-theme="light"] .buildr-side-title,
+[data-theme="light"] .buildr-section-label,
+[data-theme="light"] .buildr-input-label,
+[data-theme="light"] .buildr-chip-label,
+[data-theme="light"] .buildr-mini-title,
+[data-theme="light"] .buildr-label {
+  color:#00a65f !important;
 }
 
-/* Keep Ask BUILDr button readable */
-.light-mode .buildr-ask-btn {
-  color:#111 !important;
-  font-weight:700;
+/* Chips and quiet buttons should be readable in light mode */
+[data-theme="light"] .buildr-chip,
+[data-theme="light"] .buildr-starter-pills span {
+  color:#3e4252 !important;
+  border-color:rgba(20,24,40,0.16) !important;
+  background:rgba(255,255,255,0.58) !important;
 }
 
-/* Build Notes + Output cards */
-.light-mode .build-notes-card,
-.light-mode .buildr-output-card {
-  border-color:rgba(0,0,0,0.08) !important;
+/* Ask button remains crisp */
+[data-theme="light"] .buildr-ask-btn {
+  color:#07110c !important;
+  font-weight:800 !important;
 }
 
-/* Footer text visibility */
-.light-mode footer,
-.light-mode footer a,
-.light-mode footer p,
-.light-mode footer span {
-  color:#4f5363 !important;
+/* View disclaimer pill slightly darker */
+[data-theme="light"] .builder-subtle-note button {
+  color:#008f55 !important;
+  border-color:rgba(0,143,85,0.28) !important;
+  background:rgba(0,143,85,0.06) !important;
 }
 
 </style>
@@ -3157,7 +3183,7 @@ body.light footer,
 
 </style>
 
-<!-- Light mode readability refinement build -->
+<!-- Light mode readability refinement build v2 actual data-theme selector -->
 </head>
 <body>
 
