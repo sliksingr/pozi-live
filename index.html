@@ -5020,13 +5020,14 @@ function switchHpTab(tab, el) {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          prompt: text,
-          session_id: null,
-          user_id: null
+          prompt: bHistory.map(function(m){ return (m.role === 'user' ? 'User: ' : 'BUILDr: ') + m.content; }).join('\n'),
+          session_id: 'web-legacy-buildr',
+          user_id: 'guest'
         })
       });
       var data = await res.json();
-      var reply = data.ok ? data.reply : (data.error || 'Something went wrong — try again!');
+      if (!res.ok) throw new Error(data.error || 'BUILDr request failed.');
+      var reply = data.reply || 'Something went wrong — try again!';
       thinking.remove();
       addMsg(reply, 'bot');
       bHistory.push({role:'assistant',content:reply});
@@ -5108,15 +5109,18 @@ async function buildrEmbedSend() {
   try {
     var res = await fetch('/.netlify/functions/buildr-chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
-        prompt: text,
-        session_id: null,
-        user_id: null
+        prompt: buildrEmbedHistory.map(function(m){ return (m.role === 'user' ? 'User: ' : 'BUILDr: ') + m.content; }).join('\n'),
+        session_id: 'web-embed-buildr',
+        user_id: 'guest'
       })
     });
     var data = await res.json();
-    var reply = data.ok ? data.reply : (data.error || 'Something went wrong — try again!');
+    if (!res.ok) throw new Error(data.error || 'BUILDr request failed.');
+    var reply = data.reply || 'Something went wrong — try again!';
     if (thinking) thinking.remove();
     addBMsg(reply, 'bot');
     buildrEmbedHistory.push({ role: 'assistant', content: reply });
@@ -5137,6 +5141,17 @@ var embedSend = document.getElementById('buildrEmbedSend');
 var embedInput = document.getElementById('buildrEmbedInput');
 if (embedSend) embedSend.addEventListener('click', buildrEmbedSend);
 if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='Enter') buildrEmbedSend(); });
+</script>
+
+
+<script>
+function poziFetchWithTimeout(url, options, timeoutMs) {
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, timeoutMs || 25000);
+  options = options || {};
+  options.signal = controller.signal;
+  return fetch(url, options).finally(function(){ clearTimeout(timer); });
+}
 </script>
 
 <script>
@@ -5273,12 +5288,13 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     const pendingMsg = addBuildrMessage('Working it out...', { pending: true });
 
     try {
-      const res = await fetch('/.netlify/functions/buildr-chat', {
+      const res = await poziFetchWithTimeout('/.netlify/functions/buildr-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: promptForBackend,
-          session_id: sessionId
+          prompt: String(promptForBackend || ''),
+          session_id: sessionId,
+          user_id: 'guest'
         })
       });
 
