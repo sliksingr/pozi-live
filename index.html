@@ -29,7 +29,6 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 <link rel="apple-touch-icon" href="/logo-dark.png">
 
 <!-- POZi How It Works build notes folded into existing flow v3 -->
-<!-- BUILDr active handler restored from last known working file -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap">
 <style>
@@ -3409,6 +3408,7 @@ img[alt*="POZi logo"]{
               letter-spacing:.4px;
               cursor:pointer;
             ">View Full Disclaimer</button>
+          <div id="buildrStatus" class="buildr-status" style="display:none;">Securely routed through Netlify Functions.</div>
           </div>
         </div>
 
@@ -5149,7 +5149,11 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   const promptEl = document.getElementById('buildrPrompt');
   const askBtn = document.getElementById('buildrAskBtn');
   const answerEl = document.getElementById('buildrAnswer');
-  const statusEl = document.getElementById('buildrStatus');
+  const statusEl = document.getElementById('buildrStatus') || {
+    textContent: '',
+    className: '',
+    style: {}
+  };
   const userStreamEl = document.getElementById('buildrUserStream');
   const presetBtns = document.querySelectorAll('[data-buildr-preset]');
 
@@ -5216,7 +5220,39 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     });
   });
 
+  function stopBuildrVoiceInput(){
+    var input = document.getElementById('buildrPrompt');
+    var btn = document.getElementById('buildrAskBtn');
+    if (!input) return;
+    try {
+      input.blur();
+      input.setAttribute('readonly', 'readonly');
+      input.setAttribute('inputmode', 'none');
+
+      if (btn && typeof btn.focus === 'function') {
+        btn.focus({ preventScroll:true });
+      } else if (document.activeElement && document.activeElement.blur) {
+        document.activeElement.blur();
+      }
+
+      setTimeout(function(){
+        try {
+          input.blur();
+          if (btn && typeof btn.focus === 'function') {
+            btn.focus({ preventScroll:true });
+          }
+        } catch(e) {}
+      }, 60);
+
+      setTimeout(function(){
+        input.removeAttribute('readonly');
+        input.removeAttribute('inputmode');
+      }, 900);
+    } catch(e) {}
+  }
+
   async function askBuildr(){
+    stopBuildrVoiceInput();
     const visiblePrompt = (promptEl.value || '').trim();
 
     if (!visiblePrompt) {
@@ -5236,7 +5272,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
     promptEl.value = '';
     promptEl.placeholder = 'Add the next detail or follow-up...';
-    promptEl.focus();
+    stopBuildrVoiceInput();
 
     askBtn.disabled = true;
     askBtn.textContent = 'BUILDr is thinking...';
@@ -5250,8 +5286,9 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: promptForBackend,
-          session_id: sessionId
+          prompt: String(promptForBackend || ''),
+          session_id: sessionId,
+          user_id: 'guest'
         })
       });
 
@@ -5265,6 +5302,9 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       pendingMsg.className = 'buildr-msg ai';
       pendingMsg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml(reply);
       conversation.push({ role: 'assistant', text: reply });
+      if (window.POZiBuildrBasket && typeof window.POZiBuildrBasket.refresh === 'function') {
+        window.POZiBuildrBasket.refresh();
+      }
 
       statusEl.textContent = 'BUILDr response received. Add another detail to keep going.';
       statusEl.className = 'buildr-status ok';
@@ -5283,6 +5323,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   askBtn.addEventListener('click', askBuildr);
   promptEl.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      stopBuildrVoiceInput();
       askBuildr();
     }
   });
