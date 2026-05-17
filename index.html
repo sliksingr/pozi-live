@@ -5020,14 +5020,13 @@ function switchHpTab(tab, el) {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          prompt: bHistory.map(function(m){ return (m.role === 'user' ? 'User: ' : 'BUILDr: ') + m.content; }).join('\n'),
-          session_id: 'web-legacy-buildr',
-          user_id: 'guest'
+          prompt: text,
+          session_id: null,
+          user_id: null
         })
       });
       var data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'BUILDr request failed.');
-      var reply = data.reply || 'Something went wrong — try again!';
+      var reply = data.ok ? data.reply : (data.error || 'Something went wrong — try again!');
       thinking.remove();
       addMsg(reply, 'bot');
       bHistory.push({role:'assistant',content:reply});
@@ -5109,18 +5108,15 @@ async function buildrEmbedSend() {
   try {
     var res = await fetch('/.netlify/functions/buildr-chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        prompt: buildrEmbedHistory.map(function(m){ return (m.role === 'user' ? 'User: ' : 'BUILDr: ') + m.content; }).join('\n'),
-        session_id: 'web-embed-buildr',
-        user_id: 'guest'
+        prompt: text,
+        session_id: null,
+        user_id: null
       })
     });
     var data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'BUILDr request failed.');
-    var reply = data.reply || 'Something went wrong — try again!';
+    var reply = data.ok ? data.reply : (data.error || 'Something went wrong — try again!');
     if (thinking) thinking.remove();
     addBMsg(reply, 'bot');
     buildrEmbedHistory.push({ role: 'assistant', content: reply });
@@ -5281,9 +5277,8 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: String(promptForBackend || ''),
-          session_id: sessionId,
-          user_id: 'guest'
+          prompt: promptForBackend,
+          session_id: sessionId
         })
       });
 
