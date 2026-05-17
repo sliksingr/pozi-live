@@ -5016,7 +5016,7 @@ function switchHpTab(tab, el) {
     var thinking = addMsg('Thinking...', 'bot thinking');
 
     try {
-      var res = await fetch('/.netlify/functions/buildr-chat', {
+      var res = await fetch('/.netlify/functions/builder-chat', {
         method:'POST',
         headers:{'Content-Type':'application/json','x-api-key':ANTH_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
         body:JSON.stringify({
@@ -5027,7 +5027,7 @@ function switchHpTab(tab, el) {
         })
       });
       var data = await res.json();
-      var reply = (data.content&&data.content[0]&&data.content[0].text)?data.content[0].text:'Something went wrong — try again!';
+      var reply = data.reply || ((data.content&&data.content[0]&&data.content[0].text)?data.content[0].text:'Something went wrong — try again!');
       thinking.remove();
       addMsg(reply, 'bot');
       bHistory.push({role:'assistant',content:reply});
@@ -5107,7 +5107,7 @@ async function buildrEmbedSend() {
   var thinking = addBMsg('Thinking...', 'bot thinking');
 
   try {
-    var res = await fetch('/.netlify/functions/buildr-chat', {
+    var res = await fetch('/.netlify/functions/builder-chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -5123,7 +5123,7 @@ async function buildrEmbedSend() {
       })
     });
     var data = await res.json();
-    var reply = data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'Something went wrong — try again!';
+    var reply = data.reply || (data.content && data.content[0] && data.content[0].text ? data.content[0].text : 'Something went wrong — try again!');
     if (thinking) thinking.remove();
     addBMsg(reply, 'bot');
     buildrEmbedHistory.push({ role: 'assistant', content: reply });
@@ -5280,7 +5280,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     const pendingMsg = addBuildrMessage('Working it out...', { pending: true });
 
     try {
-      const res = await fetch('/.netlify/functions/buildr-chat', {
+      const res = await fetch('/.netlify/functions/builder-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
