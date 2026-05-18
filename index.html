@@ -1856,6 +1856,28 @@ img[alt*="POZi logo"]{
   background:rgba(0,143,85,0.06) !important;
 }
 
+
+/* ===== BUILDr-first homepage refinement ===== */
+.pozi-home-search-section{
+  padding-top:70px;
+  padding-bottom:90px;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(0,255,136,0.035), transparent 68%),
+    linear-gradient(180deg, transparent, rgba(0,0,0,0.08), transparent);
+}
+.pozi-home-search-section .hero-search-wrap{
+  max-width:900px;
+  margin:0 auto;
+}
+.pozi-home-search-section .hero-search-shell{
+  box-shadow:0 22px 70px rgba(0,0,0,0.24);
+}
+[data-theme="light"] .pozi-home-search-section{
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(0,160,80,0.08), transparent 68%),
+    linear-gradient(180deg, transparent, rgba(20,24,40,0.035), transparent);
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -3272,47 +3294,14 @@ img[alt*="POZi logo"]{
   <div class="hero-grid"></div>
   <h1></h1>
   <div class="hero-sub grad">All in One Place</div>
-  <p class="hero-desc">Search nearby stores and see live inventory before you head out. Search by item, SKU, or ZIP code and compare everything in one place.</p>
+  <p class="hero-desc">Start with BUILDr. Describe the project, get practical build notes, compile the basket, then let POZi source the items when you are ready.</p>
   
-  <div class="hero-search-wrap">
-    <div class="hero-search-shell">
-      <div id="heroDesktopSearch">
-        <div class="hero-search-row">
-          <input id="heroSearchInput" class="hero-search-input" type="search" placeholder="What are you looking for?" autocomplete="off">
-          <input id="heroZipInput" class="hero-zip-input" type="text" inputmode="numeric" placeholder="ZIP code" maxlength="10" autocomplete="postal-code">
-          <button id="heroSearchBtn" class="hero-search-btn">Search POZi</button>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-          <button id="heroLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px">Use my location</button>
-        </div>
-        <div class="hero-search-meta">
-          <div class="hero-free-pill" id="heroFreeSearchPill">10 guest searches remaining</div>
-          <button id="heroAccountBtn" class="hero-account-btn" type="button">Create Account</button>
-        </div>
-        <div class="hero-search-sub" id="heroSearchSub">Search here on desktop and see quick matches inline. Then search deeper in the Live Inventory tab.</div>
-        <div class="hero-results" id="heroResults">
-          <div class="hero-results-head">
-            <div class="hero-results-title">Quick Matches</div>
-            <button class="btn-s" id="heroViewAllBtn" style="padding:8px 14px;font-size:11px;margin:0">Search deeper</button>
-          </div>
-          <div class="hero-results-list" id="heroResultsList">
-            <div class="hero-results-empty">Search inventory by item and optional ZIP code.</div>
-          </div>
-        </div>
-      </div>
-      <div id="heroMobilePortal" style="display:none">
-        <div style="display:grid;gap:12px">
-          <div style="font-family:var(--fh);font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">To see live inventory, open or download POZi Go</div>
-          <div style="font-size:14px;color:var(--muted);line-height:1.7">POZi Go gives mobile shoppers the faster search experience for nearby inventory, scanning, and live lookup in one place.</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button id="heroMobileOpenBtn" class="hero-search-btn" style="flex:1;min-width:220px">Download POZi Go</button>
-            <button id="heroMobileAccountBtn" class="hero-account-btn" type="button" style="flex:1;min-width:180px">Create Account</button>
-          </div>
-          <div class="hero-search-sub" id="heroMobileSub" style="text-align:left">Mobile customers go straight into POZi Go while desktop customers can preview matches here and search deeper in Live Inventory.</div>
-        </div>
-      </div>
-    </div>
+
+  <div class="hero-actions">
+    <a class="btn-p" href="#buildr">Start with BUILDr</a>
+    <button class="btn-s" type="button" onclick="document.getElementById('pozi-home-search')?.scrollIntoView({behavior:'smooth',block:'start'});">Search inventory only</button>
   </div>
+
 
 
 </section>
@@ -3482,6 +3471,56 @@ img[alt*="POZi logo"]{
 </div>
 </section>
 
+
+
+<section class="section pozi-home-search-section" id="pozi-home-search">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:34px;">
+      <div class="eyebrow">POZi Search</div>
+      <h2 class="sec-title">Source the basket after BUILDr organizes it.</h2>
+      <p class="sec-sub">Search is still here for quick lookups, but the main POZi flow now starts with BUILDr planning the project first.</p>
+    </div>
+  <div class="hero-search-wrap">
+    <div class="hero-search-shell">
+      <div id="heroDesktopSearch">
+        <div class="hero-search-row">
+          <input id="heroSearchInput" class="hero-search-input" type="search" placeholder="What are you looking for?" autocomplete="off">
+          <input id="heroZipInput" class="hero-zip-input" type="text" inputmode="numeric" placeholder="ZIP code" maxlength="10" autocomplete="postal-code">
+          <button id="heroSearchBtn" class="hero-search-btn">Search POZi</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button id="heroLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px">Use my location</button>
+        </div>
+        <div class="hero-search-meta">
+          <div class="hero-free-pill" id="heroFreeSearchPill">10 guest searches remaining</div>
+          <button id="heroAccountBtn" class="hero-account-btn" type="button">Create Account</button>
+        </div>
+        <div class="hero-search-sub" id="heroSearchSub">Search here on desktop and see quick matches inline. Then search deeper in the Live Inventory tab.</div>
+        <div class="hero-results" id="heroResults">
+          <div class="hero-results-head">
+            <div class="hero-results-title">Quick Matches</div>
+            <button class="btn-s" id="heroViewAllBtn" style="padding:8px 14px;font-size:11px;margin:0">Search deeper</button>
+          </div>
+          <div class="hero-results-list" id="heroResultsList">
+            <div class="hero-results-empty">Search inventory by item and optional ZIP code.</div>
+          </div>
+        </div>
+      </div>
+      <div id="heroMobilePortal" style="display:none">
+        <div style="display:grid;gap:12px">
+          <div style="font-family:var(--fh);font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">To see live inventory, open or download POZi Go</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.7">POZi Go gives mobile shoppers the faster search experience for nearby inventory, scanning, and live lookup in one place.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="heroMobileOpenBtn" class="hero-search-btn" style="flex:1;min-width:220px">Download POZi Go</button>
+            <button id="heroMobileAccountBtn" class="hero-account-btn" type="button" style="flex:1;min-width:180px">Create Account</button>
+          </div>
+          <div class="hero-search-sub" id="heroMobileSub" style="text-align:left">Mobile customers go straight into POZi Go while desktop customers can preview matches here and search deeper in Live Inventory.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
 
 <footer>
   <div>
