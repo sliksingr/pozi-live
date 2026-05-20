@@ -4606,28 +4606,79 @@ var DEMO_DB = [
   }
 
 
+
+  function poziNearestKnownZip(coords){
+    if (!coords) return '';
+    var bestZip = '';
+    var bestMiles = Infinity;
+    Object.keys(POZI_ZIP_COORDS || {}).forEach(function(zip){
+      var miles = poziMiles(coords, POZI_ZIP_COORDS[zip]);
+      if (typeof miles === 'number' && isFinite(miles) && miles < bestMiles){
+        bestMiles = miles;
+        bestZip = zip;
+      }
+    });
+    return bestZip;
+  }
+
+  async function poziZipFromCoords(lat, lng){
+    try {
+      var url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' +
+        encodeURIComponent(lat) +
+        '&lon=' +
+        encodeURIComponent(lng) +
+        '&addressdetails=1';
+
+      var res = await fetch(url);
+      if (!res.ok) return '';
+
+      var data = await res.json();
+      var postcode = data && data.address && data.address.postcode ? String(data.address.postcode) : '';
+      var match = postcode.match(/\d{5}/);
+      return match ? match[0] : '';
+    } catch(e) {
+      return '';
+    }
+  }
+
   function requestPoziLocation(options){
     options = options || {};
     var statusEl = options.statusEl || null;
     var zipInput = options.zipInput || null;
     var after = options.after || function(){};
+
     if (!navigator.geolocation){
       if (statusEl) statusEl.textContent = 'Location not available on this browser. Try a ZIP code instead.';
       return;
     }
-    if (statusEl) statusEl.textContent = 'Finding your location...';
-    navigator.geolocation.getCurrentPosition(function(pos){
+
+    if (statusEl) statusEl.textContent = 'Finding your ZIP code...';
+
+    navigator.geolocation.getCurrentPosition(async function(pos){
       poziUserLocation = {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
         label: 'your location'
       };
+
+      var detectedZip = await poziZipFromCoords(pos.coords.latitude, pos.coords.longitude);
+
+      if (!detectedZip) {
+        detectedZip = poziNearestKnownZip(poziUserLocation);
+      }
+
       if (zipInput) {
-        zipInput.value = '';
-        zipInput.placeholder = 'Using your location';
+        zipInput.value = detectedZip || '';
+        zipInput.placeholder = detectedZip || 'ZIP detected';
         zipInput.dataset.locationActive = 'true';
       }
-      if (statusEl) statusEl.textContent = 'Using your location. Results show closest matches first within about 50 miles.';
+
+      if (statusEl) {
+        statusEl.textContent = detectedZip
+          ? ('Using ZIP ' + detectedZip + '. Results show closest matches first within about 50 miles.')
+          : 'Location detected. Enter a ZIP code if you want a more exact local search.';
+      }
+
       after();
     }, function(){
       if (statusEl) statusEl.textContent = 'Location lookup was denied. You can still search by ZIP code.';
