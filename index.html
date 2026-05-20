@@ -4228,6 +4228,33 @@ button,
 }
 </style>
 
+
+<style id="pozi-hero-headline-final-fix">
+.hero-main-title{
+  font-family:var(--fd) !important;
+  font-weight:800 !important;
+  letter-spacing:-0.065em !important;
+  line-height:1.02 !important;
+  text-rendering:geometricPrecision;
+  -webkit-font-smoothing:antialiased;
+}
+.hero-support-title{
+  display:block !important;
+  font-family:var(--fd) !important;
+  font-size:clamp(24px,4.2vw,46px) !important;
+  font-weight:800 !important;
+  line-height:1.08 !important;
+  letter-spacing:-0.05em !important;
+  text-align:center !important;
+  margin:-6px auto 28px !important;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  opacity:.9;
+}
+</style>
+
 </head>
 <body>
 
@@ -4319,7 +4346,8 @@ button,
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <h1></h1>
-  <div class="hero-sub grad">Plan Your Project<br><span class="hero-sub-small">All in one place.</span></div>
+  <div class="hero-sub grad hero-main-title">Plan Your Project</div>
+  <div class="hero-sub-small hero-support-title">All in one place.</div>
   <p class="hero-desc">Start with BUILDr. Organize the project, create your build list, then let POZi find the materials when you are ready.</p>
   
 
