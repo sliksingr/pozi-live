@@ -31,7 +31,7 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 <!-- POZi How It Works build notes folded into existing flow v3 -->
 <!-- POZi humanized build-list copy update -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Sora:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap">
 <style>
 
 /* ════════════════════════════════════
@@ -45,6 +45,7 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
   --border: #2a2a45;
   --muted:  #c0c0d8;
   --fh: 'Syne', sans-serif;
+  --fd: 'Sora', sans-serif;
   --fb: 'Inter', sans-serif;
   --nh: 64px;
 }
@@ -2316,6 +2317,86 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 @media(max-width:900px){
   .account-toggle span:nth-child(2){display:inline;}
   .account-caret{display:none;}
+}
+
+
+/* ===== Readable headline typography update =====
+   Sora is used for long display headlines.
+   Syne stays for buttons, nav, pills, badges, labels, and short brand accents. */
+.hero h1,
+.hero-sub,
+.sec-title,
+.stitle,
+.cta-title,
+.mq,
+.ttitle,
+.saving-title,
+.bc-step-title,
+.worth-title,
+.value-title,
+.promise-title,
+.live-title,
+.ss-title,
+.modal-title,
+.go-title,
+.page-hero h1,
+.pozi-results-head h3,
+.pozi-source-search-card h2,
+.buildr-panel-title,
+.buildr-card-title,
+.buildr-response-title,
+.buildr-output-title,
+.pricing-card .tier-name,
+.tier-name,
+.sc-card h3,
+.projects-title,
+.project-empty-title,
+.pozi-handoff-title{
+  font-family:var(--fd) !important;
+  font-weight:800 !important;
+  letter-spacing:-0.055em !important;
+  text-rendering:geometricPrecision;
+  -webkit-font-smoothing:antialiased;
+}
+
+.hero-sub,
+.sec-title,
+.page-hero h1{
+  line-height:1.04 !important;
+}
+
+.buildr-panel-title,
+.modal-title,
+.tier-name,
+.pozi-results-head h3{
+  line-height:1.12 !important;
+}
+
+/* Keep compact UI elements in the futuristic POZi voice */
+button,
+.btn-p,
+.btn-s,
+.nav-cta,
+.account-toggle,
+.account-item,
+.nl,
+.m-nl,
+.eyebrow,
+.badge,
+.tier-label,
+.tier-btn,
+.featured-badge,
+.form-label,
+.modal-live-lbl,
+.pozi-source-kicker,
+.buildr-kicker,
+.buildr-prompt-label,
+.buildr-note-pill,
+.buildr-output-pill,
+.hero-auth-title,
+.hero-auth-primary,
+.hero-auth-secondary{
+  font-family:var(--fh);
 }
 
 </style>
