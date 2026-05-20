@@ -3825,6 +3825,63 @@ button,
 }
 </style>
 
+
+<style id="pozi-pricing-card-layout-fix">
+/* Final pricing card/table alignment pass */
+.pricing-grid{
+  align-items:stretch !important;
+}
+.pricing-grid > .pricing-card{
+  height:100% !important;
+  min-height:1040px !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+.pricing-grid > .pricing-card .tier-features{
+  flex:1 1 auto !important;
+  margin-bottom:28px !important;
+}
+.pricing-grid > .pricing-card .tier-btn{
+  margin-top:auto !important;
+  align-self:center !important;
+  width:100% !important;
+  max-width:260px !important;
+  min-width:260px !important;
+  min-height:58px !important;
+  padding:0 22px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  line-height:1.05 !important;
+  font-size:15px !important;
+  border-radius:16px !important;
+  margin-bottom:6px !important;
+}
+@media(max-width:1180px){
+  .pricing-grid > .pricing-card{
+    min-height:1080px !important;
+  }
+  .pricing-grid > .pricing-card .tier-btn{
+    max-width:240px !important;
+    min-width:240px !important;
+    font-size:14px !important;
+  }
+}
+@media(max-width:900px){
+  .pricing-grid > .pricing-card{
+    min-height:auto !important;
+  }
+  .pricing-grid > .pricing-card .tier-btn{
+    max-width:none !important;
+    min-width:0 !important;
+    width:100% !important;
+    white-space:normal !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -4481,7 +4538,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99">Start Consumer Plan</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99">Start Consumer</button>
       </div>
 
       <div class="pricing-card featured">
