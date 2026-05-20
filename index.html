@@ -5970,7 +5970,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     basketBtn.setAttribute('aria-disabled','false');
     basketBtn.classList.remove('is-locked');
     basketBtn.classList.add('is-ready');
-    basketStatus.textContent = 'Project list ready. Create your basket when you’re finished.';
+    basketStatus.textContent = 'Build list ready. Choose Create Build List when you’re finished.';
     basketStatus.className = 'buildr-basket-status ok';
   }
 
@@ -6010,12 +6010,15 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     renderOutputItems(items);
     renderBuildNotes(notes);
 
-    const readyLanguage = /(build-list-ready|basket ready|project list ready|shopping list|material list|materials list|create (your )?basket|ready to source|ready for sourcing|final list|compiled)/i.test(buildrText);
+    const readyLanguage = /(build[-\s]*list\s*(?:is\s*)?ready|project\s*list\s*(?:is\s*)?ready|material(?:s)?\s*list\s*(?:is\s*)?ready|materials?\s*(?:are\s*)?ready|items?\s*list\s*(?:is\s*)?ready|ready\s*to\s*source|ready\s*for\s*sourcing|final\s*(?:build\s*)?list|compiled\s*(?:build\s*)?list|press\s*(?:the\s*)?(?:create\s*)?(?:build\s*list|create\s*build\s*list|create\s*basket)|hit\s*(?:create\s*)?(?:build\s*list|create\s*build\s*list|create\s*basket)|choose\s*create\s*build\s*list)/i.test(buildrText);
 
-    if (items.length >= 3 && readyLanguage){
+    // Best workflow:
+    // BUILDr decides when the list is finished. The button stays locked until
+    // BUILDr confirms the build list is ready and there are sourceable items.
+    if (items.length > 0 && readyLanguage){
       setBasketReady(items);
     } else if (items.length > 0){
-      setBasketLocked('BUILDr is compiling ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '. Keep refining until the list is ready.');
+      setBasketLocked('BUILDr is compiling ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '. Keep refining until BUILDr says the build list is ready.');
     } else {
       setBasketLocked('BUILDr will unlock this when your item list is ready.');
     }
