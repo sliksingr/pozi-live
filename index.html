@@ -4013,6 +4013,53 @@ button,
 }
 </style>
 
+
+<style id="pozi-plan-overview-account-polish">
+/* Remove leftover comparison icon/square */
+.bc-sub-icon,
+.comparison-icon,
+.plan-overview-icon{
+  display:none !important;
+}
+.bc-sub-header{
+  gap:0 !important;
+}
+
+/* Make Account match the nav scale better */
+.account-toggle{
+  padding:7px 13px !important;
+  min-height:34px !important;
+  border-radius:10px !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  letter-spacing:0 !important;
+  color:#e9e9f7 !important;
+  background:rgba(255,255,255,0.045) !important;
+  border-color:rgba(255,255,255,0.10) !important;
+  transform:none !important;
+}
+.account-toggle:hover,
+.account-toggle.open{
+  background:rgba(0,255,136,0.075) !important;
+  border-color:rgba(0,255,136,0.18) !important;
+  transform:none !important;
+}
+.account-dot{
+  width:7px !important;
+  height:7px !important;
+  box-shadow:0 0 10px rgba(0,255,136,.45) !important;
+}
+.account-caret{
+  font-size:10px !important;
+}
+@media(max-width:1100px){
+  .account-toggle{
+    padding:7px 11px !important;
+    font-size:12px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -4481,7 +4528,6 @@ button,
 
     <div class="saving-card" style="margin-bottom:40px;">
       <div class="bc-sub-header">
-        <div class="bc-sub-icon">⚡</div>
         <div class="bc-sub-title">
 Search Smarter</div>
       </div>
@@ -4723,7 +4769,6 @@ Search Smarter</div>
 
     <div class="saving-card" style="margin-bottom:42px;">
       <div class="bc-sub-header">
-        <div class="bc-sub-icon"></div>
         <div class="bc-sub-title">Plan Overview</div>
       </div>
 
