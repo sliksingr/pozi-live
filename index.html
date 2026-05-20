@@ -1978,6 +1978,28 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   line-height:1.6;
 }
 
+
+/* ===== SEARCH PAGE EMPTY STATE: no default fake cards ===== */
+#inventoryGrid .live-empty{
+  min-height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:1px dashed rgba(0,255,136,0.22);
+  border-radius:18px;
+  background:rgba(8,12,32,0.35);
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+  padding:32px 24px;
+}
+[data-theme="light"] #inventoryGrid .live-empty{
+  background:#fff;
+  color:#4f5363;
+  border-color:rgba(0,160,80,0.22);
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -3669,7 +3691,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
       <div class="pozi-source-kicker">SEARCH ANYTHING</div>
       <h2>Find products, materials, tools, or project items.</h2>
       <p>
-        Search directly, or bring items over from a BUILDr basket. POZi uses sourcing search to steer you toward useful product and retailer results.
+        Search directly, or bring items over from BUILDr. POZi shows real product and retailer results after you run a search.
       </p>
 
       <div class="live-search-card pozi-source-search-card">
@@ -3695,10 +3717,10 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
         <div class="pozi-source-kicker">SOURCING RESULTS</div>
         <h3>Product and retailer paths</h3>
       </div>
-      <div class="pozi-results-note">Live POZi sourcing results appear here after you search.<br><span class="search-placeholder-note">Run a search to find local materials, tools, products, and nearby inventory.</span></div>
+      <div class="pozi-results-note">Real POZi sourcing results will appear here after you run a search.<br><span class="search-placeholder-note">Run a search to find local materials, tools, products, and nearby inventory.</span></div>
     </div>
     <div id="inventoryGrid" class="live-results-grid">
-      <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
+      <div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>
     </div>
   </div>
 
@@ -4475,9 +4497,9 @@ var DEMO_DB = [
   function renderLiveDefault(){
     var g = document.getElementById('inventoryGrid');
     var st = document.getElementById('liveResultsStatus');
-    if (st) st.textContent = 'Showing sample live inventory. Search to narrow results.';
+    if (st) st.textContent = 'Run a search to see materials, tools, products, and nearby inventory.';
     if (!g) return;
-    renderLiveResults(DEMO_DB.slice(0,8), '');
+    g.innerHTML = '<div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>';
   }
 
   function renderLiveResults(rows, query){
@@ -4489,7 +4511,7 @@ var DEMO_DB = [
       if (st) st.textContent = 'Search POZi to source project items.';
       return;
     }
-    if (st) st.textContent = query ? ('Showing closest available matches for “' + query + '”.') : 'Showing sample live inventory.';
+    if (st) st.textContent = query ? ('Showing closest available matches for “' + query + '”.') : 'Run a search to see materials, tools, products, and nearby inventory.';
     g.innerHTML = rows.map(function(x){
       var sm = heroStoreMeta(x.store_key) || {};
       var qty = Number(x.inventory_quantity || x.quantity || 0);
@@ -4507,21 +4529,45 @@ var DEMO_DB = [
     if (ts) ts.textContent = new Date().toLocaleTimeString();
   }
 
-  function runLiveSearch(){
+  async function runLiveSearch(){
     var input = document.getElementById('liveSearchInput');
     var zipInput = document.getElementById('liveZipInput');
     var q = input ? input.value.trim() : '';
     var zip = zipInput ? zipInput.value.trim() : '';
-    if (!q){ renderLiveDefault(); return; }
-    var rows = DEMO_DB.filter(function(x){
-      var hay = [x.name, x.brand, x.sku, x.category].join(' ').toLowerCase();
-      return hay.indexOf(q.toLowerCase()) > -1 || q.toLowerCase().split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
-    });
-    rows = poziSortRowsByDistance(rows, zip);
-    var label = q;
-    var locLabel = poziLocationLabel(zip);
-    if (locLabel) label += ' near ' + locLabel + ' (closest first, about 50 miles)';
-    renderLiveResults(rows, label);
+    var g = document.getElementById('inventoryGrid');
+    var st = document.getElementById('liveResultsStatus');
+
+    if (!q){
+      renderLiveDefault();
+      return;
+    }
+
+    if (st) st.textContent = 'Searching POZi for “' + q + '”.';
+    if (g) g.innerHTML = '<div class="live-empty">Searching live inventory for “' + q + '”...</div>';
+
+    try {
+      var rows = [];
+      if (heroSB) {
+        var query = heroSB
+          .from('inventory')
+          .select('*')
+          .or('product_name.ilike.%' + q + '%,sku.ilike.%' + q + '%,store_name.ilike.%' + q + '%,barcode.ilike.%' + q + '%');
+
+        var out = await query.limit(24);
+        rows = out.data || [];
+      }
+
+      rows = poziSortRowsByDistance(rows, zip);
+
+      var label = q;
+      var locLabel = poziLocationLabel(zip);
+      if (locLabel) label += ' near ' + locLabel + ' (closest first, about 50 miles)';
+
+      renderLiveResults(rows, label);
+    } catch (e) {
+      if (st) st.textContent = 'Search is having trouble connecting. Try again in a moment.';
+      if (g) g.innerHTML = '<div class="live-empty">Live sourcing results could not load. Try again in a moment.</div>';
+    }
   }
 
   async function runHeroSearch(){
