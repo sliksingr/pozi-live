@@ -3719,6 +3719,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
       <button id="heroSignOutBtn" class="hero-auth-secondary" type="button" style="display:none">Sign Out</button>
     </div>
     <div class="hero-auth-status" id="heroAuthStatus">Guest searches enabled</div>
+    <button id="heroCheckoutBtn" class="hero-auth-primary" type="button" style="display:none;margin-top:10px;width:100%">Continue to Checkout</button>
   </div>
 </div>
 
@@ -4249,7 +4250,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-s contact-trigger" type="button">Start Consumer Plan</button>
+        <button class="tier-btn tier-btn-s plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99">Start Consumer Plan</button>
       </div>
 
       <div class="pricing-card featured">
@@ -4274,7 +4275,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Priority Features</strong>Access advanced BUILDr and sourcing tools as they launch.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p contact-trigger" type="button">Start Pro Plan</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99">Start Pro Plan</button>
       </div>
 
       <div class="pricing-card">
@@ -5030,6 +5031,7 @@ var DEMO_DB = [
     if (m) m.classList.remove('show');
   }
   function updateHeroAccountUi(){
+    window.heroCurrentUser = heroCurrentUser;
     var accountBtn = document.getElementById('heroAccountBtn');
     var mobileAccountBtn = document.getElementById('heroMobileAccountBtn');
     var pill = document.getElementById('heroFreeSearchPill');
@@ -6571,6 +6573,95 @@ document.addEventListener('click', function(e){
       return false;
     }
   }, true);
+})();
+</script>
+
+
+<script>
+(function(){
+  var selectedPOZiPlan = null;
+
+  function setAuthText(title, sub, status){
+    var titleEl = document.querySelector('#heroAuthModal .hero-auth-title');
+    var subEl = document.getElementById('heroAuthSub');
+    var statusEl = document.getElementById('heroAuthStatus');
+    if (titleEl && title) titleEl.textContent = title;
+    if (subEl && sub) subEl.textContent = sub;
+    if (statusEl && status) statusEl.textContent = status;
+  }
+
+  function showHeroAuth(){
+    var modal = document.getElementById('heroAuthModal');
+    if (modal) modal.classList.add('show');
+  }
+
+  function planCheckoutMessage(){
+    if (!selectedPOZiPlan) return;
+    var statusEl = document.getElementById('heroAuthStatus');
+    var checkoutBtn = document.getElementById('heroCheckoutBtn');
+
+    if (statusEl) {
+      statusEl.textContent = selectedPOZiPlan.name + ' selected at ' + selectedPOZiPlan.price + '/month. Stripe checkout still needs to be connected.';
+    }
+    if (checkoutBtn) {
+      checkoutBtn.style.display = '';
+      checkoutBtn.textContent = 'Continue to Checkout — ' + selectedPOZiPlan.name;
+    }
+  }
+
+  function startPOZiPlan(plan){
+    selectedPOZiPlan = plan;
+
+    // heroCurrentUser exists in the main auth script when Supabase auth is active.
+    var signedIn = false;
+    try { signedIn = !!window.heroCurrentUser; } catch(e) { signedIn = false; }
+
+    if (signedIn) {
+      setAuthText(
+        'Finish your ' + plan.name,
+        'You are signed in. The next step is connecting this button to Stripe Checkout for ' + plan.price + ' per month.',
+        ''
+      );
+      showHeroAuth();
+      planCheckoutMessage();
+      return;
+    }
+
+    setAuthText(
+      'Create your POZi account',
+      'Create an account first, then continue to checkout for the ' + plan.name + ' at ' + plan.price + ' per month.',
+      'Create or sign in to continue with ' + plan.name + '.'
+    );
+
+    var checkoutBtn = document.getElementById('heroCheckoutBtn');
+    if (checkoutBtn) checkoutBtn.style.display = 'none';
+
+    showHeroAuth();
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('.plan-start-btn');
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    startPOZiPlan({
+      key: btn.getAttribute('data-plan') || '',
+      name: btn.getAttribute('data-plan-name') || btn.textContent.trim(),
+      price: btn.getAttribute('data-plan-price') || ''
+    });
+  }, true);
+
+  document.addEventListener('click', function(e){
+    if (!e.target || e.target.id !== 'heroCheckoutBtn') return;
+    e.preventDefault();
+
+    var statusEl = document.getElementById('heroAuthStatus');
+    if (statusEl) {
+      statusEl.textContent = 'Stripe checkout is not connected yet. Next backend step: create a Netlify Function that starts a Stripe Checkout Session for this plan.';
+    }
+  });
 })();
 </script>
 
