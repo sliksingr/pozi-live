@@ -2298,7 +2298,25 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 [data-theme="light"] .account-menu{background:rgba(255,255,255,0.98);border-color:rgba(0,0,0,0.10);}
 [data-theme="light"] .account-item{color:#242736;}
 [data-theme="light"] .account-item:hover{background:rgba(0,160,80,0.08);color:#0a0a14;}
-@media(max-width:920px){.account-menu-wrap{display:none;}}
+@media(max-width:760px){.account-menu-wrap{display:none;}}
+
+
+/* ===== Account button tablet visibility fix ===== */
+.account-toggle{
+  min-width:0;
+  white-space:nowrap;
+}
+@media(max-width:1100px){
+  nav{padding:0 24px;}
+  .nav-links{gap:0;}
+  .nl{padding:7px 10px;font-size:12px;}
+  .account-toggle{padding:10px 12px;font-size:12px;}
+  .nav-cta{padding:12px 16px;font-size:12px;}
+}
+@media(max-width:900px){
+  .account-toggle span:nth-child(2){display:inline;}
+  .account-caret{display:none;}
+}
 
 </style>
 
