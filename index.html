@@ -3793,6 +3793,38 @@ button,
 </style>
 
 <!-- Light mode readability refinement build v2 actual data-theme selector -->
+
+<style id="pozi-pricing-final-cta-fix">
+/* Final pricing CTA visibility pass */
+.pricing-card .tier-btn{
+  border-radius:14px !important;
+  font-weight:800 !important;
+  min-height:54px !important;
+  letter-spacing:.2px !important;
+}
+.pricing-card .tier-btn-p{
+  background:linear-gradient(135deg,rgba(0,255,136,.78),rgba(0,180,255,.64)) !important;
+  color:#04130d !important;
+  border:1px solid rgba(0,255,136,.24) !important;
+  box-shadow:0 12px 30px rgba(0,255,136,.10),0 0 24px rgba(0,160,255,.08) !important;
+}
+.pricing-card .tier-btn-p:hover{
+  filter:brightness(1.06) !important;
+  transform:translateY(-2px) !important;
+  box-shadow:0 16px 34px rgba(0,255,136,.16),0 0 28px rgba(0,160,255,.12) !important;
+}
+.pricing-card .retailer-btn{
+  background:linear-gradient(135deg,rgba(45,75,135,.42),rgba(18,32,70,.62)) !important;
+  color:#f5f7ff !important;
+  border:1px solid rgba(95,150,255,.30) !important;
+  box-shadow:0 12px 28px rgba(0,80,255,.10) !important;
+}
+.pricing-card .retailer-btn:hover{
+  background:linear-gradient(135deg,rgba(60,95,160,.52),rgba(22,40,82,.72)) !important;
+  border-color:rgba(0,200,255,.35) !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4449,7 +4481,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-s plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99" onclick="window.POZiStartPlanFromButton && window.POZiStartPlanFromButton(this); return false;">Start Consumer Plan</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99">Start Consumer Plan</button>
       </div>
 
       <div class="pricing-card featured">
@@ -4474,7 +4506,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Priority Features</strong>Access advanced BUILDr and sourcing tools as they launch.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99" onclick="window.POZiStartPlanFromButton && window.POZiStartPlanFromButton(this); return false;">Start Pro Plan</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99">Start Pro Plan</button>
       </div>
 
       <div class="pricing-card">
@@ -6884,79 +6916,74 @@ document.addEventListener('click', function(e){
 </script>
 
 
-<script>
+
+
+
+<script id="pozi-pricing-final-plan-flow">
 (function(){
   window.POZiSelectedPlan = null;
 
-  function $(id){ return document.getElementById(id); }
+  function byId(id){ return document.getElementById(id); }
 
-  function getAuthUser(){
-    if (window.heroCurrentUser) return window.heroCurrentUser;
-    return null;
+  function getCurrentUser(){
+    return window.heroCurrentUser || null;
   }
 
-  function setModalMode(mode){
-    var modal = $('heroAuthModal');
-    if (!modal) return;
-    modal.classList.remove('plan-auth','plan-checkout');
-    modal.classList.add(mode);
-  }
-
-  function showAuthModal(){
-    var modal = $('heroAuthModal');
+  function showModal(){
+    var modal = byId('heroAuthModal');
     if (modal) modal.classList.add('show');
   }
 
-  function setAuthText(title, sub, status){
+  function setModalText(title, sub, status){
     var titleEl = document.querySelector('#heroAuthModal .hero-auth-title');
-    var subEl = $('heroAuthSub');
-    var statusEl = $('heroAuthStatus');
-    if (titleEl && title) titleEl.textContent = title;
-    if (subEl && sub) subEl.textContent = sub;
-    if (statusEl && status) statusEl.textContent = status;
+    var subEl = byId('heroAuthSub');
+    var statusEl = byId('heroAuthStatus');
+    if (titleEl) titleEl.textContent = title;
+    if (subEl) subEl.textContent = sub;
+    if (statusEl) statusEl.textContent = status;
   }
 
-  function updateCheckoutButton(plan){
-    var btn = $('heroCheckoutBtn');
-    if (!btn) return;
-    if (!plan){
-      btn.style.display = 'none';
-      return;
+  function setCheckoutVisible(visible, plan){
+    var checkoutBtn = byId('heroCheckoutBtn');
+    if (!checkoutBtn) return;
+    checkoutBtn.style.display = visible ? '' : 'none';
+    if (visible && plan) checkoutBtn.textContent = 'Continue to Checkout — ' + plan.name;
+  }
+
+  function showAccountPrompt(plan){
+    var modal = byId('heroAuthModal');
+    if (modal) {
+      modal.classList.remove('plan-checkout');
+      modal.classList.add('plan-auth');
     }
-    btn.style.display = '';
-    btn.textContent = 'Continue to Checkout — ' + plan.name;
-  }
-
-  function showCreateAccountForPlan(plan){
-    setModalMode('plan-auth');
-    setAuthText(
+    setModalText(
       'Create your POZi account',
       'Create an account or sign in first. Then you can continue to checkout for the ' + plan.name + ' at ' + plan.price + ' per month.',
       'Account required before starting ' + plan.name + '.'
     );
-    updateCheckoutButton(null);
-    showAuthModal();
+    setCheckoutVisible(false);
+    showModal();
   }
 
-  function showCheckoutForPlan(plan){
-    setModalMode('plan-checkout');
-    setAuthText(
+  function showCheckoutPrompt(plan){
+    var modal = byId('heroAuthModal');
+    if (modal) {
+      modal.classList.remove('plan-auth');
+      modal.classList.add('plan-checkout');
+    }
+    setModalText(
       'Finish your ' + plan.name,
-      'You are signed in. The next step is Stripe Checkout for ' + plan.price + ' per month.',
-      'Stripe checkout is not connected yet. Next backend step: create a Netlify Function that starts a Stripe Checkout Session for this plan.'
+      'You are signed in. Next step: connect this button to Stripe Checkout for ' + plan.price + ' per month.',
+      'Stripe checkout is not connected yet. This is ready for a Netlify Function that creates a Stripe Checkout Session.'
     );
-    updateCheckoutButton(plan);
-    showAuthModal();
+    setCheckoutVisible(true, plan);
+    showModal();
   }
 
   window.POZiStartPlan = function(plan){
     window.POZiSelectedPlan = plan;
-
-    if (getAuthUser()){
-      showCheckoutForPlan(plan);
-    } else {
-      showCreateAccountForPlan(plan);
-    }
+    if (getCurrentUser()) showCheckoutPrompt(plan);
+    else showAccountPrompt(plan);
   };
 
   window.POZiStartPlanFromButton = function(btn){
@@ -6968,14 +6995,7 @@ document.addEventListener('click', function(e){
     });
   };
 
-  window.POZiAfterAuthPlanCheck = function(){
-    if (window.POZiSelectedPlan && getAuthUser()){
-      showCheckoutForPlan(window.POZiSelectedPlan);
-    }
-  };
-
-  // Capture + bubble listeners, so this works even if other pricing/contact handlers exist.
-  function handlePlanClick(e){
+  function onPlanClick(e){
     var btn = e.target.closest && e.target.closest('.plan-start-btn');
     if (!btn) return;
     e.preventDefault();
@@ -6985,26 +7005,30 @@ document.addEventListener('click', function(e){
     return false;
   }
 
-  document.addEventListener('click', handlePlanClick, true);
-  document.addEventListener('click', handlePlanClick, false);
+  document.addEventListener('click', onPlanClick, true);
+  document.addEventListener('click', onPlanClick, false);
 
   document.addEventListener('click', function(e){
     if (!e.target || e.target.id !== 'heroCheckoutBtn') return;
     e.preventDefault();
+    var statusEl = byId('heroAuthStatus');
     var plan = window.POZiSelectedPlan;
-    var statusEl = $('heroAuthStatus');
     if (statusEl) {
       statusEl.textContent = plan
-        ? 'Stripe checkout placeholder for ' + plan.name + '. Connect this to a Netlify Function that creates a Stripe Checkout Session.'
+        ? 'Stripe checkout placeholder for ' + plan.name + '. Connect this to /.netlify/functions/create-checkout-session.'
         : 'Choose a plan first.';
     }
   });
 
-  // After auth actions, re-check selected plan and reveal checkout if the user became signed in.
+  // After sign in/sign up, reveal checkout if a plan was selected.
   document.addEventListener('click', function(e){
     if (!e.target || (e.target.id !== 'heroSignUpBtn' && e.target.id !== 'heroSignInBtn')) return;
-    setTimeout(function(){ window.POZiAfterAuthPlanCheck(); }, 900);
-    setTimeout(function(){ window.POZiAfterAuthPlanCheck(); }, 1800);
+    setTimeout(function(){
+      if (window.POZiSelectedPlan && getCurrentUser()) showCheckoutPrompt(window.POZiSelectedPlan);
+    }, 1200);
+    setTimeout(function(){
+      if (window.POZiSelectedPlan && getCurrentUser()) showCheckoutPrompt(window.POZiSelectedPlan);
+    }, 2400);
   }, true);
 })();
 </script>
