@@ -3999,6 +3999,20 @@ button,
 }
 </style>
 
+
+<style id="pozi-remove-pricing-emojis">
+.comparison-title{
+  display:flex;
+  align-items:center;
+  gap:0;
+}
+.example-card .emoji,
+.example-card .icon,
+.example-icon{
+  display:none !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4061,7 +4075,7 @@ button,
 
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="m-nl" data-page="home">🏠 Home</button>
+  <button class="m-nl" data-page="home"> Home</button>
   <button class="m-nl" id="mobileLive" data-page="live">⚡ POZi Search</button>
   <button class="m-nl" data-page="how">⚡ How It Works</button>
   <button class="m-nl" data-page="pricing">💰 Pricing</button>
@@ -4709,8 +4723,8 @@ Search Smarter</div>
 
     <div class="saving-card" style="margin-bottom:42px;">
       <div class="bc-sub-header">
-        <div class="bc-sub-icon">📊</div>
-        <div class="bc-sub-title">What Each Plan Gets</div>
+        <div class="bc-sub-icon"></div>
+        <div class="bc-sub-title">Plan Overview</div>
       </div>
 
       <div class="sc-card">
@@ -4767,9 +4781,9 @@ Search Smarter</div>
 
     <div class="grid-2" style="margin-bottom:44px;">
       <div class="worth-card">
-        <div class="worth-icon">🏠</div>
+        <div class="worth-icon"></div>
         <div>
-          <div class="worth-title">Consumer Example</div>
+          <div class="worth-title">Consumer Workflow Example</div>
           <div class="worth-desc">
             “Help me design a living room under budget.” BUILDr organizes the list, then POZi helps source the products when the basket is ready.
           </div>
@@ -4777,9 +4791,9 @@ Search Smarter</div>
       </div>
 
       <div class="worth-card">
-        <div class="worth-icon">🛠️</div>
+        <div class="worth-icon"></div>
         <div>
-          <div class="worth-title">Contractor Pro Example</div>
+          <div class="worth-title">Contractor Workflow Example</div>
           <div class="worth-desc">
             “Build a 12x20 cedar deck with stairs.” BUILDr creates the material plan, then POZi runs a sourcing pass for the basket.
           </div>
@@ -5012,7 +5026,7 @@ Search Smarter</div>
 
   /* ── SHARED SEARCH ENGINE (HOME + LIVE INVENTORY) ── */
 var STORES = [
-  { key:'hd_rv', chain:'Home Depot', name:'Home Depot', loc:'Roseville', addr:'10001 Fairway Dr, Roseville CA', lat:38.7907, lng:-121.2910, icon:'🏠', color:'#f96302', bg:'rgba(249,99,2,.12)', platform:'homedepot_search', params:{store_no:'6688',zipcode:'95678'}, link:function(q){return 'https://www.homedepot.com/s/'+encodeURIComponent(q)+'?store=6688';} },
+  { key:'hd_rv', chain:'Home Depot', name:'Home Depot', loc:'Roseville', addr:'10001 Fairway Dr, Roseville CA', lat:38.7907, lng:-121.2910, icon:'', color:'#f96302', bg:'rgba(249,99,2,.12)', platform:'homedepot_search', params:{store_no:'6688',zipcode:'95678'}, link:function(q){return 'https://www.homedepot.com/s/'+encodeURIComponent(q)+'?store=6688';} },
   { key:'lo_rv', chain:"Lowe's", name:"Lowe's", loc:'Roseville', addr:'10201 Fairway Dr, Roseville CA', lat:38.7919, lng:-121.2895, icon:'🔵', color:'#4f8dff', bg:'rgba(79,141,255,.12)', platform:'lowes_search', params:{store_no:'1207'}, link:function(q){return 'https://www.lowes.com/search?searchTerm='+encodeURIComponent(q)+'&storeId=1207';} },
   { key:'ace_gv', chain:'Ace Hardware', name:'B&C Ace Hardware', loc:'Grass Valley', addr:'Grass Valley, CA 95945', lat:39.2191, lng:-121.0611, icon:'🔴', color:'#ff4d73', bg:'rgba(255,77,115,.12)', platform:'acehardware_search', params:{zipcode:'95945'}, link:function(q){return 'https://www.acehardware.com/search?query='+encodeURIComponent(q);} },
   { key:'hfl_gv', chain:'POZi Local', name:'Hills Flat Lumber', loc:'Grass Valley', addr:'Grass Valley, CA', lat:39.2191, lng:-121.0611, icon:'🌲', color:'#7ee39b', bg:'rgba(126,227,155,.12)', placeholder:true, link:function(){return '#';} },
