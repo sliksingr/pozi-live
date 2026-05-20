@@ -536,10 +536,36 @@ nav {
 .tf-text strong { color:#ccc; font-family:var(--fh); font-size:11px; display:block; margin-bottom:1px; }
 .tier-btn { width:100%; padding:13px; border-radius:10px; font-family:var(--fh); font-weight:700; font-size:13px; transition:all 0.2s; letter-spacing:0.5px; }
 .tier-btn:hover { transform:translateY(-1px); }
-.tier-btn-p { background:linear-gradient(135deg,var(--green),#00cc66); color:#000; }
+.tier-btn-p { 
+  background:linear-gradient(135deg,rgba(0,255,136,0.82),rgba(0,190,255,0.68)); 
+  color:#03120b;
+  border:1px solid rgba(0,255,136,0.16);
+}
+
 .tier-btn-p:hover { box-shadow:0 8px 24px rgba(0,255,136,0.25); }
-.tier-btn-s { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); }
+.tier-btn-s { 
+  background:linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.025));
+  color:#eef3ff; 
+  border:1px solid rgba(120,170,255,0.18);
+  box-shadow:0 8px 22px rgba(0,0,0,0.18);
+}
 .tier-btn-s:hover { background:rgba(255,255,255,0.05); }
+
+.tier-btn{
+  letter-spacing:0.35px;
+}
+.tier-btn:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.04);
+}
+.tier-btn-p:hover{
+  box-shadow:0 12px 28px rgba(0,255,136,0.14),0 0 18px rgba(0,180,255,0.10);
+}
+.tier-btn-s:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.035));
+  border-color:rgba(0,255,136,0.18);
+}
+
 
 .speed-compare { padding:0 20px 54px; max-width:860px; margin:0 auto; }
 .sc-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
@@ -2397,6 +2423,27 @@ button,
 .hero-auth-primary,
 .hero-auth-secondary{
   font-family:var(--fh);
+}
+
+
+/* ===== Pricing plan account/checkout flow ===== */
+.hero-auth-modal.plan-checkout .hero-auth-grid,
+.hero-auth-modal.plan-checkout #heroSignUpBtn,
+.hero-auth-modal.plan-checkout #heroSignInBtn{
+  display:none !important;
+}
+.hero-auth-modal.plan-auth .hero-auth-grid{
+  display:grid !important;
+}
+.hero-auth-modal.plan-auth #heroSignUpBtn,
+.hero-auth-modal.plan-auth #heroSignInBtn{
+  display:inline-flex !important;
+}
+
+
+.retailer-btn{
+  background:linear-gradient(180deg,rgba(0,140,255,0.08),rgba(255,255,255,0.03));
+  border-color:rgba(0,180,255,0.18);
 }
 
 </style>
@@ -4402,7 +4449,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-s plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99">Start Consumer Plan</button>
+        <button class="tier-btn tier-btn-s plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99" onclick="window.POZiStartPlanFromButton && window.POZiStartPlanFromButton(this); return false;">Start Consumer Plan</button>
       </div>
 
       <div class="pricing-card featured">
@@ -4427,7 +4474,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Priority Features</strong>Access advanced BUILDr and sourcing tools as they launch.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99">Start Pro Plan</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99" onclick="window.POZiStartPlanFromButton && window.POZiStartPlanFromButton(this); return false;">Start Pro Plan</button>
       </div>
 
       <div class="pricing-card">
@@ -4449,7 +4496,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>Hardware stores, suppliers, specialty shops, and regional retailers.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-s contact-trigger" type="button">Contact Us</button>
+        <button class="tier-btn tier-btn-s contact-trigger retailer-btn" type="button">Contact Us</button>
       </div>
 
     </div>
@@ -6729,93 +6776,7 @@ document.addEventListener('click', function(e){
 </script>
 
 
-<script>
-(function(){
-  var selectedPOZiPlan = null;
 
-  function setAuthText(title, sub, status){
-    var titleEl = document.querySelector('#heroAuthModal .hero-auth-title');
-    var subEl = document.getElementById('heroAuthSub');
-    var statusEl = document.getElementById('heroAuthStatus');
-    if (titleEl && title) titleEl.textContent = title;
-    if (subEl && sub) subEl.textContent = sub;
-    if (statusEl && status) statusEl.textContent = status;
-  }
-
-  function showHeroAuth(){
-    var modal = document.getElementById('heroAuthModal');
-    if (modal) modal.classList.add('show');
-  }
-
-  function planCheckoutMessage(){
-    if (!selectedPOZiPlan) return;
-    var statusEl = document.getElementById('heroAuthStatus');
-    var checkoutBtn = document.getElementById('heroCheckoutBtn');
-
-    if (statusEl) {
-      statusEl.textContent = selectedPOZiPlan.name + ' selected at ' + selectedPOZiPlan.price + '/month. Stripe checkout still needs to be connected.';
-    }
-    if (checkoutBtn) {
-      checkoutBtn.style.display = '';
-      checkoutBtn.textContent = 'Continue to Checkout — ' + selectedPOZiPlan.name;
-    }
-  }
-
-  function startPOZiPlan(plan){
-    selectedPOZiPlan = plan;
-
-    // heroCurrentUser exists in the main auth script when Supabase auth is active.
-    var signedIn = false;
-    try { signedIn = !!window.heroCurrentUser; } catch(e) { signedIn = false; }
-
-    if (signedIn) {
-      setAuthText(
-        'Finish your ' + plan.name,
-        'You are signed in. The next step is connecting this button to Stripe Checkout for ' + plan.price + ' per month.',
-        ''
-      );
-      showHeroAuth();
-      planCheckoutMessage();
-      return;
-    }
-
-    setAuthText(
-      'Create your POZi account',
-      'Create an account first, then continue to checkout for the ' + plan.name + ' at ' + plan.price + ' per month.',
-      'Create or sign in to continue with ' + plan.name + '.'
-    );
-
-    var checkoutBtn = document.getElementById('heroCheckoutBtn');
-    if (checkoutBtn) checkoutBtn.style.display = 'none';
-
-    showHeroAuth();
-  }
-
-  document.addEventListener('click', function(e){
-    var btn = e.target.closest && e.target.closest('.plan-start-btn');
-    if (!btn) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    startPOZiPlan({
-      key: btn.getAttribute('data-plan') || '',
-      name: btn.getAttribute('data-plan-name') || btn.textContent.trim(),
-      price: btn.getAttribute('data-plan-price') || ''
-    });
-  }, true);
-
-  document.addEventListener('click', function(e){
-    if (!e.target || e.target.id !== 'heroCheckoutBtn') return;
-    e.preventDefault();
-
-    var statusEl = document.getElementById('heroAuthStatus');
-    if (statusEl) {
-      statusEl.textContent = 'Stripe checkout is not connected yet. Next backend step: create a Netlify Function that starts a Stripe Checkout Session for this plan.';
-    }
-  });
-})();
-</script>
 
 
 <script>
@@ -6919,6 +6880,132 @@ document.addEventListener('click', function(e){
   document.addEventListener('click', function(e){
     if (e.target && (e.target.closest('#themeToggle') || e.target.closest('#mSwitch'))) setTimeout(syncAccountThemeLabel, 60);
   });
+})();
+</script>
+
+
+<script>
+(function(){
+  window.POZiSelectedPlan = null;
+
+  function $(id){ return document.getElementById(id); }
+
+  function getAuthUser(){
+    if (window.heroCurrentUser) return window.heroCurrentUser;
+    return null;
+  }
+
+  function setModalMode(mode){
+    var modal = $('heroAuthModal');
+    if (!modal) return;
+    modal.classList.remove('plan-auth','plan-checkout');
+    modal.classList.add(mode);
+  }
+
+  function showAuthModal(){
+    var modal = $('heroAuthModal');
+    if (modal) modal.classList.add('show');
+  }
+
+  function setAuthText(title, sub, status){
+    var titleEl = document.querySelector('#heroAuthModal .hero-auth-title');
+    var subEl = $('heroAuthSub');
+    var statusEl = $('heroAuthStatus');
+    if (titleEl && title) titleEl.textContent = title;
+    if (subEl && sub) subEl.textContent = sub;
+    if (statusEl && status) statusEl.textContent = status;
+  }
+
+  function updateCheckoutButton(plan){
+    var btn = $('heroCheckoutBtn');
+    if (!btn) return;
+    if (!plan){
+      btn.style.display = 'none';
+      return;
+    }
+    btn.style.display = '';
+    btn.textContent = 'Continue to Checkout — ' + plan.name;
+  }
+
+  function showCreateAccountForPlan(plan){
+    setModalMode('plan-auth');
+    setAuthText(
+      'Create your POZi account',
+      'Create an account or sign in first. Then you can continue to checkout for the ' + plan.name + ' at ' + plan.price + ' per month.',
+      'Account required before starting ' + plan.name + '.'
+    );
+    updateCheckoutButton(null);
+    showAuthModal();
+  }
+
+  function showCheckoutForPlan(plan){
+    setModalMode('plan-checkout');
+    setAuthText(
+      'Finish your ' + plan.name,
+      'You are signed in. The next step is Stripe Checkout for ' + plan.price + ' per month.',
+      'Stripe checkout is not connected yet. Next backend step: create a Netlify Function that starts a Stripe Checkout Session for this plan.'
+    );
+    updateCheckoutButton(plan);
+    showAuthModal();
+  }
+
+  window.POZiStartPlan = function(plan){
+    window.POZiSelectedPlan = plan;
+
+    if (getAuthUser()){
+      showCheckoutForPlan(plan);
+    } else {
+      showCreateAccountForPlan(plan);
+    }
+  };
+
+  window.POZiStartPlanFromButton = function(btn){
+    if (!btn) return;
+    window.POZiStartPlan({
+      key: btn.getAttribute('data-plan') || '',
+      name: btn.getAttribute('data-plan-name') || btn.textContent.trim(),
+      price: btn.getAttribute('data-plan-price') || ''
+    });
+  };
+
+  window.POZiAfterAuthPlanCheck = function(){
+    if (window.POZiSelectedPlan && getAuthUser()){
+      showCheckoutForPlan(window.POZiSelectedPlan);
+    }
+  };
+
+  // Capture + bubble listeners, so this works even if other pricing/contact handlers exist.
+  function handlePlanClick(e){
+    var btn = e.target.closest && e.target.closest('.plan-start-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    window.POZiStartPlanFromButton(btn);
+    return false;
+  }
+
+  document.addEventListener('click', handlePlanClick, true);
+  document.addEventListener('click', handlePlanClick, false);
+
+  document.addEventListener('click', function(e){
+    if (!e.target || e.target.id !== 'heroCheckoutBtn') return;
+    e.preventDefault();
+    var plan = window.POZiSelectedPlan;
+    var statusEl = $('heroAuthStatus');
+    if (statusEl) {
+      statusEl.textContent = plan
+        ? 'Stripe checkout placeholder for ' + plan.name + '. Connect this to a Netlify Function that creates a Stripe Checkout Session.'
+        : 'Choose a plan first.';
+    }
+  });
+
+  // After auth actions, re-check selected plan and reveal checkout if the user became signed in.
+  document.addEventListener('click', function(e){
+    if (!e.target || (e.target.id !== 'heroSignUpBtn' && e.target.id !== 'heroSignInBtn')) return;
+    setTimeout(function(){ window.POZiAfterAuthPlanCheck(); }, 900);
+    setTimeout(function(){ window.POZiAfterAuthPlanCheck(); }, 1800);
+  }, true);
 })();
 </script>
 
