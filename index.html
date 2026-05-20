@@ -4060,6 +4060,162 @@ button,
 }
 </style>
 
+
+<style id="pozi-build-notes-expanded-ui">
+.build-note-card,.builder-note-card,.note-card{
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.02));
+  padding:18px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.build-note-card .note-title,.builder-note-card .note-title,.note-card .note-title{
+  font-family:var(--fd);
+  font-size:16px;
+  font-weight:800;
+  color:#f3f6ff;
+  margin-bottom:10px;
+}
+.build-note-card .note-body,.builder-note-card .note-body,.note-card .note-body{
+  max-height:180px;
+  overflow:auto;
+  padding-right:6px;
+  color:#cfd5ef;
+  line-height:1.55;
+  font-size:14px;
+}
+.note-visual{
+  margin-top:14px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:14px;
+}
+.note-visual-label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(0,180,255,0.08);
+  border:1px solid rgba(0,180,255,0.18);
+  color:#a9ddff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.note-diagram-preview{
+  border-radius:14px;
+  min-height:120px;
+  border:1px dashed rgba(0,180,255,0.24);
+  background:linear-gradient(180deg,rgba(0,180,255,0.04),rgba(255,255,255,0.015));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#9fb7da;
+  font-size:13px;
+  text-align:center;
+  padding:18px;
+}
+.note-visual-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.note-visual-btn{
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:#eef3ff;
+  font-size:12px;
+  font-weight:700;
+}
+.note-visual-btn.primary{
+  background:linear-gradient(135deg,rgba(0,255,136,.74),rgba(0,180,255,.58));
+  color:#04130d;
+}
+</style>
+
+
+<style id="pozi-diagram-modal-css">
+.diagram-modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:15000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,.82);
+  backdrop-filter:blur(14px);
+}
+.diagram-modal-overlay.open{display:flex;}
+.diagram-modal{
+  width:min(980px,96vw);
+  max-height:92vh;
+  overflow:auto;
+  border-radius:26px;
+  border:1px solid rgba(0,255,136,.16);
+  background:linear-gradient(180deg,rgba(18,18,32,.98),rgba(8,8,18,.98));
+  box-shadow:0 30px 100px rgba(0,0,0,.62);
+  padding:30px;
+  position:relative;
+}
+.diagram-modal-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:22px;
+  border:1px solid rgba(255,255,255,.10);
+}
+.diagram-modal-kicker{
+  color:var(--green);
+  font-family:var(--fh);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.diagram-modal h2{
+  font-family:var(--fd);
+  font-size:clamp(26px,4vw,42px);
+  line-height:1.05;
+  margin-bottom:12px;
+}
+.diagram-modal p{
+  color:var(--muted);
+  line-height:1.7;
+  max-width:720px;
+  margin-bottom:22px;
+}
+.diagram-modal-stage{
+  min-height:420px;
+  border-radius:20px;
+  border:1px dashed rgba(0,180,255,.28);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(180deg,rgba(255,255,255,.035) 1px,transparent 1px),
+    radial-gradient(ellipse at 50% 0%,rgba(0,180,255,.09),transparent 60%),
+    rgba(255,255,255,.025);
+  background-size:32px 32px,32px 32px,auto,auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#aebfe6;
+  text-align:center;
+  padding:30px;
+}
+</style>
+
 </head>
 <body>
 
@@ -7301,6 +7457,97 @@ document.addEventListener('click', function(e){
     var featured = document.querySelector('.pricing-grid .pricing-card.featured');
     if (featured) selectPricingCard(featured);
     else if (cards[0]) selectPricingCard(cards[0]);
+  });
+})();
+</script>
+
+
+<div class="build-note-card">
+  <div class="note-title">Deck Board Spacing + Drainage Guidance</div>
+
+  <div class="note-body">
+    Allow approximately 1/8” spacing between pressure-treated deck boards to improve drainage and reduce expansion issues over time.
+    Check local code requirements for stair and railing spacing. Pre-drill near board edges to reduce splitting and crown boards consistently before fastening.
+
+    <br><br>
+
+    BUILDr Notes are now expanded directly in the interface so users can scroll through practical guidance without opening multiple dropdowns labeled “Build Notes.”
+  </div>
+
+  <div class="note-visual">
+    <div class="note-visual-label">Visual Layout Attached</div>
+
+    <div class="note-diagram-preview">
+      Diagram preview area for spacing layouts, cut sheets, framing references, measurement sketches, and plywood optimization plans.
+    </div>
+
+    <div class="note-visual-actions">
+      <button class="note-visual-btn primary" type="button">Open Full Screen</button>
+      
+      <button class="note-visual-btn" type="button">Save to Project</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="diagram-modal-overlay" id="diagramModal" aria-hidden="true">
+  <div class="diagram-modal" role="dialog" aria-modal="true" aria-labelledby="diagramModalTitle">
+    <button class="diagram-modal-close" id="diagramModalClose" type="button" aria-label="Close">×</button>
+    <div class="diagram-modal-kicker">BUILDr Visual</div>
+    <h2 id="diagramModalTitle">Diagram Preview</h2>
+    <p id="diagramModalCopy">
+      This preview is for planning guidance inside POZi. Export and client-ready PDF tools can be added later for higher-tier plans.
+    </p>
+    <div class="diagram-modal-stage" id="diagramModalStage">
+      Diagram preview area for spacing layouts, cut sheets, framing references, measurement sketches, and plywood optimization plans.
+    </div>
+  </div>
+</div>
+
+
+<script id="pozi-diagram-modal-js">
+(function(){
+  function openDiagramModal(source){
+    var overlay = document.getElementById('diagramModal');
+    var title = document.getElementById('diagramModalTitle');
+    var stage = document.getElementById('diagramModalStage');
+
+    if (!overlay) return;
+
+    var card = source ? source.closest('.build-note-card,.builder-note-card,.note-card') : null;
+    var noteTitle = card ? card.querySelector('.note-title') : null;
+    var preview = card ? card.querySelector('.note-diagram-preview') : null;
+
+    if (title && noteTitle) title.textContent = noteTitle.textContent.trim();
+    if (stage && preview) stage.textContent = preview.textContent.trim();
+
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+  }
+
+  function closeDiagramModal(){
+    var overlay = document.getElementById('diagramModal');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('.note-visual-btn');
+    if (btn && /open/i.test(btn.textContent || '')){
+      e.preventDefault();
+      openDiagramModal(btn);
+      return;
+    }
+
+    if (e.target && e.target.id === 'diagramModalClose') closeDiagramModal();
+
+    var overlay = document.getElementById('diagramModal');
+    if (overlay && e.target === overlay) closeDiagramModal();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeDiagramModal();
   });
 })();
 </script>
