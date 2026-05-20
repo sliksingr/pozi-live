@@ -2268,6 +2268,38 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   margin-top:auto;
 }
 
+
+/* ===== Account dropdown nav polish ===== */
+.nav-right{position:relative;}
+.account-menu-wrap{position:relative;display:inline-flex;align-items:center;}
+.account-toggle{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border-radius:15px;
+  border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.055);color:#f4f4ff;
+  font-family:var(--fh);font-size:13px;font-weight:800;transition:background .2s,border-color .2s,transform .2s;
+}
+.account-toggle:hover,.account-toggle.open{background:rgba(0,255,136,0.08);border-color:rgba(0,255,136,0.24);transform:translateY(-1px);}
+.account-dot{width:8px;height:8px;border-radius:999px;background:var(--green);box-shadow:0 0 12px rgba(0,255,136,.55);}
+.account-caret{color:#9fa3c6;font-size:12px;}
+.account-menu{
+  position:absolute;top:calc(100% + 10px);right:0;width:250px;display:none;padding:10px;border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);background:rgba(13,14,28,0.98);
+  box-shadow:0 24px 70px rgba(0,0,0,0.44);backdrop-filter:blur(20px);z-index:1400;
+}
+.account-menu.open{display:grid;gap:5px;}
+.account-item{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;
+  color:#dcdcf3;font-size:13px;font-weight:700;text-align:left;transition:background .18s,color .18s;
+}
+.account-item:hover{background:rgba(0,255,136,0.08);color:#fff;}
+.account-theme strong{color:var(--green);font-family:var(--fh);font-size:12px;}
+.account-divider{height:1px;background:rgba(255,255,255,0.08);margin:5px 2px;}
+.m-account-title{color:var(--green);font-family:var(--fh);font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:8px 6px 2px;}
+[data-theme="light"] .account-toggle{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.10);color:#202331;}
+[data-theme="light"] .account-menu{background:rgba(255,255,255,0.98);border-color:rgba(0,0,0,0.10);}
+[data-theme="light"] .account-item{color:#242736;}
+[data-theme="light"] .account-item:hover{background:rgba(0,160,80,0.08);color:#0a0a14;}
+@media(max-width:920px){.account-menu-wrap{display:none;}}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -3639,14 +3671,31 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
     <button class="nl active" data-page="home">Home</button>
     <button class="nl" id="navLive" data-page="live">POZi Search</button>
     <button class="nl" data-page="how">How It Works</button>
-    <button class="nl" data-page="projects">Projects</button>
     <button class="nl" data-page="pricing">Pricing</button>
-    
-    <button class="nl" id="navContact">Contact</button>
+    <button class="nl" id="navContact" style="display:none">Contact</button>
   </div>
 
   <div class="nav-right">
-    <button class="theme-toggle" id="themeToggle">
+    <div class="account-menu-wrap">
+      <button class="account-toggle" id="accountToggle" type="button" aria-haspopup="true" aria-expanded="false">
+        <span class="account-dot"></span>
+        <span>Account</span>
+        <span class="account-caret">▾</span>
+      </button>
+      <div class="account-menu" id="accountMenu" aria-hidden="true">
+        <button class="account-item" type="button" id="accountOpenAuth">Sign in / Create account</button>
+        <button class="account-item" type="button" id="accountPlan">My plan</button>
+        <button class="account-item" type="button" data-page="projects">Projects</button>
+        <button class="account-item" type="button" id="accountContact">Contact support</button>
+        <div class="account-divider"></div>
+        <button class="account-item account-theme" type="button" id="accountThemeToggle">
+          <span>Appearance</span>
+          <strong><span id="accountThemeIcon">☀️</span> <span id="accountThemeLabel">Light</span></strong>
+        </button>
+        <button class="account-item" type="button" id="accountSignOut">Sign out</button>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" style="display:none">
       <span id="themeIcon">☀️</span>
       <span id="themeLabel">Light</span>
     </button>
@@ -3663,14 +3712,18 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   <button class="m-nl" data-page="home">🏠 Home</button>
   <button class="m-nl" id="mobileLive" data-page="live">⚡ POZi Search</button>
   <button class="m-nl" data-page="how">⚡ How It Works</button>
-  <button class="m-nl" data-page="projects">📁 Projects</button>
   <button class="m-nl" data-page="pricing">💰 Pricing</button>
-  <button class="m-nl" id="mobileContact">✉ Contact</button>
+  <button class="m-nl" id="mobileContact" style="display:none">✉ Contact</button>
   <div class="m-divider"></div>
+  <div class="m-account-title">Account</div>
+  <button class="m-nl" id="mobileAccountOpen">👤 Sign in / Create account</button>
+  <button class="m-nl" id="mobilePlanOpen">💳 My plan</button>
+  <button class="m-nl" data-page="projects">📁 Projects</button>
+  <button class="m-nl" id="mobileContactSupport">✉ Contact support</button>
   <div class="m-theme-row">
     <div class="m-theme-left">
       <span id="mMenuIcon">☀️</span>
-      <span class="m-theme-label" id="mMenuLabel">Light Mode</span>
+      <span class="m-theme-label" id="mMenuLabel">Appearance: Light</span>
     </div>
     <div class="m-switch" id="mSwitch"><div class="m-knob" id="mKnob"></div></div>
   </div>
@@ -6661,6 +6714,111 @@ document.addEventListener('click', function(e){
     if (statusEl) {
       statusEl.textContent = 'Stripe checkout is not connected yet. Next backend step: create a Netlify Function that starts a Stripe Checkout Session for this plan.';
     }
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  function $(id){ return document.getElementById(id); }
+
+  function closeAccountMenu(){
+    var menu = $('accountMenu'), toggle = $('accountToggle');
+    if (!menu || !toggle) return;
+    menu.classList.remove('open');
+    toggle.classList.remove('open');
+    toggle.setAttribute('aria-expanded','false');
+    menu.setAttribute('aria-hidden','true');
+  }
+
+  function toggleAccountMenu(e){
+    if (e) e.preventDefault();
+    var menu = $('accountMenu'), toggle = $('accountToggle');
+    if (!menu || !toggle) return;
+    var open = menu.classList.toggle('open');
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+
+  function openAuthModal(){
+    var heroBtn = $('heroAccountBtn'), modal = $('heroAuthModal');
+    if (heroBtn) heroBtn.click();
+    else if (modal) modal.classList.add('show');
+    closeAccountMenu();
+  }
+
+  function openPlanPanel(){
+    var modal = $('heroAuthModal');
+    var title = document.querySelector('#heroAuthModal .hero-auth-title');
+    var sub = $('heroAuthSub');
+    var status = $('heroAuthStatus');
+    if (title) title.textContent = 'My POZi plan';
+    if (sub) sub.textContent = window.heroCurrentUser ? 'Your plan details will appear here after Stripe billing is connected.' : 'Create an account or sign in first. Then you can choose Consumer or Pro from Pricing.';
+    if (status) status.textContent = window.heroCurrentUser ? 'Billing connection coming next.' : 'Sign in or create an account to manage your plan.';
+    if (modal) modal.classList.add('show');
+    closeAccountMenu();
+  }
+
+  function openContactSupport(){
+    var contact = $('navContact') || $('mobileContact');
+    if (contact) contact.click();
+    closeAccountMenu();
+  }
+
+  function toggleAppearance(){
+    var t = $('themeToggle');
+    if (t) t.click();
+    setTimeout(syncAccountThemeLabel, 60);
+  }
+
+  function syncAccountThemeLabel(){
+    var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    var icon = $('accountThemeIcon'), label = $('accountThemeLabel'), mobileLabel = $('mMenuLabel');
+    if (icon) icon.textContent = isLight ? '🌙' : '☀️';
+    if (label) label.textContent = isLight ? 'Dark' : 'Light';
+    if (mobileLabel) mobileLabel.textContent = isLight ? 'Appearance: Dark' : 'Appearance: Light';
+  }
+
+  function signOut(){
+    var btn = $('heroSignOutBtn');
+    if (btn && btn.style.display !== 'none') btn.click();
+    closeAccountMenu();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var accountToggle = $('accountToggle'); if (accountToggle) accountToggle.addEventListener('click', toggleAccountMenu);
+    var accountOpenAuth = $('accountOpenAuth'); if (accountOpenAuth) accountOpenAuth.addEventListener('click', openAuthModal);
+    var accountPlan = $('accountPlan'); if (accountPlan) accountPlan.addEventListener('click', openPlanPanel);
+    var accountContact = $('accountContact'); if (accountContact) accountContact.addEventListener('click', openContactSupport);
+    var accountTheme = $('accountThemeToggle'); if (accountTheme) accountTheme.addEventListener('click', function(e){ e.preventDefault(); toggleAppearance(); });
+    var accountSignOut = $('accountSignOut'); if (accountSignOut) accountSignOut.addEventListener('click', signOut);
+
+    var mobileAccountOpen = $('mobileAccountOpen'); if (mobileAccountOpen) mobileAccountOpen.addEventListener('click', function(){ var h = $('hamburger'); if (h) h.click(); openAuthModal(); });
+    var mobilePlanOpen = $('mobilePlanOpen'); if (mobilePlanOpen) mobilePlanOpen.addEventListener('click', function(){ var h = $('hamburger'); if (h) h.click(); openPlanPanel(); });
+    var mobileContactSupport = $('mobileContactSupport'); if (mobileContactSupport) mobileContactSupport.addEventListener('click', function(){ var h = $('hamburger'); if (h) h.click(); openContactSupport(); });
+
+    document.querySelectorAll('.account-menu [data-page]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.preventDefault();
+        var page = el.getAttribute('data-page');
+        var target = document.querySelector('.nl[data-page="' + page + '"], .m-nl[data-page="' + page + '"]');
+        if (target) target.click();
+        closeAccountMenu();
+      });
+    });
+
+    document.addEventListener('click', function(e){
+      var wrap = document.querySelector('.account-menu-wrap');
+      if (wrap && !wrap.contains(e.target)) closeAccountMenu();
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAccountMenu(); });
+    syncAccountThemeLabel();
+  });
+
+  document.addEventListener('click', function(e){
+    if (e.target && (e.target.closest('#themeToggle') || e.target.closest('#mSwitch'))) setTimeout(syncAccountThemeLabel, 60);
   });
 })();
 </script>
