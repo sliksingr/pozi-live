@@ -2000,6 +2000,131 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   border-color:rgba(0,160,80,0.22);
 }
 
+
+/* ===== BUILDr → POZi handoff overlay ===== */
+.pozi-handoff-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10050;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,0.78);
+  backdrop-filter:blur(12px);
+}
+.pozi-handoff-overlay.open{display:flex;}
+.pozi-handoff-card{
+  width:min(460px,94vw);
+  position:relative;
+  overflow:hidden;
+  border-radius:26px;
+  border:1px solid rgba(0,255,136,0.16);
+  background:linear-gradient(180deg,rgba(18,18,32,0.98),rgba(8,8,18,0.98));
+  box-shadow:0 28px 90px rgba(0,0,0,0.58),0 0 0 1px rgba(0,255,136,0.04) inset;
+  padding:30px 26px 26px;
+  text-align:center;
+}
+.pozi-handoff-card::before{
+  content:"";
+  position:absolute;
+  inset:-45px;
+  background:
+    radial-gradient(ellipse 62% 42% at 50% 12%,rgba(0,255,136,0.16),transparent 68%),
+    radial-gradient(ellipse 52% 46% at 80% 95%,rgba(0,102,255,0.12),transparent 70%);
+  pointer-events:none;
+}
+.pozi-handoff-logo-bg{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:210px;
+  opacity:0.12;
+  filter:blur(0.2px);
+  pointer-events:none;
+}
+.pozi-handoff-content{position:relative;z-index:1;}
+.pozi-handoff-kicker{
+  font-family:var(--fh);
+  font-weight:800;
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--green);
+  margin-bottom:10px;
+}
+.pozi-handoff-title{
+  font-family:var(--fh);
+  font-size:clamp(24px,5vw,36px);
+  font-weight:800;
+  line-height:1.05;
+  letter-spacing:-1px;
+  color:#fff;
+  margin-bottom:12px;
+}
+.pozi-handoff-copy{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+  max-width:360px;
+  margin:0 auto 22px;
+}
+.pozi-handoff-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+.pozi-handoff-primary,
+.pozi-handoff-secondary{
+  width:100%;
+  border-radius:16px;
+  padding:15px 16px;
+  font-family:var(--fh);
+  font-weight:800;
+  font-size:14px;
+}
+.pozi-handoff-primary{
+  color:#000;
+  background:linear-gradient(135deg,var(--green),#00c96e);
+  box-shadow:0 12px 28px rgba(0,255,136,0.18);
+}
+.pozi-handoff-secondary{
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.045);
+}
+.pozi-handoff-small{
+  margin-top:14px;
+  color:#777997;
+  font-size:11px;
+  line-height:1.55;
+}
+.pozi-handoff-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:2;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#9a9ab8;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:16px;
+}
+.pozi-handoff-close:hover{color:#fff;background:rgba(255,255,255,0.1);}
+[data-theme="light"] .pozi-handoff-card{
+  background:linear-gradient(180deg,#fff,#f7f7fc);
+  border-color:rgba(0,160,80,0.18);
+}
+[data-theme="light"] .pozi-handoff-title{color:#0a0a14;}
+[data-theme="light"] .pozi-handoff-copy{color:#4f5363;}
+[data-theme="light"] .pozi-handoff-secondary{color:#0a0a14;border-color:#d8d8e8;background:rgba(0,0,0,0.035);}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -6160,6 +6285,137 @@ document.addEventListener('click', function(e){
     if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
   }, 140);
 });
+</script>
+
+
+<!-- BUILDr to POZi location handoff overlay -->
+<div class="pozi-handoff-overlay" id="poziHandoffOverlay" aria-hidden="true">
+  <div class="pozi-handoff-card" role="dialog" aria-modal="true" aria-labelledby="poziHandoffTitle">
+    <button class="pozi-handoff-close" type="button" id="poziHandoffClose" aria-label="Close">×</button>
+    <img class="pozi-handoff-logo-bg logo-dark" src="/logo-dark.png" alt="">
+    <img class="pozi-handoff-logo-bg logo-light" src="/logo-light.png" alt="">
+    <div class="pozi-handoff-content">
+      <div class="pozi-handoff-kicker">POZi Search</div>
+      <h2 class="pozi-handoff-title" id="poziHandoffTitle">Ready to find materials?</h2>
+      <p class="pozi-handoff-copy">POZi can now search nearby inventory, products, and stores based on your build list.</p>
+      <div class="pozi-handoff-actions">
+        <button class="pozi-handoff-primary" type="button" id="poziHandoffUseLocation">Use My Location</button>
+        <button class="pozi-handoff-secondary" type="button" id="poziHandoffEnterZip">Enter ZIP Code</button>
+      </div>
+      <div class="pozi-handoff-small">Your location is only used to help sort nearby materials and store options.</div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  function getBuildListQuery(){
+    var chips = Array.from(document.querySelectorAll('.buildr-chip, .basket-chip, .pozi-chip, [data-basket-item], [data-build-list-item]'))
+      .map(function(el){ return (el.textContent || '').trim(); })
+      .filter(Boolean);
+
+    if (chips.length) return chips.slice(0, 8).join(' ');
+
+    var output = document.getElementById('buildrOutput') ||
+                 document.getElementById('builderOutput') ||
+                 document.querySelector('.buildr-output, .builder-output, .buildr-response');
+
+    if (output) {
+      var text = (output.textContent || '').replace(/\s+/g, ' ').trim();
+      if (text) return text.slice(0, 180);
+    }
+
+    return '';
+  }
+
+  function openPoziHandoff(e){
+    if (e) e.preventDefault();
+    var overlay = document.getElementById('poziHandoffOverlay');
+    if (!overlay) return;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+  }
+
+  function closePoziHandoff(){
+    var overlay = document.getElementById('poziHandoffOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+  }
+
+  function goToPoziSearch(){
+    closePoziHandoff();
+
+    var q = getBuildListQuery();
+    var searchBtn = document.querySelector('.nl[data-page="live"], .m-nl[data-page="live"]');
+    if (searchBtn) searchBtn.click();
+
+    setTimeout(function(){
+      var liveInput = document.getElementById('liveSearchInput');
+      if (liveInput && q && !liveInput.value.trim()) liveInput.value = q;
+
+      var livePage = document.getElementById('page-live');
+      if (livePage) livePage.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 180);
+  }
+
+  function useLocationThenSearch(){
+    goToPoziSearch();
+    setTimeout(function(){
+      if (typeof liveLocationLookup === 'function') {
+        liveLocationLookup();
+      } else {
+        var locBtn = document.getElementById('liveLocateBtn') ||
+                     document.querySelector('[data-live-location], .live-location-btn');
+        if (locBtn) locBtn.click();
+      }
+    }, 360);
+  }
+
+  function enterZipThenSearch(){
+    goToPoziSearch();
+    setTimeout(function(){
+      var zipInput = document.getElementById('liveZipInput');
+      if (zipInput) {
+        zipInput.focus();
+        zipInput.select && zipInput.select();
+      }
+    }, 360);
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('button, a');
+    if (!btn) return;
+
+    var text = (btn.textContent || '').trim().toLowerCase();
+    var isBuildHandoff =
+      text === 'create build list' ||
+      text === 'find materials' ||
+      text === 'compare options' ||
+      text === 'source materials' ||
+      btn.id === 'buildrCreateBasket' ||
+      btn.id === 'buildrCreateBuildList' ||
+      btn.dataset.poziHandoff === 'true';
+
+    if (!isBuildHandoff) return;
+
+    openPoziHandoff(e);
+  });
+
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.id === 'poziHandoffClose') closePoziHandoff();
+    if (e.target && e.target.id === 'poziHandoffUseLocation') useLocationThenSearch();
+    if (e.target && e.target.id === 'poziHandoffEnterZip') enterZipThenSearch();
+
+    var overlay = document.getElementById('poziHandoffOverlay');
+    if (overlay && e.target === overlay) closePoziHandoff();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closePoziHandoff();
+  });
+})();
 </script>
 
 </body>
