@@ -1792,7 +1792,7 @@ img[alt*="POZi logo"]{
 [data-theme="light"] .buildr-bubble,
 [data-theme="light"] .buildr-output-panel,
 [data-theme="light"] .buildr-notes-panel,
-[data-theme="light"] .buildr-basket-panel,
+[data-theme="light"] .buildr-build list-panel,
 [data-theme="light"] .buildr-live-answer,
 [data-theme="light"] .buildr-msg,
 [data-theme="light"] .buildr-card,
@@ -1802,8 +1802,8 @@ img[alt*="POZi logo"]{
 
 [data-theme="light"] .buildr-output-empty,
 [data-theme="light"] .buildr-note-empty,
-[data-theme="light"] .buildr-basket-status,
-[data-theme="light"] .buildr-basket-head span,
+[data-theme="light"] .buildr-build list-status,
+[data-theme="light"] .buildr-build list-head span,
 [data-theme="light"] .builder-subtle-note,
 [data-theme="light"] .buildr-panel p,
 [data-theme="light"] .buildr-bubble p,
@@ -1819,7 +1819,7 @@ img[alt*="POZi logo"]{
 [data-theme="light"] .buildr-bubble strong,
 [data-theme="light"] .buildr-output-panel strong,
 [data-theme="light"] .buildr-notes-panel strong,
-[data-theme="light"] .buildr-basket-panel strong,
+[data-theme="light"] .buildr-build list-panel strong,
 [data-theme="light"] .buildr-panel-title,
 [data-theme="light"] .buildr-starter-title {
   color:#111421 !important;
@@ -2478,9 +2478,9 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 </style>
 
 
-<style id="pozi-buildr-basket-css">
-/* BUILDr → POZi Basket → DataForSEO */
-.buildr-basket-panel{
+<style id="pozi-buildr-build list-css">
+/* BUILDr → Build List → DataForSEO */
+.buildr-build list-panel{
   margin-top:14px;
   background:
     radial-gradient(ellipse 80% 70% at 15% 10%, rgba(0,255,136,.08), transparent 62%),
@@ -2492,7 +2492,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   box-shadow:0 14px 34px rgba(0,0,0,.18);
 }
 
-.buildr-basket-head{
+.buildr-build list-head{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
@@ -2500,7 +2500,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   margin-bottom:10px;
 }
 
-.buildr-basket-head strong{
+.buildr-build list-head strong{
   display:block;
   color:#fff;
   font-family:var(--fh);
@@ -2508,14 +2508,14 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   margin-bottom:4px;
 }
 
-.buildr-basket-head span{
+.buildr-build list-head span{
   display:block;
   color:var(--muted);
   font-size:11px;
   line-height:1.45;
 }
 
-.buildr-basket-btn{
+.buildr-build list-btn{
   flex-shrink:0;
   display:inline-flex;
   align-items:center;
@@ -2533,19 +2533,19 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   min-height:44px;
 }
 
-.buildr-basket-btn:hover{
+.buildr-build list-btn:hover{
   transform:translateY(-1px);
   box-shadow:0 14px 30px rgba(0,255,136,.24);
 }
 
-.buildr-basket-btn:disabled{
+.buildr-build list-btn:disabled{
   opacity:.55;
   cursor:not-allowed;
   transform:none;
   box-shadow:none;
 }
 
-.buildr-basket-logo{
+.buildr-build list-logo{
   width:28px !important;
   height:28px !important;
   object-fit:contain;
@@ -2553,7 +2553,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   filter:drop-shadow(0 0 10px rgba(0,0,0,.18));
 }
 
-.buildr-basket-status{
+.buildr-build list-status{
   min-height:18px;
   color:var(--muted);
   font-size:11px;
@@ -2561,10 +2561,10 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   margin-bottom:10px;
 }
 
-.buildr-basket-status.ok{color:var(--green);}
-.buildr-basket-status.err{color:#ff6680;}
+.buildr-build list-status.ok{color:var(--green);}
+.buildr-build list-status.err{color:#ff6680;}
 
-.buildr-basket-results{
+.buildr-build list-results{
   display:grid;
   gap:10px;
   max-height:360px;
@@ -2572,14 +2572,14 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   padding-right:2px;
 }
 
-.buildr-basket-group{
+.buildr-build list-group{
   border:1px solid rgba(255,255,255,.07);
   background:rgba(0,0,0,.16);
   border-radius:14px;
   padding:10px;
 }
 
-.buildr-basket-query{
+.buildr-build list-query{
   color:#7dffbf;
   font-family:var(--fh);
   font-size:10px;
@@ -2629,31 +2629,31 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   white-space:nowrap;
 }
 
-[data-theme="light"] .buildr-basket-head strong,
+[data-theme="light"] .buildr-build list-head strong,
 [data-theme="light"] .buildr-shopping-title{color:#0a0a14;}
 
-[data-theme="light"] .buildr-basket-panel,
-[data-theme="light"] .buildr-basket-group,
+[data-theme="light"] .buildr-build list-panel,
+[data-theme="light"] .buildr-build list-group,
 [data-theme="light"] .buildr-shopping-card{
   background:rgba(0,0,0,.025);
   border-color:rgba(0,0,0,.08);
 }
 
 @media(max-width:720px){
-  .buildr-basket-head{flex-direction:column;}
-  .buildr-basket-btn{width:100%;}
+  .buildr-build list-head{flex-direction:column;}
+  .buildr-build list-btn{width:100%;}
 }
 </style>
 
 
-<style id="pozi-basket-button-polish-final">
-.buildr-basket-head{
+<style id="pozi-build list-button-polish-final">
+.buildr-build list-head{
   align-items:stretch !important;
   gap:14px !important;
 }
 
-.buildr-basket-btn.buildr-basket-btn-dark,
-#buildrBasketBtn{
+.buildr-build list-btn.buildr-build list-btn-dark,
+#buildrBuild ListBtn{
   align-self:stretch !important;
   min-width:150px !important;
   max-width:188px !important;
@@ -2679,7 +2679,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   cursor:pointer !important;
 }
 
-#buildrBasketBtn:hover{
+#buildrBuild ListBtn:hover{
   transform:translateY(-2px) !important;
   border-color:rgba(0,255,136,.30) !important;
   box-shadow:
@@ -2688,13 +2688,13 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
     inset 0 0 0 1px rgba(255,255,255,.05) !important;
 }
 
-#buildrBasketBtn:disabled{
+#buildrBuild ListBtn:disabled{
   opacity:.7 !important;
   cursor:not-allowed !important;
   transform:none !important;
 }
 
-.buildr-basket-logo-wrap{
+.buildr-build list-logo-wrap{
   width:46px !important;
   height:46px !important;
   display:flex !important;
@@ -2705,7 +2705,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   box-shadow:0 0 18px rgba(0,255,136,.10) !important;
 }
 
-#buildrBasketBtn .buildr-basket-logo{
+#buildrBuild ListBtn .buildr-build list-logo{
   width:42px !important;
   height:42px !important;
   max-width:none !important;
@@ -2714,7 +2714,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   filter:none !important;
 }
 
-.buildr-basket-copy{
+.buildr-build list-copy{
   display:block !important;
   color:#fff !important;
   font-family:var(--fh) !important;
@@ -2725,31 +2725,31 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 }
 
 @media(max-width:1180px){
-  .buildr-basket-head{
+  .buildr-build list-head{
     flex-direction:column !important;
   }
-  #buildrBasketBtn{
+  #buildrBuild ListBtn{
     width:100% !important;
     max-width:none !important;
     min-height:70px !important;
     flex-direction:row !important;
     gap:10px !important;
   }
-  .buildr-basket-logo-wrap{
+  .buildr-build list-logo-wrap{
     width:48px !important;
     height:48px !important;
   }
-  #buildrBasketBtn .buildr-basket-logo{
+  #buildrBuild ListBtn .buildr-build list-logo{
     width:44px !important;
     height:44px !important;
   }
-  .buildr-basket-copy{
+  .buildr-build list-copy{
     font-size:14px !important;
   }
 }
 
 @media(max-width:720px){
-  #buildrBasketBtn{
+  #buildrBuild ListBtn{
     min-height:66px !important;
     border-radius:16px !important;
   }
@@ -2826,12 +2826,12 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   background:rgba(0,0,0,.16);
   border-color:rgba(0,255,136,.12);
 }
-.pozi-basket-mini-list{
+.pozi-build list-mini-list{
   display:grid;
   gap:9px;
   margin-top:14px;
 }
-.pozi-basket-mini,
+.pozi-build list-mini,
 .pozi-project-row,
 .pozi-chip-cloud button{
   border:1px solid rgba(255,255,255,.08);
@@ -2840,13 +2840,13 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   border-radius:14px;
   transition:transform .16s, border-color .16s, background .16s;
 }
-.pozi-basket-mini{
+.pozi-build list-mini{
   text-align:left;
   padding:11px 12px;
   font-size:12px;
   font-weight:800;
 }
-.pozi-basket-mini:hover,
+.pozi-build list-mini:hover,
 .pozi-project-row:hover,
 .pozi-chip-cloud button:hover{
   transform:translateY(-1px);
@@ -2949,7 +2949,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 [data-theme="light"] .pozi-project-row span{
   color:#0a0a14;
 }
-[data-theme="light"] .pozi-basket-mini,
+[data-theme="light"] .pozi-build list-mini,
 [data-theme="light"] .pozi-project-row,
 [data-theme="light"] .pozi-chip-cloud button,
 [data-theme="light"] .pozi-flow-mini div{
@@ -3147,7 +3147,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 
 
 <style id="pozi-search-layout-order-final">
-/* Final POZi Search layout: search first, live results directly below, basket/queue below results */
+/* Final POZi Search layout: search first, live results directly below, build list/queue below results */
 .pozi-search-top-grid{
   grid-template-columns:1fr !important;
 }
@@ -3161,12 +3161,12 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   margin-bottom:18px !important;
 }
 
-.pozi-current-basket{
+.pozi-current-build list{
   margin:18px 0 !important;
 }
 
 /* Hide old sample-note if an older copy remains anywhere */
-.pozi-current-basket .pozi-small-note{
+.pozi-current-build list .pozi-small-note{
   display:none !important;
 }
 </style>
@@ -3219,7 +3219,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 
 
 <style id="pozi-search-workflow-middle-only-fix">
-/* POZi Search workflow: only improve the small BUILDr Thunder icon and middle basket text card */
+/* POZi Search workflow: only improve the small BUILDr Thunder icon and middle build list text card */
 .pozi-flow-branded .pozi-flow-icon img[src*="thunder"]{
   width:150% !important;
   height:150% !important;
@@ -3243,9 +3243,9 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 </style>
 
 
-<style id="basket-core-workflow-fix">
+<style id="build list-core-workflow-fix">
 .pozi-flow-placeholder img,
-.workflow-icon img[src*="basket-core"]{
+.workflow-icon img[src*="build list-core"]{
   width:100% !important;
   height:100% !important;
   object-fit:contain !important;
@@ -3305,9 +3305,9 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   transform:none !important;
 }
 
-/* Basket Core stays perfect */
-.pozi-flow-branded .pozi-flow-placeholder img[src*="basket-core"],
-.pozi-flow-branded .pozi-flow-icon img[src*="basket-core"]{
+/* Build List Core stays perfect */
+.pozi-flow-branded .pozi-flow-placeholder img[src*="build list-core"],
+.pozi-flow-branded .pozi-flow-icon img[src*="build list-core"]{
   width:142% !important;
   height:142% !important;
   object-fit:cover !important;
@@ -3376,21 +3376,21 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   from{opacity:0; transform:translateY(6px) scale(.97);}
   to{opacity:1; transform:translateY(0) scale(1);}
 }
-#buildrBasketBtn.is-ready{
+#buildrBuild ListBtn.is-ready{
   opacity:1 !important;
   border-color:rgba(0,255,136,.42) !important;
-  animation:buildrBasketReadyPulse 2.2s ease-in-out infinite;
+  animation:buildrBuild ListReadyPulse 2.2s ease-in-out infinite;
 }
-#buildrBasketBtn.is-ready .buildr-basket-copy{color:#fff !important;}
-#buildrBasketBtn.is-locked{
+#buildrBuild ListBtn.is-ready .buildr-build list-copy{color:#fff !important;}
+#buildrBuild ListBtn.is-locked{
   filter:grayscale(.25);
 }
-#buildrBasketBtn.is-created{
+#buildrBuild ListBtn.is-created{
   opacity:.86 !important;
   cursor:default !important;
   animation:none !important;
 }
-@keyframes buildrBasketReadyPulse{
+@keyframes buildrBuild ListReadyPulse{
   0%,100%{box-shadow:0 18px 40px rgba(0,0,0,.40),0 0 18px rgba(0,255,136,.10),inset 0 0 0 1px rgba(255,255,255,.05);}
   50%{box-shadow:0 20px 48px rgba(0,0,0,.44),0 0 32px rgba(0,255,136,.25),inset 0 0 0 1px rgba(255,255,255,.06);}
 }
@@ -3696,19 +3696,19 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
           </div>
         </div>
 
-          <div class="buildr-basket-panel" id="buildrBasketPanel">
-            <div class="buildr-basket-head">
+          <div class="buildr-build list-panel" id="buildrBuild ListPanel">
+            <div class="buildr-build list-head">
               <div>
-                <strong>Create POZi Basket</strong>
+                <strong>Create Build List</strong>
                 <span>Locked until BUILDr finishes compiling your build-list-ready item list.</span>
               </div>
-              <button id="buildrBasketBtn" class="buildr-basket-btn buildr-basket-btn-dark" type="button" disabled aria-disabled="true">
-                <span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span>
-                <span class="buildr-basket-copy">Create Build List</span>
+              <button id="buildrBuild ListBtn" class="buildr-build list-btn buildr-build list-btn-dark" type="button" disabled aria-disabled="true">
+                <span class="buildr-build list-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-build list-logo"></span>
+                <span class="buildr-build list-copy">Create Build List</span>
               </button>
             </div>
-            <div id="buildrBasketStatus" class="buildr-basket-status">BUILDr will unlock this when your item list is ready.</div>
-            <div id="buildrBasketResults" class="buildr-basket-results"></div>
+            <div id="buildrBuild ListStatus" class="buildr-build list-status">BUILDr will unlock this when your item list is ready.</div>
+            <div id="buildrBuild ListResults" class="buildr-build list-results"></div>
           </div>
 
       </div>
@@ -3805,7 +3805,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   </div>
   <h1 class="sec-title">Source your project.<br><span class="grad">Compare the path.</span></h1>
   <p class="sec-sub">
-    BUILDr creates the plan. POZi Search helps source the items, compare options, and keep project baskets organized.
+    BUILDr creates the plan. POZi Search helps source the items, compare options, and keep project build lists organized.
   </p>
 </section>
 
@@ -3829,7 +3829,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
           <button id="liveLocateBtn" class="btn-s" style="margin:0;padding:12px 18px;font-size:12px" type="button">Use my location</button>
         </div>
         <div class="live-meta-row">
-          <div id="liveResultsStatus">Search a product or continue from a BUILDr basket.</div>
+          <div id="liveResultsStatus">Search a product or continue from a BUILDr build list.</div>
           <button class="live-back-btn" type="button" data-page="home">← Back to BUILDr</button>
         </div>
       </div>
@@ -4103,7 +4103,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>BUILDr Planning</strong>Ask BUILDr for help planning rooms, repairs, upgrades, and project ideas.</div></div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Daily Usage</strong>Generous daily BUILDr usage with refresh cycles for normal consumer use.</div></div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Shopping Lists</strong>Turn an idea into an organized list before searching stores.</div></div>
-          <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Basket-Based Search</strong>Create your build list first, then compare products and stores when ready.</div></div>
+          <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Build List-Based Search</strong>Create your build list first, then compare products and stores when ready.</div></div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
@@ -4188,7 +4188,7 @@ Search Smarter</div>
         </div>
 
         <div class="sc-row">
-          <div class="sc-label">Basket-based sourcing</div>
+          <div class="sc-label">Build List-based sourcing</div>
           <div class="sc-val sc-best">Basic</div>
           <div class="sc-val sc-best">Advanced</div>
           <div class="sc-val sc-best">Placement</div>
@@ -4223,7 +4223,7 @@ Search Smarter</div>
         <div>
           <div class="worth-title">Consumer Example</div>
           <div class="worth-desc">
-            “Help me design a living room under budget.” BUILDr organizes the list, then POZi helps source the products when the basket is ready.
+            “Help me design a living room under budget.” BUILDr organizes the list, then POZi helps source the products when the build list is ready.
           </div>
         </div>
       </div>
@@ -4233,7 +4233,7 @@ Search Smarter</div>
         <div>
           <div class="worth-title">Contractor Pro Example</div>
           <div class="worth-desc">
-            “Build a 12x20 cedar deck with stairs.” BUILDr creates the material plan, then POZi runs a sourcing pass for the basket.
+            “Build a 12x20 cedar deck with stairs.” BUILDr creates the material plan, then POZi runs a sourcing pass for the build list.
           </div>
         </div>
       </div>
@@ -5676,8 +5676,8 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       pendingMsg.className = 'buildr-msg ai';
       pendingMsg.innerHTML = '<strong>BUILDr</strong>' + escapeHtml(reply);
       conversation.push({ role: 'assistant', text: reply });
-      if (window.POZiBuildrBasket && typeof window.POZiBuildrBasket.refresh === 'function') {
-        window.POZiBuildrBasket.refresh();
+      if (window.POZiBuildrBuild List && typeof window.POZiBuildrBuild List.refresh === 'function') {
+        window.POZiBuildrBuild List.refresh();
       }
 
       statusEl.textContent = 'BUILDr response received. Add another detail to keep going.';
@@ -5705,11 +5705,11 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 </script>
 
 
-<script id="pozi-buildr-basket-js">
+<script id="pozi-buildr-build list-js">
 (function(){
-  const basketBtn = document.getElementById('buildrBasketBtn');
-  const basketStatus = document.getElementById('buildrBasketStatus');
-  const basketResults = document.getElementById('buildrBasketResults');
+  const build listBtn = document.getElementById('buildrBuild ListBtn');
+  const build listStatus = document.getElementById('buildrBuild ListStatus');
+  const build listResults = document.getElementById('buildrBuild ListResults');
   const promptEl = document.getElementById('buildrPrompt');
   const answerEl = document.getElementById('buildrAnswer');
   const outputItems = document.getElementById('buildrOutputItems');
@@ -5717,7 +5717,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   const notesList = document.getElementById('buildrNotesList');
   const notesEmpty = document.getElementById('buildrNotesEmpty');
 
-  if (!basketBtn || !basketStatus || !basketResults) return;
+  if (!build listBtn || !build listStatus || !build listResults) return;
 
   if (notesList) {
     notesList.addEventListener('click', function(event){
@@ -5728,8 +5728,8 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
   }
 
   const POZI_SEARCH_ENDPOINT = '/.netlify/functions/pozi-search';
-  let basketCreated = false;
-  let basketReady = false;
+  let build listCreated = false;
+  let build listReady = false;
   let readyItems = [];
 
   function safeHtml(value){
@@ -5789,21 +5789,21 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     });
   }
 
-  function extractBasketItems(text){
+  function extractBuild ListItems(text){
     const fullText = String(text || '');
-    let basketSection = sectionAfter(fullText, ['(?:POZi\\s+)?Build List Items\\s*:']);
-    if (basketSection) {
-      basketSection = basketSection.split(/\n\s*Your build list is ready/i)[0];
-      basketSection = basketSection.split(/\n\s*Press Create Build List/i)[0];
+    let build listSection = sectionAfter(fullText, ['(?:POZi\\s+)?Build List Items\\s*:']);
+    if (build listSection) {
+      build listSection = build listSection.split(/\n\s*Your build list is ready/i)[0];
+      build listSection = build listSection.split(/\n\s*Press Create Build List/i)[0];
     }
 
-    const source = basketSection || fullText;
+    const source = build listSection || fullText;
     const raw = source
       .split(/\n|<br>|•|\- |\* |\d+\.\s+/g)
       .map(cleanLine)
       .filter(Boolean);
 
-    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|notes|build notes|question|first|then|you|buildr|pro mode|consumer mode|shopping path|project list ready|basket ready|ready to create build list|your build list is ready|press create build list.*)$/i;
+    const skip = /^(materials|tools|next steps|steps|sourcing|summary|budget|note|notes|build notes|question|first|then|you|buildr|pro mode|consumer mode|shopping path|project list ready|build list ready|ready to create build list|your build list is ready|press create build list.*)$/i;
     const materialWords = /(lumber|wood|deck|screw|nail|bolt|bracket|paint|brush|wire|pipe|pvc|drill|saw|blade|level|tape|concrete|cement|post|joist|beam|plywood|sheet|fastener|hinge|gate|light|fixture|outlet|switch|tile|adhesive|sealant|caulk|stud|drywall|insulation|floor|trim|board|tool|material|anchor|washer|nut|connector|stain|primer|sandpaper|gravel|rebar|hanger|flashing|sill|plate|rafter|shingle|underlayment|glue|conduit|clip|clamp|fitting|valve|drain|fabric|stone|sand|base|stringer|tread|riser)/i;
     const dimensions = /\b(2x4|2x6|2x8|2x10|4x4|6x6|1x|2x|3\/4|1\/2|5\/8|10ft|8ft|12ft|16ft|20v|18v|gallon|quart|lb|ft|inch|in\.)\b/i;
 
@@ -5811,7 +5811,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     return raw.filter(line => {
       if (line.length < 4 || line.length > 96) return false;
       if (skip.test(line)) return false;
-      return basketSection ? true : (materialWords.test(line) || dimensions.test(line));
+      return build listSection ? true : (materialWords.test(line) || dimensions.test(line));
     }).map(line => line
       .replace(/^\s*(qty|quantity|item)\s*[:\-]\s*/i, '')
       .replace(/\s+\([^)]*\)/g, '')
@@ -5825,27 +5825,27 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     }).slice(0, 10);
   }
 
-  function setBasketLocked(reason){
-    if (basketCreated) return;
-    basketReady = false;
-    basketBtn.disabled = true;
-    basketBtn.setAttribute('aria-disabled','true');
-    basketBtn.classList.add('is-locked');
-    basketBtn.classList.remove('is-ready');
-    basketStatus.textContent = reason || 'BUILDr will unlock this when your item list is ready.';
-    basketStatus.className = 'buildr-basket-status';
+  function setBuild ListLocked(reason){
+    if (build listCreated) return;
+    build listReady = false;
+    build listBtn.disabled = true;
+    build listBtn.setAttribute('aria-disabled','true');
+    build listBtn.classList.add('is-locked');
+    build listBtn.classList.remove('is-ready');
+    build listStatus.textContent = reason || 'BUILDr will unlock this when your item list is ready.';
+    build listStatus.className = 'buildr-build list-status';
   }
 
-  function setBasketReady(items){
-    if (basketCreated) return;
-    basketReady = true;
+  function setBuild ListReady(items){
+    if (build listCreated) return;
+    build listReady = true;
     readyItems = items.slice(0, 10);
-    basketBtn.disabled = false;
-    basketBtn.setAttribute('aria-disabled','false');
-    basketBtn.classList.remove('is-locked');
-    basketBtn.classList.add('is-ready');
-    basketStatus.textContent = 'Project list ready. Create your basket when you’re finished.';
-    basketStatus.className = 'buildr-basket-status ok';
+    build listBtn.disabled = false;
+    build listBtn.setAttribute('aria-disabled','false');
+    build listBtn.classList.remove('is-locked');
+    build listBtn.classList.add('is-ready');
+    build listStatus.textContent = 'Project list ready. Create your build list when you’re finished.';
+    build listStatus.className = 'buildr-build list-status ok';
   }
 
   function renderOutputItems(items){
@@ -5876,22 +5876,22 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     if (notesEmpty) notesEmpty.style.display = 'none';
   }
 
-  function refreshBasketState(){
+  function refreshBuild ListState(){
     const buildrText = textFromBuildr();
-    const items = extractBasketItems(buildrText);
+    const items = extractBuild ListItems(buildrText);
     const notes = extractBuildNotes(buildrText);
     readyItems = items;
     renderOutputItems(items);
     renderBuildNotes(notes);
 
-    const readyLanguage = /(build-list-ready|basket ready|project list ready|shopping list|material list|materials list|create (your )?basket|ready to source|ready for sourcing|final list|compiled)/i.test(buildrText);
+    const readyLanguage = /(build-list-ready|build list ready|project list ready|shopping list|material list|materials list|create (your )?build list|ready to source|ready for sourcing|final list|compiled)/i.test(buildrText);
 
     if (items.length >= 3 && readyLanguage){
-      setBasketReady(items);
+      setBuild ListReady(items);
     } else if (items.length > 0){
-      setBasketLocked('BUILDr is compiling ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '. Keep refining until the list is ready.');
+      setBuild ListLocked('BUILDr is compiling ' + items.length + ' item' + (items.length === 1 ? '' : 's') + '. Keep refining until the list is ready.');
     } else {
-      setBasketLocked('BUILDr will unlock this when your item list is ready.');
+      setBuild ListLocked('BUILDr will unlock this when your item list is ready.');
     }
   }
 
@@ -5937,28 +5937,28 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     return normalizeResults(data);
   }
 
-  async function createBasket(){
-    refreshBasketState();
+  async function createBuild List(){
+    refreshBuild ListState();
 
-    if (basketCreated){
-      basketStatus.textContent = 'Basket already created for this compiled list.';
-      basketStatus.className = 'buildr-basket-status ok';
+    if (build listCreated){
+      build listStatus.textContent = 'Build List already created for this compiled list.';
+      build listStatus.className = 'buildr-build list-status ok';
       return;
     }
 
-    if (!basketReady || !readyItems.length){
-      basketStatus.textContent = 'Finish the BUILDr dialogue first. The basket unlocks when the compiled item list is ready.';
-      basketStatus.className = 'buildr-basket-status err';
+    if (!build listReady || !readyItems.length){
+      build listStatus.textContent = 'Finish the BUILDr dialogue first. The build list unlocks when the compiled item list is ready.';
+      build listStatus.className = 'buildr-build list-status err';
       return;
     }
 
     const items = readyItems.slice(0, 10);
-    basketBtn.disabled = true;
-    basketBtn.classList.remove('is-ready');
-    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Searching...</span>';
-    basketStatus.textContent = 'Creating one POZi basket from the compiled BUILDr list...';
-    basketStatus.className = 'buildr-basket-status';
-    basketResults.innerHTML = '';
+    build listBtn.disabled = true;
+    build listBtn.classList.remove('is-ready');
+    build listBtn.innerHTML = '<span class="buildr-build list-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-build list-logo"></span><span class="buildr-build list-copy">Searching...</span>';
+    build listStatus.textContent = 'Creating one POZi build list from the compiled BUILDr list...';
+    build listStatus.className = 'buildr-build list-status';
+    build listResults.innerHTML = '';
 
     let rendered = '';
     let success = 0;
@@ -5967,36 +5967,36 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       try{
         const results = await searchPoziItem(item);
         success += results.length ? 1 : 0;
-        rendered += '<div class="buildr-basket-group"><div class="buildr-basket-query">' + safeHtml(item) + '</div>' +
-          (results.length ? results.map(resultCard).join('') : '<div class="buildr-basket-status err">No results returned.</div>') +
+        rendered += '<div class="buildr-build list-group"><div class="buildr-build list-query">' + safeHtml(item) + '</div>' +
+          (results.length ? results.map(resultCard).join('') : '<div class="buildr-build list-status err">No results returned.</div>') +
           '</div>';
       } catch(err){
-        rendered += '<div class="buildr-basket-group"><div class="buildr-basket-query">' + safeHtml(item) + '</div>' +
-          '<div class="buildr-basket-status err">' + safeHtml(err.message || 'Search failed.') + '</div></div>';
+        rendered += '<div class="buildr-build list-group"><div class="buildr-build list-query">' + safeHtml(item) + '</div>' +
+          '<div class="buildr-build list-status err">' + safeHtml(err.message || 'Search failed.') + '</div></div>';
       }
 
-      basketResults.innerHTML = rendered;
+      build listResults.innerHTML = rendered;
     }
 
-    basketCreated = true;
-    basketBtn.disabled = true;
-    basketBtn.classList.add('is-created');
-    basketBtn.setAttribute('aria-disabled','true');
-    basketBtn.innerHTML = '<span class="buildr-basket-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-basket-logo"></span><span class="buildr-basket-copy">Basket Created</span>';
+    build listCreated = true;
+    build listBtn.disabled = true;
+    build listBtn.classList.add('is-created');
+    build listBtn.setAttribute('aria-disabled','true');
+    build listBtn.innerHTML = '<span class="buildr-build list-logo-wrap"><img src="logo-dark.png" alt="" class="buildr-build list-logo"></span><span class="buildr-build list-copy">Build List Ready</span>';
 
     if (success){
-      basketStatus.textContent = 'Basket created once. Review POZi search results below.';
-      basketStatus.className = 'buildr-basket-status ok';
+      build listStatus.textContent = 'Build list ready. Choose your location to find nearby materials.';
+      build listStatus.className = 'buildr-build list-status ok';
     } else {
-      basketStatus.textContent = 'Basket created once, but search did not return usable results. Check Netlify function logs.';
-      basketStatus.className = 'buildr-basket-status err';
+      build listStatus.textContent = 'Build list ready once, but search did not return usable results. Check Netlify function logs.';
+      build listStatus.className = 'buildr-build list-status err';
     }
   }
 
-  window.POZiBuildrBasket = { refresh: refreshBasketState };
-  setBasketLocked('BUILDr will unlock this when your item list is ready.');
-  refreshBasketState();
-  basketBtn.addEventListener('click', createBasket);
+  window.POZiBuildrBuild List = { refresh: refreshBuild ListState };
+  setBuild ListLocked('BUILDr will unlock this when your item list is ready.');
+  refreshBuild ListState();
+  build listBtn.addEventListener('click', createBuild List);
 })();
 </script>
 
@@ -6089,7 +6089,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     if (!query){
       setStatus('Type a product, material, tool, or project item first.');
       const grid = getResultsContainer();
-      if (grid) grid.innerHTML = '<div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>';
+      if (grid) grid.innerHTML = '<div class="live-empty">Search POZi or select a build list chip to begin sourcing.</div>';
       return;
     }
 
@@ -6308,18 +6308,86 @@ document.addEventListener('click', function(e){
 </div>
 
 
+
+
+
+<script>
+(function(){
+  var buildNoteTitles = [
+    'Project Overview',
+    'Materials & Hardware',
+    'Measurements & Fit',
+    'Install Sequence',
+    'Fastening & Support',
+    'Safety / Code Check',
+    'Finishing Details',
+    'Before You Buy'
+  ];
+
+  function cleanBuildNoteLabel(text, index){
+    var t = (text || '').replace(/\s+/g,' ').trim();
+    if (!t || /^build note$/i.test(t)) return buildNoteTitles[index % buildNoteTitles.length];
+
+    // Use the first useful phrase instead of repeating "BUILD NOTE"
+    t = t.replace(/^build note[:\-\s]*/i, '').trim();
+    if (!t) return buildNoteTitles[index % buildNoteTitles.length];
+
+    var firstSentence = t.split(/[.!?]/)[0].trim();
+    if (firstSentence.length > 34) firstSentence = firstSentence.slice(0, 31).trim() + '...';
+    return firstSentence || buildNoteTitles[index % buildNoteTitles.length];
+  }
+
+  function refreshBuildNoteLabels(){
+    var candidates = Array.from(document.querySelectorAll(
+      '.build-note, .build-note-pill, .buildr-note, .note-pill, .buildr-notes button, .build-notes button, [data-build-note]'
+    ));
+
+    // Also catch the current UI where collapsed rows literally read BUILD NOTE.
+    Array.from(document.querySelectorAll('button, .pill, .chip, .note, .build-note-label')).forEach(function(el){
+      if ((el.textContent || '').trim().toLowerCase() === 'build note' && candidates.indexOf(el) === -1) {
+        candidates.push(el);
+      }
+    });
+
+    candidates.forEach(function(el, i){
+      var expandedText = el.getAttribute('data-note') || el.getAttribute('data-full-text') || el.title || el.textContent;
+      var label = cleanBuildNoteLabel(expandedText, i);
+      if ((el.textContent || '').trim().toLowerCase() === 'build note' || /^build note/i.test((el.textContent || '').trim())) {
+        el.textContent = label;
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', refreshBuildNoteLabels);
+  document.addEventListener('click', function(){ setTimeout(refreshBuildNoteLabels, 120); });
+  var obs = new MutationObserver(function(){ refreshBuildNoteLabels(); });
+  obs.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
 <script>
 (function(){
   function getBuildListQuery(){
-    var chips = Array.from(document.querySelectorAll('.buildr-chip, .basket-chip, .pozi-chip, [data-basket-item], [data-build-list-item]'))
-      .map(function(el){ return (el.textContent || '').trim(); })
-      .filter(Boolean);
+    var chipSelectors = [
+      '.buildr-chip', '.basket-chip', '.pozi-chip',
+      '[data-basket-item]', '[data-build-list-item]',
+      '.live-result-name', '.inventory-item', '.material-item'
+    ];
+
+    var chips = [];
+    chipSelectors.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(el){
+        var t = (el.textContent || '').replace(/\s+/g,' ').trim();
+        if (t && chips.indexOf(t) === -1) chips.push(t);
+      });
+    });
 
     if (chips.length) return chips.slice(0, 8).join(' ');
 
     var output = document.getElementById('buildrOutput') ||
                  document.getElementById('builderOutput') ||
-                 document.querySelector('.buildr-output, .builder-output, .buildr-response');
+                 document.querySelector('.buildr-output, .builder-output, .buildr-response, #buildrResponse');
 
     if (output) {
       var text = (output.textContent || '').replace(/\s+/g, ' ').trim();
@@ -6330,11 +6398,18 @@ document.addEventListener('click', function(e){
   }
 
   function openPoziHandoff(e){
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    }
+
     var overlay = document.getElementById('poziHandoffOverlay');
-    if (!overlay) return;
+    if (!overlay) return false;
+
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden','false');
+    return false;
   }
 
   function closePoziHandoff(){
@@ -6349,7 +6424,11 @@ document.addEventListener('click', function(e){
 
     var q = getBuildListQuery();
     var searchBtn = document.querySelector('.nl[data-page="live"], .m-nl[data-page="live"]');
-    if (searchBtn) searchBtn.click();
+    if (searchBtn) {
+      searchBtn.click();
+    } else if (typeof showPage === 'function') {
+      showPage('live');
+    }
 
     setTimeout(function(){
       var liveInput = document.getElementById('liveSearchInput');
@@ -6379,29 +6458,37 @@ document.addEventListener('click', function(e){
       var zipInput = document.getElementById('liveZipInput');
       if (zipInput) {
         zipInput.focus();
-        zipInput.select && zipInput.select();
+        if (zipInput.select) zipInput.select();
       }
     }, 360);
   }
 
+  function isHandoffTrigger(btn){
+    if (!btn) return false;
+    var text = (btn.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+    var id = (btn.id || '').toLowerCase();
+
+    return (
+      btn.dataset.poziHandoff === 'true' ||
+      id.indexOf('createbasket') > -1 ||
+      id.indexOf('createbuildlist') > -1 ||
+      id.indexOf('buildlist') > -1 ||
+      text.indexOf('create build list') > -1 ||
+      text.indexOf('build list ready') > -1 ||
+      text.indexOf('find materials') > -1 ||
+      text.indexOf('compare options') > -1 ||
+      text.indexOf('source materials') > -1 ||
+      text.indexOf('create pozi') > -1
+    );
+  }
+
+  // Capture phase so this wins before the older inline result handler creates cards.
   document.addEventListener('click', function(e){
-    var btn = e.target.closest('button, a');
-    if (!btn) return;
-
-    var text = (btn.textContent || '').trim().toLowerCase();
-    var isBuildHandoff =
-      text === 'create build list' ||
-      text === 'find materials' ||
-      text === 'compare options' ||
-      text === 'source materials' ||
-      btn.id === 'buildrCreateBasket' ||
-      btn.id === 'buildrCreateBuildList' ||
-      btn.dataset.poziHandoff === 'true';
-
-    if (!isBuildHandoff) return;
-
+    var btn = e.target.closest('button, a, [role="button"]');
+    if (!isHandoffTrigger(btn)) return;
     openPoziHandoff(e);
-  });
+    return false;
+  }, true);
 
   document.addEventListener('click', function(e){
     if (e.target && e.target.id === 'poziHandoffClose') closePoziHandoff();
