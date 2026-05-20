@@ -2213,6 +2213,45 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   max-height:none !important;
 }
 
+
+/* ===== Build-list DataForSEO grouped sourcing results ===== */
+.pozi-buildlist-source-group{
+  grid-column:1/-1;
+  border:1px solid rgba(0,255,136,0.16);
+  border-radius:20px;
+  background:rgba(255,255,255,0.035);
+  padding:16px;
+}
+.pozi-buildlist-source-query{
+  font-family:var(--fh);
+  color:var(--green);
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.pozi-buildlist-source-results{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:12px;
+}
+.pozi-live-loading{
+  grid-column:1/-1;
+  min-height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:1px dashed rgba(0,255,136,0.22);
+  border-radius:18px;
+  color:var(--muted);
+}
+[data-theme="light"] .pozi-buildlist-source-group{
+  background:#fff;
+  border-color:rgba(0,160,80,0.18);
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -6040,6 +6079,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
 
     basketStatus.textContent = 'Build list ready. Choose your location to find nearby materials.';
     basketStatus.className = 'buildr-basket-status ok';
+    window.POZiPendingBuildListItems = readyItems.slice(0, 10);
 
     if (window.POZiOpenBuildrHandoff && typeof window.POZiOpenBuildrHandoff === 'function') {
       window.POZiOpenBuildrHandoff(event);
@@ -6426,7 +6466,26 @@ document.addEventListener('click', function(e){
   function useLocationThenSearch(){
     goToPoziSearch();
     setTimeout(function(){
-      if (typeof liveLocationLookup === 'function') {
+      var zipInput = document.getElementById('liveZipInput');
+      var statusEl = document.getElementById('liveResultsStatus');
+
+      if (typeof requestPoziLocation === 'function') {
+        requestPoziLocation({
+          zipInput: zipInput,
+          statusEl: statusEl,
+          after: function(){
+            if (typeof window.POZiRunBuildListSearch === 'function' &&
+                Array.isArray(window.POZiPendingBuildListItems) &&
+                window.POZiPendingBuildListItems.length) {
+              window.POZiRunBuildListSearch(window.POZiPendingBuildListItems);
+            } else if (typeof window.runPoziSearch === 'function') {
+              window.runPoziSearch();
+            } else if (typeof liveLocationLookup === 'function') {
+              liveLocationLookup();
+            }
+          }
+        });
+      } else if (typeof liveLocationLookup === 'function') {
         liveLocationLookup();
       } else {
         var locBtn = document.getElementById('liveLocateBtn') ||
