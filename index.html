@@ -3949,6 +3949,56 @@ button,
 }
 </style>
 
+
+<style id="pozi-pricing-selectable-cards">
+/* Selectable pricing cards: active card subtly steps forward and carries the highlight */
+.pricing-grid{
+  position:relative !important;
+}
+.pricing-card{
+  cursor:pointer !important;
+  transition:transform .24s ease, border-color .24s ease, box-shadow .24s ease, background .24s ease !important;
+}
+.pricing-card:hover,
+.pricing-card.is-selected{
+  transform:translateY(-8px) scale(1.018) !important;
+  z-index:5 !important;
+  border-color:rgba(0,255,136,.34) !important;
+  box-shadow:0 26px 70px rgba(0,0,0,.36),0 0 34px rgba(0,255,136,.08) !important;
+}
+.pricing-card::before{
+  content:'' !important;
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:3px !important;
+  opacity:0 !important;
+  background:linear-gradient(90deg,var(--green),var(--blue)) !important;
+  transition:opacity .22s ease !important;
+}
+.pricing-card.is-selected::before,
+.pricing-card:hover::before{
+  opacity:1 !important;
+}
+.pricing-card.featured::before{
+  opacity:0 !important;
+}
+.pricing-card.featured.is-selected::before,
+.pricing-card.featured:hover::before{
+  opacity:1 !important;
+}
+.pricing-card.is-selected .tier-btn{
+  filter:brightness(1.06) !important;
+}
+@media(max-width:900px){
+  .pricing-card:hover,
+  .pricing-card.is-selected{
+    transform:none !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -7154,6 +7204,45 @@ document.addEventListener('click', function(e){
       if (window.POZiSelectedPlan && getCurrentUser()) showCheckoutPrompt(window.POZiSelectedPlan);
     }, 2400);
   }, true);
+})();
+</script>
+
+
+<script id="pozi-pricing-card-select-js">
+(function(){
+  function selectPricingCard(card){
+    if (!card) return;
+    document.querySelectorAll('.pricing-grid .pricing-card').forEach(function(c){
+      c.classList.remove('is-selected');
+      c.setAttribute('aria-selected','false');
+    });
+    card.classList.add('is-selected');
+    card.setAttribute('aria-selected','true');
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var cards = Array.from(document.querySelectorAll('.pricing-grid .pricing-card'));
+    cards.forEach(function(card, index){
+      card.setAttribute('tabindex','0');
+      card.setAttribute('role','button');
+      card.setAttribute('aria-selected', card.classList.contains('featured') ? 'true' : 'false');
+
+      card.addEventListener('click', function(e){
+        selectPricingCard(card);
+      });
+
+      card.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectPricingCard(card);
+        }
+      });
+    });
+
+    var featured = document.querySelector('.pricing-grid .pricing-card.featured');
+    if (featured) selectPricingCard(featured);
+    else if (cards[0]) selectPricingCard(cards[0]);
+  });
 })();
 </script>
 
