@@ -3717,29 +3717,16 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
         <div class="pozi-source-kicker">SOURCING RESULTS</div>
         <h3>Product and retailer paths</h3>
       </div>
-      <div class="pozi-results-note">Real POZi sourcing results will appear here after you run a search.<br><span class="search-placeholder-note">Run a search to find local materials, tools, products, and nearby inventory.</span></div>
+      <div class="pozi-results-note">Run a search to see nearby inventory and sourcing results.<br><span class="search-placeholder-note">Run a search to find local materials, tools, products, and nearby inventory.</span></div>
     </div>
     <div id="inventoryGrid" class="live-results-grid">
-      <div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>
+      <div class="live-empty">Run a search to see materials, tools, products, and nearby inventory.</div>
     </div>
   </div>
 
 
 
-    <div class="pozi-source-card pozi-current-basket">
-      <div class="pozi-source-kicker">PROJECT SOURCING</div>
-      
-
-  
-<div class="pozi-search-dashboard-grid">
-  <div class="empty-search-state">
-    <div class="empty-search-icon">⌕</div>
-    <h3>Ready for live sourcing</h3>
-    <p>Search results will appear here after a real POZi search is started.</p>
-  </div>
-</div>
-
-</section>
+    </section>
 
 <footer>
   <div>
@@ -4499,7 +4486,7 @@ var DEMO_DB = [
     var st = document.getElementById('liveResultsStatus');
     if (st) st.textContent = 'Run a search to see materials, tools, products, and nearby inventory.';
     if (!g) return;
-    g.innerHTML = '<div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>';
+    g.innerHTML = '<div class="live-empty">Run a search to see materials, tools, products, and nearby inventory.</div>';
   }
 
   function renderLiveResults(rows, query){
