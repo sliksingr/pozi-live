@@ -1936,6 +1936,48 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   display:none !important;
 }
 
+
+.search-placeholder-note{
+  display:inline-block;
+  margin-top:10px;
+  color:#7ee7b8;
+  font-size:0.95rem;
+  opacity:0.9;
+}
+
+
+.empty-search-state{
+  width:100%;
+  min-height:260px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:1px dashed rgba(74,255,167,0.22);
+  border-radius:28px;
+  background:rgba(8,12,32,0.55);
+  padding:48px 24px;
+  margin-top:20px;
+}
+
+.empty-search-icon{
+  font-size:3rem;
+  opacity:0.75;
+  margin-bottom:18px;
+}
+
+.empty-search-state h3{
+  font-size:2rem;
+  margin-bottom:12px;
+}
+
+.empty-search-state p{
+  max-width:520px;
+  color:rgba(255,255,255,0.72);
+  line-height:1.6;
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -3653,7 +3695,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
         <div class="pozi-source-kicker">SOURCING RESULTS</div>
         <h3>Product and retailer paths</h3>
       </div>
-      <div class="pozi-results-note">Live POZi sourcing results appear here after you search.</div>
+      <div class="pozi-results-note">Live POZi sourcing results appear here after you search.<br><span class="search-placeholder-note">Run a search to find local materials, tools, products, and nearby inventory.</span></div>
     </div>
     <div id="inventoryGrid" class="live-results-grid">
       <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
@@ -3666,42 +3708,14 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
       <div class="pozi-source-kicker">PROJECT SOURCING</div>
       
 
-  <div class="pozi-search-dashboard-grid">
-
-    <div class="pozi-source-card">
-      <div class="pozi-source-kicker">RECENT BASKETS</div>
-      <h3>Pick up where you left off.</h3>
-      <div class="pozi-project-row" data-pozi-search="cedar deck materials">
-        <span>Deck build</span><em>Cedar boards, posts, screws</em>
-      </div>
-      <div class="pozi-project-row" data-pozi-search="living room lighting furniture">
-        <span>Living room refresh</span><em>Lighting, furniture, layout</em>
-      </div>
-      <div class="pozi-project-row" data-pozi-search="outdoor gate repair hardware">
-        <span>Gate repair</span><em>Hinges, latch, fasteners</em>
-      </div>
-    </div>
-
-    <div class="pozi-source-card">
-      <div class="pozi-source-kicker">HOW THIS PAGE WORKS</div>
-      <h3>BUILDr → Project → Source</h3>
-      <div class="pozi-flow-mini pozi-flow-branded">
-        <div>
-          <strong class="pozi-flow-icon"><img src="thunder.PNG" alt=""></strong>
-          <span>BUILDr organizes the project.</span>
-        </div>
-        <div>
-          <strong class="pozi-flow-icon pozi-flow-placeholder"><img src="basket-core.png" alt="Create Build List"></strong>
-          <span>Create your build list when ready.</span>
-        </div>
-        <div>
-          <strong class="pozi-flow-icon"><img src="logo-dark.png" alt=""></strong>
-          <span>POZi Search sources options.</span>
-        </div>
-      </div>
-    </div>
-
+  
+<div class="pozi-search-dashboard-grid">
+  <div class="empty-search-state">
+    <div class="empty-search-icon">⌕</div>
+    <h3>Ready for live sourcing</h3>
+    <p>Search results will appear here after a real POZi search is started.</p>
   </div>
+</div>
 
 </section>
 
