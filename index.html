@@ -1879,6 +1879,63 @@ img[alt*="POZi logo"]{
     linear-gradient(180deg, transparent, rgba(20,24,40,0.035), transparent);
 }
 
+
+/* ===== PROJECTS PAGE ===== */
+.projects-section{padding-top:40px;}
+.projects-empty-card{
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,136,0.075), transparent 65%), var(--card);
+  border:1px solid rgba(0,255,136,0.14);
+  border-radius:24px;
+  padding:44px 34px;
+  text-align:center;
+  box-shadow:0 20px 70px rgba(0,0,0,0.22);
+  margin-bottom:24px;
+}
+.projects-empty-icon{
+  width:64px;height:64px;margin:0 auto 18px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg, rgba(0,255,136,0.16), rgba(0,102,255,0.12));
+  border:1px solid rgba(0,255,136,0.18);
+  color:var(--green);font-size:30px;
+}
+.projects-empty-card h2{
+  font-family:var(--fh);font-weight:800;font-size:clamp(26px,4vw,40px);
+  color:#fff;letter-spacing:-1px;margin-bottom:12px;
+}
+.projects-empty-card p{
+  max-width:560px;margin:0 auto 28px;color:var(--muted);
+  line-height:1.8;font-size:14px;
+}
+.projects-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.project-preview-card{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;
+}
+.project-preview-kicker{
+  font-family:var(--fh);font-weight:800;font-size:9px;letter-spacing:1.8px;
+  color:var(--green);margin-bottom:12px;
+}
+.project-preview-card h3{font-family:var(--fh);font-size:16px;color:#fff;margin-bottom:8px;}
+.project-preview-card p{font-size:12px;color:var(--muted);line-height:1.7;}
+[data-theme="light"] .projects-empty-card,
+[data-theme="light"] .project-preview-card{
+  background:#fff;border-color:#e0e0ee;box-shadow:0 2px 18px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .projects-empty-card h2,
+[data-theme="light"] .project-preview-card h3{color:#0a0a14;}
+[data-theme="light"] .projects-empty-card p,
+[data-theme="light"] .project-preview-card p{color:#4f5363;}
+@media(max-width:760px){
+  .projects-preview-grid{grid-template-columns:1fr;}
+  .projects-empty-card{padding:34px 22px;}
+}
+
+
+/* ===== NAV FIX: keep moved home search/footer home-only ===== */
+body[data-current-page]:not([data-current-page="home"]) #pozi-home-search,
+body[data-current-page]:not([data-current-page="home"]) #homeFooter{
+  display:none !important;
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -3250,6 +3307,7 @@ img[alt*="POZi logo"]{
     <button class="nl active" data-page="home">Home</button>
     <button class="nl" id="navLive" data-page="live">POZi Search</button>
     <button class="nl" data-page="how">How It Works</button>
+    <button class="nl" data-page="projects">Projects</button>
     <button class="nl" data-page="pricing">Pricing</button>
     
     <button class="nl" id="navContact">Contact</button>
@@ -3273,6 +3331,7 @@ img[alt*="POZi logo"]{
   <button class="m-nl" data-page="home">🏠 Home</button>
   <button class="m-nl" id="mobileLive" data-page="live">⚡ POZi Search</button>
   <button class="m-nl" data-page="how">⚡ How It Works</button>
+  <button class="m-nl" data-page="projects">📁 Projects</button>
   <button class="m-nl" data-page="pricing">💰 Pricing</button>
   <button class="m-nl" id="mobileContact">✉ Contact</button>
   <div class="m-divider"></div>
@@ -3523,7 +3582,7 @@ img[alt*="POZi logo"]{
   </div>
 </section>
 
-<footer>
+<footer id="homeFooter">
   <div>
     <div class="footer-name" style="display:flex;align-items:center;gap:10px">
       <img src="logo-dark.png" alt="POZi storm logo" class="nav-logo-img logo-dark">
@@ -3536,6 +3595,7 @@ img[alt*="POZi logo"]{
     <button class="footer-link" data-page="home">Home</button>
     <button class="footer-link" id="footerLiveLink" data-page="live">POZi Search</button>
     <button class="footer-link" data-page="how">How It Works</button>
+    <button class="footer-link" data-page="projects">Projects</button>
     <button class="footer-link" data-page="pricing">Pricing</button>
     <button class="footer-link contact-trigger">Contact</button>
   </div>
@@ -3653,6 +3713,7 @@ img[alt*="POZi logo"]{
   <div class="footer-links">
     <button class="footer-link" data-page="home">Home</button>
     <button class="footer-link" data-page="how">How It Works</button>
+    <button class="footer-link" data-page="projects">Projects</button>
     <button class="footer-link" data-page="pricing">Pricing</button>
     <button class="footer-link contact-trigger">Contact</button>
   </div>
@@ -3801,6 +3862,7 @@ Search Smarter</div>
   <div class="footer-links">
     <button class="footer-link" data-page="home">Home</button>
     <button class="footer-link" data-page="how">How It Works</button>
+    <button class="footer-link" data-page="projects">Projects</button>
     <button class="footer-link" data-page="pricing">Pricing</button>
     <button class="footer-link contact-trigger">Contact</button>
   </div>
@@ -3814,6 +3876,52 @@ Search Smarter</div>
 <!-- ════════════════════════════════════════════
      PRICING
 ════════════════════════════════════════════ -->
+
+<!-- PROJECTS PAGE -->
+<div id="page-projects" class="page">
+<div class="page-top"></div>
+
+<section class="page-hero">
+  <div class="page-bg"></div>
+  <div class="page-grid"></div>
+  <div style="position:relative;z-index:1;">
+    <div class="eyebrow">PROJECTS</div>
+    <h1 class="sec-title">Your saved work,<br><span class="grad">organized by project.</span></h1>
+    <p class="sec-sub">Projects will hold your BUILDr conversations, build lists, notes, and material plans so you can come back when you're ready to build.</p>
+  </div>
+</section>
+
+<section class="section projects-section">
+  <div class="wrap-sm">
+    <div class="projects-empty-card">
+      <div class="projects-empty-icon">⌂</div>
+      <h2>No projects yet.</h2>
+      <p>Start a conversation with BUILDr to create your first project, build list, and material plan. Once projects are saved, they’ll appear here as clean cards you can reopen anytime.</p>
+      <button class="btn-p" type="button" data-page="home" data-scroll-target="buildr">Start a Project</button>
+    </div>
+
+    <div class="projects-preview-grid" aria-label="Future project card examples">
+      <div class="project-preview-card">
+        <div class="project-preview-kicker">COMING SOON</div>
+        <h3>Saved Build Lists</h3>
+        <p>Keep materials, tools, and project notes together instead of restarting every time.</p>
+      </div>
+      <div class="project-preview-card">
+        <div class="project-preview-kicker">COMING SOON</div>
+        <h3>Continue with BUILDr</h3>
+        <p>Reopen a project and keep the conversation moving from where you left off.</p>
+      </div>
+      <div class="project-preview-card">
+        <div class="project-preview-kicker">COMING SOON</div>
+        <h3>Material Plans</h3>
+        <p>Save the organized plan before comparing stores, prices, and local options.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
 <div id="page-pricing" class="page">
 <div class="page-top"></div>
 
@@ -3826,7 +3934,7 @@ Search Smarter</div>
         Plans for <span class="grad-g">Consumers</span>, <span class="grad">Pros</span> & Retailers
       </h2>
       <p class="sec-sub">
-        BUILDr helps organize the project first. POZi helps source the products, materials, tools, and inventory when the basket is ready.
+        BUILDr helps organize the project first. POZi helps find the products, materials, tools, and inventory after BUILDr organizes the project.
       </p>
     </div>
 
@@ -3834,11 +3942,11 @@ Search Smarter</div>
 
       <div class="pricing-card">
         <div class="tier-label">CONSUMER</div>
-        <div class="tier-name">Free Starter</div>
+        <div class="tier-name">Consumer Mode</div>
         <div class="tier-desc">
-          For homeowners, shoppers, DIY projects, repairs, room planning, and everyday product discovery.
+          Built for homeowners, DIYers, room updates, repairs, and everyday projects.
         </div>
-        <div class="tier-price">$2.99</div>
+        <div class="tier-price">$19.99</div>
         <div class="tier-period">per month</div>
 
         <div class="tier-divider"></div>
@@ -3847,7 +3955,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>BUILDr Planning</strong>Ask BUILDr for help planning rooms, repairs, upgrades, and project ideas.</div></div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Daily Usage</strong>Generous daily BUILDr usage with refresh cycles for normal consumer use.</div></div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Shopping Lists</strong>Turn an idea into an organized list before searching stores.</div></div>
-          <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Basket-Based Search</strong>Build the basket first, then source products when ready.</div></div>
+          <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Basket-Based Search</strong>Create your build list first, then compare products and stores when ready.</div></div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
@@ -3860,7 +3968,7 @@ Search Smarter</div>
         <div class="tier-label">CONTRACTOR PRO</div>
         <div class="tier-name">Professional Workflows</div>
         <div class="tier-desc">
-          For contractors, builders, landscapers, remodelers, property owners, and serious project sourcing.
+          Designed for contractors, estimators, remodelers, and serious project workflows.
         </div>
         <div class="tier-price">$9.99</div>
         <div class="tier-period">per month</div>
@@ -4023,6 +4131,7 @@ Search Smarter</div>
   <div class="footer-links">
     <button class="footer-link" data-page="home">Home</button>
     <button class="footer-link" data-page="how">How It Works</button>
+    <button class="footer-link" data-page="projects">Projects</button>
     <button class="footer-link" data-page="pricing">Pricing</button>
     <button class="footer-link contact-trigger">Contact</button>
   </div>
@@ -4102,6 +4211,7 @@ Search Smarter</div>
 
   /* ── PAGE NAV ── */
   function showPage(name) {
+    document.body.setAttribute('data-current-page', name);
     document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
     var pg = document.getElementById('page-' + name);
     if (pg) pg.classList.add('active');
@@ -4664,6 +4774,7 @@ var DEMO_DB = [
 
   /* ── INIT ── */
   document.addEventListener('DOMContentLoaded', function () {
+    document.body.setAttribute('data-current-page', 'home');
 
     // Restore theme
     var saved = 'dark';
@@ -5939,5 +6050,19 @@ function closeDisclaimerModal(){
   document.getElementById('disclaimerModal').classList.remove('open');
 }
 </script>
+
+<script>
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('[data-page="home"][data-scroll-target="buildr"]');
+  if (!btn) return;
+  const homeBtn = document.querySelector('.nl[data-page="home"]') || document.querySelector('.m-nl[data-page="home"]');
+  if (homeBtn) homeBtn.click();
+  setTimeout(function(){
+    const target = document.getElementById('buildr');
+    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 140);
+});
+</script>
+
 </body>
 </html>
