@@ -2252,6 +2252,22 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
   border-color:rgba(0,160,80,0.18);
 }
 
+
+/* ===== Pricing page polish: aligned CTAs ===== */
+.pricing-grid{
+  align-items:stretch;
+}
+.pricing-card{
+  display:flex;
+  flex-direction:column;
+}
+.pricing-card .tier-features{
+  flex:1;
+}
+.pricing-card .tier-btn{
+  margin-top:auto;
+}
+
 </style>
 
 <style id="pozi-refine-pass">
@@ -4233,7 +4249,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-s">Start Free</button>
+        <button class="tier-btn tier-btn-s contact-trigger" type="button">Start Consumer Plan</button>
       </div>
 
       <div class="pricing-card featured">
@@ -4258,7 +4274,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Priority Features</strong>Access advanced BUILDr and sourcing tools as they launch.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p">Upgrade to Pro</button>
+        <button class="tier-btn tier-btn-p contact-trigger" type="button">Start Pro Plan</button>
       </div>
 
       <div class="pricing-card">
@@ -4280,7 +4296,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>Hardware stores, suppliers, specialty shops, and regional retailers.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-s">Contact Us</button>
+        <button class="tier-btn tier-btn-s contact-trigger" type="button">Contact Us</button>
       </div>
 
     </div>
