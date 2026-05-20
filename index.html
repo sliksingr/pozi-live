@@ -1937,45 +1937,25 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
 }
 
 
-.search-placeholder-note{
-  display:inline-block;
-  margin-top:10px;
-  color:#7ee7b8;
-  font-size:0.95rem;
-  opacity:0.9;
-}
-
-
-.empty-search-state{
-  width:100%;
+/* ===== REAL SEARCH ONLY: no default fake inventory cards ===== */
+#inventoryGrid .live-empty{
   min-height:260px;
   display:flex;
-  flex-direction:column;
   align-items:center;
   justify-content:center;
   text-align:center;
-  border:1px dashed rgba(74,255,167,0.22);
-  border-radius:28px;
-  background:rgba(8,12,32,0.55);
-  padding:48px 24px;
-  margin-top:20px;
+  border:1px dashed rgba(0,255,136,0.22);
+  border-radius:22px;
+  background:rgba(8,12,32,0.45);
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+  padding:36px 24px;
 }
-
-.empty-search-icon{
-  font-size:3rem;
-  opacity:0.75;
-  margin-bottom:18px;
-}
-
-.empty-search-state h3{
-  font-size:2rem;
-  margin-bottom:12px;
-}
-
-.empty-search-state p{
-  max-width:520px;
-  color:rgba(255,255,255,0.72);
-  line-height:1.6;
+[data-theme="light"] #inventoryGrid .live-empty{
+  background:#fff;
+  color:#4f5363;
+  border-color:rgba(0,160,80,0.22);
 }
 
 </style>
@@ -3669,7 +3649,7 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
       <div class="pozi-source-kicker">SEARCH ANYTHING</div>
       <h2>Find products, materials, tools, or project items.</h2>
       <p>
-        Search directly, or bring items over from a BUILDr basket. POZi uses sourcing search to steer you toward useful product and retailer results.
+        Search directly, or bring items over from BUILDr. POZi will show real product and retailer results after you run a search.
       </p>
 
       <div class="live-search-card pozi-source-search-card">
@@ -3695,29 +3675,16 @@ body[data-current-page]:not([data-current-page="home"]) #homeFooter{
         <div class="pozi-source-kicker">SOURCING RESULTS</div>
         <h3>Product and retailer paths</h3>
       </div>
-      <div class="pozi-results-note">Live POZi sourcing results appear here after you search.<br><span class="search-placeholder-note">Run a search to find local materials, tools, products, and nearby inventory.</span></div>
+      <div class="pozi-results-note">Real POZi sourcing results will appear here after you run a search.</div>
     </div>
     <div id="inventoryGrid" class="live-results-grid">
-      <div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>
+      <div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>
     </div>
   </div>
 
 
 
-    <div class="pozi-source-card pozi-current-basket">
-      <div class="pozi-source-kicker">PROJECT SOURCING</div>
-      
-
-  
-<div class="pozi-search-dashboard-grid">
-  <div class="empty-search-state">
-    <div class="empty-search-icon">⌕</div>
-    <h3>Ready for live sourcing</h3>
-    <p>Search results will appear here after a real POZi search is started.</p>
-  </div>
-</div>
-
-</section>
+    </section>
 
 <footer>
   <div>
@@ -4475,9 +4442,9 @@ var DEMO_DB = [
   function renderLiveDefault(){
     var g = document.getElementById('inventoryGrid');
     var st = document.getElementById('liveResultsStatus');
-    if (st) st.textContent = 'Showing sample live inventory. Search to narrow results.';
+    if (st) st.textContent = 'Run a search to see materials, tools, products, and nearby inventory.';
     if (!g) return;
-    renderLiveResults(DEMO_DB.slice(0,8), '');
+    g.innerHTML = '<div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>';
   }
 
   function renderLiveResults(rows, query){
@@ -4489,7 +4456,7 @@ var DEMO_DB = [
       if (st) st.textContent = 'Search POZi to source project items.';
       return;
     }
-    if (st) st.textContent = query ? ('Showing closest available matches for “' + query + '”.') : 'Showing sample live inventory.';
+    if (st) st.textContent = query ? ('Showing closest available matches for “' + query + '”.') : 'Run a search to see materials, tools, products, and nearby inventory.';
     g.innerHTML = rows.map(function(x){
       var sm = heroStoreMeta(x.store_key) || {};
       var qty = Number(x.inventory_quantity || x.quantity || 0);
@@ -4512,11 +4479,22 @@ var DEMO_DB = [
     var zipInput = document.getElementById('liveZipInput');
     var q = input ? input.value.trim() : '';
     var zip = zipInput ? zipInput.value.trim() : '';
-    if (!q){ renderLiveDefault(); return; }
-    var rows = DEMO_DB.filter(function(x){
-      var hay = [x.name, x.brand, x.sku, x.category].join(' ').toLowerCase();
-      return hay.indexOf(q.toLowerCase()) > -1 || q.toLowerCase().split(/\s+/).every(function(tok){ return hay.indexOf(tok) > -1; });
-    });
+    var g = document.getElementById('inventoryGrid');
+    var st = document.getElementById('liveResultsStatus');
+
+    if (!q){
+      renderLiveDefault();
+      return;
+    }
+
+    if (st) {
+      st.textContent = 'Searching real POZi sourcing results for “' + q + '”.';
+    }
+
+    if (g) {
+      g.innerHTML = '<div class="live-empty">Real sourcing results will appear here after the live search connection returns matches for “' + q + '”.</div>';
+    }
+  });
     rows = poziSortRowsByDistance(rows, zip);
     var label = q;
     var locLabel = poziLocationLabel(zip);
@@ -5880,7 +5858,7 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     if (!query){
       setStatus('Type a product, material, tool, or project item first.');
       const grid = getResultsContainer();
-      if (grid) grid.innerHTML = '<div class="live-empty">Search POZi or select a basket chip to begin sourcing.</div>';
+      if (grid) grid.innerHTML = '<div class="live-empty">Run a search to see materials, tools, products, and nearby inventory results.</div>';
       return;
     }
 
