@@ -4524,6 +4524,42 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-go-final-modal-fix-css">
+.pozi-go-qr img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:10px;
+}
+.pozi-go-sms-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  margin:0 0 12px;
+}
+.pozi-go-phone-input{
+  width:100%;
+  min-height:48px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.055);
+  color:#fff;
+  padding:0 14px;
+  font-size:14px;
+  outline:none;
+}
+.pozi-go-phone-input:focus{
+  border-color:rgba(0,255,136,.32);
+}
+@media(max-width:560px){
+  .pozi-go-sms-row,
+  .pozi-go-modal-actions{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -5403,7 +5439,7 @@ Search Smarter</div>
     <div style="font-size:38px;margin-bottom:14px">📱</div>
     <div class="go-title">POZi Go is a mobile app</div>
     <p class="go-sub">Scan barcodes and check live inventory from your phone. Scan the QR code or send yourself a link.</p>
-    <div class="go-qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://pozi.live/pozi-go.html" width="180" height="180" alt="QR"></div>
+    <div class="go-qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fpozi.live%2Finstall" width="180" height="180" alt="QR"></div>
     <div class="go-scan-lbl">Scan with your phone camera</div>
     <div class="go-divider"><div class="go-div-line"></div><div class="go-div-txt">OR SEND TO YOUR PHONE</div><div class="go-div-line"></div></div>
     <div class="go-sms-row">
@@ -7869,26 +7905,30 @@ document.addEventListener('click', function(e){
     <div class="pozi-go-modal-kicker">POZi Go</div>
     <h2 id="poziGoModalTitle">Send POZi Go to your phone</h2>
     <p>
-      POZi Go is the mobile field tool for BUILDr, live inventory, project scanning, and active project workflows.
+      Scan the QR code or send yourself the install link for POZi Go.
     </p>
 
     <div class="pozi-go-qr-box">
-      <div class="pozi-go-qr">
-        <div class="qr-grid"></div>
-      </div>
+      <div class="pozi-go-qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fpozi.live%2Finstall" width="104" height="104" alt="POZi Go QR code"></div>
       <div>
         <strong>Open on your phone</strong>
-        <span>Scan this placeholder QR area once the App Store / TestFlight link is finalized.</span>
+        <span>Scan this code with your phone, or send yourself the POZi Go link.</span>
       </div>
+    </div>
+
+    
+    <div class="pozi-go-sms-row">
+      <input id="poziGoPhoneInput" type="tel" class="pozi-go-phone-input" placeholder="Phone number" inputmode="tel">
+      <button class="pozi-go-secondary" id="poziGoSendSms" type="button">Text Install Link</button>
     </div>
 
     <div class="pozi-go-modal-actions">
-      <a class="pozi-go-primary" id="poziGoOpenLink" href="/pozi-go.html">Open POZi Go</a>
-      <button class="pozi-go-secondary" id="poziGoCopyLink" type="button">Copy Link</button>
+      <button class="pozi-go-primary" id="poziGoInstallBtn" type="button">Get POZi Go</button>
+      <button class="pozi-go-secondary" id="poziGoCopyLink" type="button">Copy Install Link</button>
     </div>
 
     <div class="pozi-go-note" id="poziGoModalStatus">
-      App Store / TestFlight links can be connected here when ready.
+      Scan the QR code or send the install link to your phone.
     </div>
   </div>
 </div>
@@ -8016,6 +8056,98 @@ document.addEventListener('click', function(e){
     });
 
     showMobileGateway();
+  });
+})();
+</script>
+
+
+<script id="pozi-go-final-click-override">
+(function(){
+  var POZI_GO_URL = 'https://pozi.live/install';
+
+  function isPhone(){
+    return (/iphone|ipod|android.*mobile/i.test(navigator.userAgent) || window.innerWidth <= 680);
+  }
+
+  function openNewPoziGoModal(){
+    var modal = document.getElementById('poziGoModal');
+    if (!modal) return;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeNewPoziGoModal(){
+    var modal = document.getElementById('poziGoModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function handleGetPoziGo(e){
+    var btn = e.target.closest && e.target.closest('#poziGoBtn');
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+
+    openNewPoziGoModal();
+    return false;
+  }
+
+  // Capture phase so this beats the older openPoziGo() listener in the main script.
+  document.addEventListener('click', handleGetPoziGo, true);
+
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.id === 'poziGoModalClose') closeNewPoziGoModal();
+
+    var modal = document.getElementById('poziGoModal');
+    if (modal && e.target === modal) closeNewPoziGoModal();
+
+    
+    if (e.target && e.target.id === 'poziGoInstallBtn') {
+      e.preventDefault();
+      window.open(POZI_GO_URL, '_blank');
+    }
+
+    if (e.target && e.target.id === 'poziGoCopyLink') {
+
+      e.preventDefault();
+      var status = document.getElementById('poziGoModalStatus');
+      navigator.clipboard.writeText(POZI_GO_URL).then(function(){
+        if (status) status.textContent = 'POZi Go link copied.';
+      }).catch(function(){
+        if (status) status.textContent = POZI_GO_URL;
+      });
+    }
+
+    if (e.target && e.target.id === 'poziGoSendSms') {
+      e.preventDefault();
+      var phone = document.getElementById('poziGoPhoneInput');
+      var status = document.getElementById('poziGoModalStatus');
+      var value = phone ? phone.value.trim() : '';
+      var message = 'Open POZi Go: ' + POZI_GO_URL;
+
+      if (!value) {
+        if (status) status.textContent = 'Enter a phone number, or scan the QR code.';
+        return;
+      }
+
+      window.location.href = 'sms:' + encodeURIComponent(value) + '?body=' + encodeURIComponent(message);
+      if (status) status.textContent = 'Opening your messages app...';
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeNewPoziGoModal();
+  });
+
+  // Keep old modal from appearing if an older handler somehow opens it.
+  document.addEventListener('DOMContentLoaded', function(){
+    var oldModal = document.getElementById('goModal');
+    if (oldModal) oldModal.style.display = 'none';
   });
 })();
 </script>
