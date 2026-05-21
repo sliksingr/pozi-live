@@ -8,21 +8,44 @@ document.documentElement.setAttribute('data-theme','dark');
 try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>POZi — It’s All in One Place</title>
+<title>POZi — Project Planning, BUILDr Guidance & Live Material Sourcing</title>
 
-<!-- POZi social/link preview metadata -->
+<meta name="description" content="POZi helps homeowners, DIYers, and pros plan projects with BUILDr, organize build lists, compare material options, and source tools, products, and nearby inventory.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://pozi.live/">
+
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pozi.live/">
-<meta property="og:title" content="POZi — It’s All in One Place">
-<meta property="og:description" content="Project planning, BUILDr guidance, and live sourcing in one connected workflow.">
+<meta property="og:title" content="POZi — Plan Your Project All in One Place">
+<meta property="og:description" content="POZi helps homeowners, DIYers, and pros plan projects with BUILDr, organize build lists, compare material options, and source tools, products, and nearby inventory.">
+<meta property="og:site_name" content="POZi">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="POZi — Plan Your Project All in One Place">
+<meta name="twitter:description" content="POZi helps homeowners, DIYers, and pros plan projects with BUILDr, organize build lists, compare material options, and source tools, products, and nearby inventory.">
+
+<script type="application/ld+json" id="pozi-seo-structured-data">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "POZi",
+  "url": "https://pozi.live/",
+  "description": "POZi helps homeowners, DIYers, and pros plan projects with BUILDr, organize build lists, compare material options, and source tools, products, and nearby inventory.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://pozi.live/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+
+<!-- POZi social/link preview metadata -->
 <meta property="og:image" content="https://pozi.live/pozi-social-card.png">
 <meta property="og:image:secure_url" content="https://pozi.live/pozi-social-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="POZi stormbrain lightning logo">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="POZi — It’s All in One Place">
-<meta name="twitter:description" content="Project planning, BUILDr guidance, and live sourcing in one connected workflow.">
 <meta name="twitter:image" content="https://pozi.live/pozi-social-card.png">
 
 <link rel="icon" href="/logo-dark.png">
@@ -5368,8 +5391,28 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-seo-crawl-nav-css">
+.seo-crawl-nav{
+  position:absolute !important;
+  left:-9999px !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+}
+</style>
+
 </head>
 <body>
+
+<nav class="seo-crawl-nav" aria-label="POZi crawlable site links">
+  <a href="https://pozi.live/">Home</a>
+  <a href="https://pozi.live/#pozi-search">POZi Search</a>
+  <a href="https://pozi.live/#how-it-works">How It Works</a>
+  <a href="https://pozi.live/#pricing">Pricing</a>
+  <a href="https://pozi.live/#contact">Contact</a>
+</nav>
+
 
 <!-- ════════════════════
      NAV
@@ -5667,7 +5710,7 @@ body.mobile-gateway-active .mobile-go-gateway{
 <div class="page-top"></div>
 
 <!-- POZi SEARCH PAGE -->
-<section class="page-hero pozi-search-hero">
+<section class="page-hero pozi-search-hero" id="pozi-search">
   <div class="page-bg"></div>
   <div class="page-grid"></div>
   <div class="badge" style="background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.12);color:var(--green)">
