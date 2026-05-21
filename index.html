@@ -31,7 +31,7 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 <!-- POZi How It Works build notes folded into existing flow v3 -->
 <!-- POZi humanized build-list copy update -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Sora:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Sora:wght@600;700;800&family=Inter+Tight:wght@700;800&family=Inter:wght@300;400;500;600&display=swap">
 <style>
 
 /* ════════════════════════════════════
@@ -46,6 +46,7 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
   --muted:  #c0c0d8;
   --fh: 'Syne', sans-serif;
   --fd: 'Sora', sans-serif;
+  --fhero: 'Inter Tight', sans-serif;
   --fb: 'Inter', sans-serif;
   --nh: 64px;
 }
@@ -4252,6 +4253,52 @@ button,
   -webkit-text-fill-color:transparent;
   background-clip:text;
   opacity:.9;
+}
+</style>
+
+
+<style id="pozi-premium-hero-font-pass">
+.hero-main-title,
+.hero h1,
+.hero-sub.hero-main-title,
+.buildr-tension-section .sec-title,
+.buildr-tension-section .sec-title span,
+.page-hero .sec-title,
+.pricing-section > .center .sec-title,
+.cta-title{
+  font-family:var(--fhero) !important;
+  font-weight:800 !important;
+  letter-spacing:-0.045em !important;
+  line-height:.98 !important;
+  text-rendering:geometricPrecision;
+  -webkit-font-smoothing:antialiased;
+}
+.hero-support-title{
+  font-family:var(--fhero) !important;
+  font-weight:700 !important;
+  letter-spacing:-0.035em !important;
+  line-height:1.08 !important;
+}
+.buildr-tension-section .sec-title{
+  letter-spacing:-0.04em !important;
+}
+.buildr-tension-section .sec-title span{
+  letter-spacing:-0.045em !important;
+}
+.tier-name,
+.bc-sub-title,
+.sc-card h3,
+.projects-title,
+.project-empty-title,
+.modal-title,
+.go-title,
+.pozi-results-head h3,
+.pozi-source-search-card h2,
+.buildr-panel-title,
+.buildr-card-title,
+.buildr-response-title,
+.buildr-output-title{
+  font-family:var(--fd) !important;
 }
 </style>
 
