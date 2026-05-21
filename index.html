@@ -5222,6 +5222,152 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-usage-rules-css">
+.pozi-usage-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:26px;
+  padding:0 10px;
+  border-radius:999px;
+  font-family:var(--fh);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.7px;
+  color:#b8c0df;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+  margin:8px 0 0;
+}
+.pozi-usage-chip strong{
+  color:var(--green);
+  margin-left:4px;
+}
+.pozi-usage-overlay{
+  position:fixed;
+  inset:0;
+  z-index:18000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(14px);
+}
+.pozi-usage-overlay.open{display:flex;}
+.pozi-usage-modal{
+  width:min(760px,96vw);
+  max-height:92vh;
+  overflow:auto;
+  position:relative;
+  border-radius:28px;
+  border:1px solid rgba(0,255,136,.16);
+  background:linear-gradient(180deg,rgba(18,18,32,.98),rgba(8,8,18,.98));
+  box-shadow:0 30px 100px rgba(0,0,0,.62);
+  padding:32px;
+}
+.pozi-usage-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:22px;
+  border:1px solid rgba(255,255,255,.10);
+}
+.pozi-usage-kicker{
+  color:var(--green);
+  font-family:var(--fh);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.pozi-usage-modal h2{
+  font-family:var(--fhero,var(--fd));
+  font-size:clamp(30px,5vw,48px);
+  line-height:1.02;
+  letter-spacing:-.04em;
+  margin-bottom:12px;
+}
+.pozi-usage-modal p{
+  color:var(--muted);
+  line-height:1.7;
+  margin-bottom:22px;
+  max-width:680px;
+}
+.pozi-usage-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:18px 0 22px;
+}
+.pozi-usage-card{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  border-radius:18px;
+  padding:14px;
+}
+.pozi-usage-card.active{
+  border-color:rgba(0,255,136,.22);
+  background:rgba(0,255,136,.055);
+}
+.pozi-usage-card strong{
+  display:block;
+  font-family:var(--fd);
+  font-size:14px;
+  margin-bottom:10px;
+  color:#fff;
+}
+.pozi-usage-card span{
+  display:block;
+  color:#b8bfdc;
+  font-size:12px;
+  line-height:1.45;
+  margin-top:6px;
+}
+.pozi-usage-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.pozi-usage-primary,
+.pozi-usage-secondary{
+  min-height:52px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--fh);
+  font-size:13px;
+  font-weight:900;
+}
+.pozi-usage-primary{
+  color:#03120b;
+  background:linear-gradient(135deg,rgba(0,255,136,.86),rgba(0,180,255,.64));
+}
+.pozi-usage-secondary{
+  color:#eef3ff;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.055);
+}
+.pozi-usage-note{
+  margin-top:16px;
+  color:#8e93b8;
+  font-size:12px;
+  line-height:1.55;
+}
+@media(max-width:760px){
+  .pozi-usage-grid{grid-template-columns:1fr 1fr;}
+  .pozi-usage-actions{grid-template-columns:1fr;}
+}
+</style>
+
 </head>
 <body>
 
@@ -5392,6 +5538,7 @@ body.mobile-gateway-active .mobile-go-gateway{
           <textarea id="buildrPrompt" class="buildr-input-area" placeholder="Tell BUILDr what you want to build, fix, design, or source next."></textarea>
           
           <button id="buildrAskBtn" class="buildr-ask-btn" type="button">Ask BUILDr</button>
+          <div class="pozi-usage-chip" id="poziUsageChip">Guest BUILDr: <strong id="poziUsageRemaining">3 left</strong></div>
 
           <div class="builder-subtle-note" style="
             margin:12px auto 8px;
@@ -7407,6 +7554,10 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
       return;
     }
 
+    if (window.POZiUsageGate && !window.POZiUsageGate.allow('buildr_message')) {
+      return;
+    }
+
     const messageLabel = document.getElementById('buildrMessageLabel');
     if (messageLabel) messageLabel.textContent = 'NEXT MESSAGE';
 
@@ -7722,6 +7873,10 @@ if (embedInput) embedInput.addEventListener('keydown', function(e){ if(e.key==='
     if (!basketReady || !readyItems.length){
       basketStatus.textContent = 'Finish the BUILDr dialogue first. The build list unlocks when the item list is ready.';
       basketStatus.className = 'buildr-basket-status err';
+      return;
+    }
+
+    if (window.POZiUsageGate && !window.POZiUsageGate.allow('sourcing_run')) {
       return;
     }
 
@@ -8810,6 +8965,228 @@ document.addEventListener('click', function(e){
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') window.POZiClosePricingPlanModal();
   });
+})();
+</script>
+
+
+<!-- POZi Usage / Plan Rules Modal -->
+<div class="pozi-usage-overlay" id="poziUsageOverlay" aria-hidden="true">
+  <div class="pozi-usage-modal" role="dialog" aria-modal="true" aria-labelledby="poziUsageTitle">
+    <button class="pozi-usage-close" id="poziUsageClose" type="button" aria-label="Close">×</button>
+    <div class="pozi-usage-kicker">POZi Usage</div>
+    <h2 id="poziUsageTitle">Create an account to keep building.</h2>
+    <p id="poziUsageCopy">
+      Guest access is designed for trying BUILDr. Create an account to save projects, continue conversations, and unlock more planning tools.
+    </p>
+
+    <div class="pozi-usage-grid">
+      <div class="pozi-usage-card active">
+        <strong>Guest</strong>
+        <span>3 BUILDr messages</span>
+        <span>No saved projects</span>
+        <span>No diagram generation</span>
+      </div>
+      <div class="pozi-usage-card">
+        <strong>Free Account</strong>
+        <span>Daily BUILDr usage</span>
+        <span>Limited sourcing</span>
+        <span>1 simple visual preview/day</span>
+      </div>
+      <div class="pozi-usage-card">
+        <strong>Consumer</strong>
+        <span>More BUILDr usage</span>
+        <span>Saved projects</span>
+        <span>Standard diagrams</span>
+      </div>
+      <div class="pozi-usage-card">
+        <strong>Contractor Pro</strong>
+        <span>Priority workflows</span>
+        <span>Expanded projects</span>
+        <span>More diagrams + sourcing</span>
+      </div>
+    </div>
+
+    <div class="pozi-usage-actions">
+      <button class="pozi-usage-primary" id="poziUsageCreateAccount" type="button">Create Free Account</button>
+      <button class="pozi-usage-secondary" id="poziUsageViewPlans" type="button">View Plans</button>
+    </div>
+
+    <div class="pozi-usage-note" id="poziUsageNote">
+      Diagram and high-volume sourcing limits protect quality and keep POZi fast.
+    </div>
+  </div>
+</div>
+
+
+<script id="pozi-usage-rules-js">
+(function(){
+  const DAY_KEY = new Date().toISOString().slice(0,10);
+  const PLAN_KEY = 'pozi_plan_tier';
+  const USAGE_KEY = 'pozi_usage_' + DAY_KEY;
+
+  const LIMITS = {
+    guest:    { label:'Guest', messages:3, sourcing:0, diagrams:0 },
+    free:     { label:'Free Account', messages:60, sourcing:3, diagrams:1 },
+    consumer: { label:'Consumer', messages:250, sourcing:20, diagrams:5 },
+    pro:      { label:'Contractor Pro', messages:1000, sourcing:75, diagrams:20 }
+  };
+
+  function getPlan(){
+    if (window.heroCurrentUser && !localStorage.getItem(PLAN_KEY)) return 'free';
+    return localStorage.getItem(PLAN_KEY) || 'guest';
+  }
+
+  function getUsage(){
+    try {
+      return JSON.parse(localStorage.getItem(USAGE_KEY) || '{"messages":0,"sourcing":0,"diagrams":0}');
+    } catch(e) {
+      return {messages:0,sourcing:0,diagrams:0};
+    }
+  }
+
+  function saveUsage(usage){
+    try { localStorage.setItem(USAGE_KEY, JSON.stringify(usage)); } catch(e){}
+  }
+
+  function openUsageModal(reason){
+    const overlay = document.getElementById('poziUsageOverlay');
+    const title = document.getElementById('poziUsageTitle');
+    const copy = document.getElementById('poziUsageCopy');
+    const note = document.getElementById('poziUsageNote');
+
+    if (title) {
+      title.textContent = reason === 'diagram'
+        ? 'Diagrams need an account.'
+        : reason === 'sourcing'
+          ? 'Create an account to source inventory.'
+          : 'Create an account to keep building.';
+    }
+
+    if (copy) {
+      copy.textContent = reason === 'diagram'
+        ? 'Visual diagrams and cut layouts use more processing, so they are available with account-based usage.'
+        : reason === 'sourcing'
+          ? 'Sourcing runs check inventory and retailer paths. Create an account so POZi can manage usage and save your project flow.'
+          : 'Guest access is designed for trying BUILDr. Create an account to save projects, continue conversations, and unlock more planning tools.';
+    }
+
+    if (note) {
+      note.textContent = 'Current limits: Guest 3 BUILDr messages. Free accounts get daily BUILDr usage, limited sourcing, and 1 simple visual preview. Consumer and Pro unlock larger workflows.';
+    }
+
+    if (overlay) {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeUsageModal(){
+    const overlay = document.getElementById('poziUsageOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  function updateChip(){
+    const chip = document.getElementById('poziUsageChip');
+    const remainingEl = document.getElementById('poziUsageRemaining');
+    if (!chip || !remainingEl) return;
+
+    const plan = getPlan();
+    const usage = getUsage();
+    const limit = LIMITS[plan] || LIMITS.guest;
+    const left = Math.max(0, limit.messages - usage.messages);
+
+    chip.firstChild && (chip.firstChild.textContent = limit.label + ' BUILDr: ');
+    remainingEl.textContent = left + ' left today';
+  }
+
+  window.POZiUsageGate = {
+    limits: LIMITS,
+    getPlan,
+    getUsage,
+    open: openUsageModal,
+    close: closeUsageModal,
+    allow(type){
+      const plan = getPlan();
+      const usage = getUsage();
+      const limit = LIMITS[plan] || LIMITS.guest;
+
+      if (type === 'buildr_message') {
+        if (usage.messages >= limit.messages) {
+          openUsageModal('buildr');
+          return false;
+        }
+        usage.messages += 1;
+        saveUsage(usage);
+        updateChip();
+        return true;
+      }
+
+      if (type === 'sourcing_run') {
+        if (usage.sourcing >= limit.sourcing) {
+          openUsageModal('sourcing');
+          return false;
+        }
+        usage.sourcing += 1;
+        saveUsage(usage);
+        return true;
+      }
+
+      if (type === 'diagram') {
+        if (usage.diagrams >= limit.diagrams) {
+          openUsageModal('diagram');
+          return false;
+        }
+        usage.diagrams += 1;
+        saveUsage(usage);
+        return true;
+      }
+
+      return true;
+    },
+    resetToday(){
+      localStorage.removeItem(USAGE_KEY);
+      updateChip();
+    }
+  };
+
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.id === 'poziUsageClose') closeUsageModal();
+
+    const overlay = document.getElementById('poziUsageOverlay');
+    if (overlay && e.target === overlay) closeUsageModal();
+
+    if (e.target && e.target.id === 'poziUsageCreateAccount') {
+      closeUsageModal();
+      const auth = document.getElementById('heroAuthModal');
+      if (auth) auth.classList.add('show');
+    }
+
+    if (e.target && e.target.id === 'poziUsageViewPlans') {
+      closeUsageModal();
+      const pricing = document.querySelector('[data-page="pricing"]');
+      if (pricing) pricing.click();
+    }
+
+    const diagramBtn = e.target.closest && e.target.closest('.note-visual-btn');
+    if (diagramBtn && /open/i.test(diagramBtn.textContent || '')) {
+      if (!window.POZiUsageGate.allow('diagram')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+      }
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeUsageModal();
+  });
+
+  document.addEventListener('DOMContentLoaded', updateChip);
+  updateChip();
 })();
 </script>
 
