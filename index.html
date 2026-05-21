@@ -4560,6 +4560,96 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-pricing-auth-modal-css">
+.pricing-auth-overlay{
+  position:fixed;
+  inset:0;
+  z-index:17000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(14px);
+}
+.pricing-auth-overlay.open{
+  display:flex;
+}
+.pricing-auth-modal{
+  width:min(520px,94vw);
+  position:relative;
+  border-radius:28px;
+  border:1px solid rgba(0,255,136,.16);
+  background:linear-gradient(180deg,rgba(18,18,32,.98),rgba(8,8,18,.98));
+  box-shadow:0 30px 100px rgba(0,0,0,.62);
+  padding:32px;
+}
+.pricing-auth-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:22px;
+  border:1px solid rgba(255,255,255,.10);
+}
+.pricing-auth-kicker{
+  color:var(--green);
+  font-family:var(--fh);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.pricing-auth-modal h2{
+  font-family:var(--fhero,var(--fd));
+  font-size:clamp(30px,5vw,46px);
+  line-height:1.02;
+  letter-spacing:-.04em;
+  margin-bottom:12px;
+}
+.pricing-auth-copy{
+  color:var(--muted);
+  line-height:1.7;
+  margin-bottom:22px;
+}
+.pricing-auth-actions{
+  display:grid;
+  gap:12px;
+}
+.pricing-auth-primary,
+.pricing-auth-secondary{
+  min-height:54px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--fh);
+  font-size:14px;
+  font-weight:900;
+}
+.pricing-auth-primary{
+  color:#03120b;
+  background:linear-gradient(135deg,rgba(0,255,136,.86),rgba(0,180,255,.64));
+}
+.pricing-auth-secondary{
+  color:#eef3ff;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.055);
+}
+.pricing-auth-status{
+  margin-top:18px;
+  color:#8e93b8;
+  font-size:12px;
+  line-height:1.55;
+}
+</style>
+
 </head>
 <body>
 
@@ -5216,7 +5306,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Best For</strong>DIY, furniture planning, repairs, room ideas, and household projects.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99">Start Consumer</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="consumer" data-plan-name="Consumer Plan" data-plan-price="$9.99" data-plan="consumer">Start Consumer</button>
       </div>
 
       <div class="pricing-card featured">
@@ -5241,7 +5331,7 @@ Search Smarter</div>
           <div class="tf"><div class="tf-check">✓</div><div class="tf-text"><strong>Priority Features</strong>Access advanced BUILDr and sourcing tools as they launch.</div></div>
         </div>
 
-        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99">Start Pro Plan</button>
+        <button class="tier-btn tier-btn-p plan-start-btn" type="button" data-plan="pro" data-plan-name="Pro Plan" data-plan-price="$19.99" data-plan="pro">Start Pro Plan</button>
       </div>
 
       <div class="pricing-card">
@@ -8148,6 +8238,112 @@ document.addEventListener('click', function(e){
   document.addEventListener('DOMContentLoaded', function(){
     var oldModal = document.getElementById('goModal');
     if (oldModal) oldModal.style.display = 'none';
+  });
+})();
+</script>
+
+
+<!-- Pricing/Auth Modal -->
+<div class="pricing-auth-overlay" id="pricingAuthOverlay" aria-hidden="true">
+  <div class="pricing-auth-modal">
+    <button class="pricing-auth-close" id="pricingAuthClose" type="button">×</button>
+
+    <div class="pricing-auth-kicker">POZi Account</div>
+    <h2 id="pricingAuthTitle">Start your POZi plan</h2>
+
+    <p class="pricing-auth-copy" id="pricingAuthCopy">
+      Create your account to activate your plan and unlock BUILDr workflows, projects, sourcing, and POZi Go integration.
+    </p>
+
+    <div class="pricing-auth-actions" id="pricingAuthActions">
+      <button class="pricing-auth-primary" id="pricingCreateAccount" type="button">
+        Create Account
+      </button>
+
+      <button class="pricing-auth-secondary" id="pricingAlreadySignedIn" type="button">
+        I Already Have an Account
+      </button>
+    </div>
+
+    <div class="pricing-auth-status" id="pricingAuthStatus">
+      Payment activation and Stripe checkout are coming soon.
+    </div>
+  </div>
+</div>
+
+
+<script id="pozi-pricing-auth-modal-js">
+(function(){
+  function openPricingAuth(plan){
+    var overlay = document.getElementById('pricingAuthOverlay');
+    var title = document.getElementById('pricingAuthTitle');
+    var copy = document.getElementById('pricingAuthCopy');
+    var status = document.getElementById('pricingAuthStatus');
+
+    if (!overlay) return;
+
+    if (plan === 'pro') {
+      title.textContent = 'Start Contractor Pro';
+      copy.textContent = 'Create your POZi account to unlock Contractor Pro workflows, BUILDr planning tools, sourcing, projects, and POZi Go integration.';
+    } else {
+      title.textContent = 'Start Consumer Mode';
+      copy.textContent = 'Create your POZi account to start planning projects, organizing materials, and using BUILDr with POZi Go.';
+    }
+
+    if (status) {
+      status.textContent = 'Payment activation and Stripe checkout are coming soon.';
+    }
+
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePricingAuth(){
+    var overlay = document.getElementById('pricingAuthOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-plan]');
+    if (btn) {
+      e.preventDefault();
+      var plan = btn.getAttribute('data-plan') || 'consumer';
+      openPricingAuth(plan);
+      return;
+    }
+
+    if (e.target && e.target.id === 'pricingAuthClose') {
+      closePricingAuth();
+      return;
+    }
+
+    var overlay = document.getElementById('pricingAuthOverlay');
+    if (overlay && e.target === overlay) {
+      closePricingAuth();
+      return;
+    }
+
+    if (e.target && e.target.id === 'pricingCreateAccount') {
+      var status = document.getElementById('pricingAuthStatus');
+      if (status) {
+        status.textContent = 'Account creation flow connected. Stripe/payment activation is coming soon.';
+      }
+    }
+
+    if (e.target && e.target.id === 'pricingAlreadySignedIn') {
+      var status = document.getElementById('pricingAuthStatus');
+      if (status) {
+        status.textContent = 'Signed-in payment activation flow coming soon.';
+      }
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closePricingAuth();
   });
 })();
 </script>
