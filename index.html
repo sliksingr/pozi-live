@@ -4302,6 +4302,228 @@ button,
 }
 </style>
 
+
+<style id="pozi-go-onboarding-css">
+/* ===== POZi Go desktop send-to-phone modal ===== */
+.pozi-go-modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:16000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(14px);
+}
+.pozi-go-modal-overlay.open{display:flex;}
+.pozi-go-modal{
+  width:min(520px,94vw);
+  position:relative;
+  border-radius:26px;
+  border:1px solid rgba(0,255,136,.16);
+  background:linear-gradient(180deg,rgba(18,18,32,.98),rgba(8,8,18,.98));
+  box-shadow:0 30px 100px rgba(0,0,0,.62);
+  padding:30px;
+}
+.pozi-go-modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:22px;
+  border:1px solid rgba(255,255,255,.10);
+}
+.pozi-go-modal-kicker,
+.mobile-go-kicker{
+  color:var(--green);
+  font-family:var(--fh);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.pozi-go-modal h2{
+  font-family:var(--fhero, var(--fd));
+  font-size:clamp(28px,4.6vw,44px);
+  line-height:1.02;
+  letter-spacing:-.04em;
+  margin-bottom:12px;
+}
+.pozi-go-modal p{
+  color:var(--muted);
+  line-height:1.7;
+  margin-bottom:20px;
+}
+.pozi-go-qr-box{
+  display:grid;
+  grid-template-columns:104px 1fr;
+  gap:16px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  padding:14px;
+  background:rgba(255,255,255,.035);
+  margin-bottom:18px;
+}
+.pozi-go-qr{
+  width:104px;
+  height:104px;
+  border-radius:16px;
+  background:#fff;
+  padding:12px;
+}
+.qr-grid{
+  width:100%;
+  height:100%;
+  background:
+    linear-gradient(90deg,#111 9px,transparent 9px) 0 0/18px 18px,
+    linear-gradient(#111 9px,transparent 9px) 0 0/18px 18px,
+    radial-gradient(circle at 18px 18px,#111 0 14px,transparent 15px),
+    radial-gradient(circle at 66px 18px,#111 0 14px,transparent 15px),
+    radial-gradient(circle at 18px 66px,#111 0 14px,transparent 15px);
+  opacity:.85;
+}
+.pozi-go-qr-box strong{
+  display:block;
+  font-family:var(--fd);
+  font-size:17px;
+  margin-bottom:6px;
+}
+.pozi-go-qr-box span{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+.pozi-go-modal-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.pozi-go-primary,
+.pozi-go-secondary{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  border-radius:14px;
+  font-family:var(--fh);
+  font-size:13px;
+  font-weight:800;
+}
+.pozi-go-primary{
+  background:linear-gradient(135deg,rgba(0,255,136,.82),rgba(0,180,255,.62));
+  color:#03120b;
+}
+.pozi-go-secondary{
+  color:#eef3ff;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+}
+.pozi-go-note{
+  margin-top:14px;
+  color:#8e93b8;
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* ===== Mobile gateway ===== */
+.mobile-go-gateway{
+  position:fixed;
+  inset:0;
+  z-index:20000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:#0f0f1a;
+  overflow:auto;
+}
+.mobile-go-gateway.show{display:flex;}
+.mobile-go-bg{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 50% 12%,rgba(0,255,136,.16),transparent 56%),
+    radial-gradient(ellipse at 80% 85%,rgba(0,102,255,.16),transparent 58%);
+  pointer-events:none;
+}
+.mobile-go-card{
+  position:relative;
+  width:min(430px,100%);
+  text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:28px;
+  background:linear-gradient(180deg,rgba(20,22,40,.94),rgba(8,8,18,.96));
+  box-shadow:0 24px 80px rgba(0,0,0,.55);
+  padding:28px 22px 24px;
+}
+.mobile-go-logo{
+  width:82px;
+  height:82px;
+  object-fit:contain;
+  margin:0 auto 18px;
+}
+.mobile-go-card h1{
+  font-family:var(--fhero, var(--fd));
+  font-size:clamp(30px,9vw,44px);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  margin-bottom:14px;
+}
+.mobile-go-card p{
+  color:var(--muted);
+  line-height:1.65;
+  font-size:15px;
+  margin-bottom:22px;
+}
+.mobile-go-actions{
+  display:grid;
+  gap:10px;
+}
+.mobile-go-primary,
+.mobile-go-secondary{
+  min-height:52px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--fh);
+  font-size:14px;
+  font-weight:900;
+}
+.mobile-go-primary{
+  color:#03120b;
+  background:linear-gradient(135deg,rgba(0,255,136,.86),rgba(0,180,255,.64));
+}
+.mobile-go-secondary{
+  color:#eef3ff;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.055);
+}
+.mobile-go-mini{
+  margin-top:16px;
+  color:#8e93b8;
+  font-size:12px;
+  line-height:1.55;
+}
+body.mobile-gateway-active > *:not(.mobile-go-gateway){
+  pointer-events:none;
+}
+body.mobile-gateway-active .mobile-go-gateway{
+  pointer-events:auto;
+}
+@media(min-width:769px){
+  .mobile-go-gateway{display:none !important;}
+}
+</style>
+
 </head>
 <body>
 
@@ -4354,7 +4576,7 @@ button,
       <span id="themeIcon">☀️</span>
       <span id="themeLabel">Light</span>
     </button>
-    <button class="nav-cta" id="poziGoBtn">⬇ Download POZi Go</button>
+    <button class="nav-cta" id="poziGoBtn">Get POZi Go</button>
   </div>
 
   <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -4382,7 +4604,7 @@ button,
     </div>
     <div class="m-switch" id="mSwitch"><div class="m-knob" id="mKnob"></div></div>
   </div>
-  <button class="m-cta" id="mobilePoziGo">⬇ Download POZi Go</button>
+  <button class="m-cta" id="mobilePoziGo">Get POZi Go</button>
 </div><!-- /mobileMenu -->
 
 <div id="page-home" class="page active">
@@ -4612,7 +4834,7 @@ button,
           <div style="font-family:var(--fh);font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">To see live inventory, open or download POZi Go</div>
           <div style="font-size:14px;color:var(--muted);line-height:1.7">POZi Go gives mobile shoppers the faster search experience for nearby inventory, scanning, and live lookup in one place.</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button id="heroMobileOpenBtn" class="hero-search-btn" style="flex:1;min-width:220px">Download POZi Go</button>
+            <button id="heroMobileOpenBtn" class="hero-search-btn" style="flex:1;min-width:220px">Get POZi Go</button>
             <button id="heroMobileAccountBtn" class="hero-account-btn" type="button" style="flex:1;min-width:180px">Create Account</button>
           </div>
           <div class="hero-search-sub" id="heroMobileSub" style="text-align:left">Mobile customers go straight into POZi Go while desktop customers can preview matches here and search deeper in Live Inventory.</div>
@@ -6231,7 +6453,7 @@ function switchHpTab(tab, el) {
 
     if(getCount() >= GUEST_LIMIT){
       inp.value = '';
-      addMsg('You\'ve used your 3 free messages! Download POZi Go or create a free account to get 10 messages per day. \uD83D\uDD28', 'bot');
+      addMsg('You\'ve used your 3 free messages! Get POZi Go or create a free account to get 10 messages per day. \uD83D\uDD28', 'bot');
       return;
     }
 
@@ -6319,7 +6541,7 @@ async function buildrEmbedSend() {
   if (!text) return;
 
   if (buildrEmbedCount >= BUILDR_EMBED_LIMIT) {
-    addBMsg('You\'ve used your 3 free messages! Download POZi Go or create an account to keep going.', 'bot');
+    addBMsg('You\'ve used your 3 free messages! Get POZi Go or create an account to keep going.', 'bot');
     input.value = '';
     return;
   }
@@ -7635,6 +7857,165 @@ document.addEventListener('click', function(e){
 
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') closeDiagramModal();
+  });
+})();
+</script>
+
+
+<!-- POZi Go send-to-phone modal -->
+<div class="pozi-go-modal-overlay" id="poziGoModal" aria-hidden="true">
+  <div class="pozi-go-modal" role="dialog" aria-modal="true" aria-labelledby="poziGoModalTitle">
+    <button class="pozi-go-modal-close" id="poziGoModalClose" type="button" aria-label="Close">×</button>
+    <div class="pozi-go-modal-kicker">POZi Go</div>
+    <h2 id="poziGoModalTitle">Send POZi Go to your phone</h2>
+    <p>
+      POZi Go is the mobile field tool for BUILDr, live inventory, project scanning, and active project workflows.
+    </p>
+
+    <div class="pozi-go-qr-box">
+      <div class="pozi-go-qr">
+        <div class="qr-grid"></div>
+      </div>
+      <div>
+        <strong>Open on your phone</strong>
+        <span>Scan this placeholder QR area once the App Store / TestFlight link is finalized.</span>
+      </div>
+    </div>
+
+    <div class="pozi-go-modal-actions">
+      <a class="pozi-go-primary" id="poziGoOpenLink" href="/pozi-go.html">Open POZi Go</a>
+      <button class="pozi-go-secondary" id="poziGoCopyLink" type="button">Copy Link</button>
+    </div>
+
+    <div class="pozi-go-note" id="poziGoModalStatus">
+      App Store / TestFlight links can be connected here when ready.
+    </div>
+  </div>
+</div>
+
+
+<!-- Mobile POZi Go gateway -->
+<div class="mobile-go-gateway" id="mobileGoGateway" aria-hidden="true">
+  <div class="mobile-go-bg"></div>
+  <div class="mobile-go-card">
+    <img class="mobile-go-logo logo-dark" src="/logo-dark.png" alt="POZi">
+    <img class="mobile-go-logo logo-light" src="/logo-light.png" alt="POZi">
+
+    <div class="mobile-go-kicker">POZi Go</div>
+    <h1>Project planning, inventory, and scanning on your phone.</h1>
+    <p>
+      POZi Go is the mobile field experience for BUILDr, live sourcing, project notes, diagrams, and quick inventory workflows.
+    </p>
+
+    <div class="mobile-go-actions">
+      <a class="mobile-go-primary" href="/pozi-go.html">Open POZi Go</a>
+      <button class="mobile-go-secondary" id="mobileContinueSite" type="button">Continue to full site</button>
+    </div>
+
+    <div class="mobile-go-mini">
+      BUILDr organizes the project. POZi Go helps you use it in the field.
+    </div>
+  </div>
+</div>
+
+
+<script id="pozi-go-onboarding-js">
+(function(){
+  var POZI_GO_URL = '/pozi-go.html';
+
+  function isPhone(){
+    return (/iphone|ipod|android.*mobile/i.test(navigator.userAgent) || window.innerWidth <= 680);
+  }
+
+  function openPoziGoModal(e){
+    if (e) e.preventDefault();
+    var modal = document.getElementById('poziGoModal');
+    if (modal) {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+  }
+
+  function closePoziGoModal(){
+    var modal = document.getElementById('poziGoModal');
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+  }
+
+  function showMobileGateway(){
+    if (!isPhone()) return;
+    if (sessionStorage.getItem('pozi_continue_full_site') === '1') return;
+    var gateway = document.getElementById('mobileGoGateway');
+    if (!gateway) return;
+    gateway.classList.add('show');
+    gateway.setAttribute('aria-hidden','false');
+    document.body.classList.add('mobile-gateway-active');
+  }
+
+  function hideMobileGateway(){
+    var gateway = document.getElementById('mobileGoGateway');
+    if (!gateway) return;
+    gateway.classList.remove('show');
+    gateway.setAttribute('aria-hidden','true');
+    document.body.classList.remove('mobile-gateway-active');
+    sessionStorage.setItem('pozi_continue_full_site','1');
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var desktopBtn = document.getElementById('poziGoBtn');
+    var mobileBtn = document.getElementById('mobilePoziGo');
+
+    if (desktopBtn) {
+      desktopBtn.addEventListener('click', function(e){
+        if (isPhone()) {
+          e.preventDefault();
+          window.location.href = POZI_GO_URL;
+        } else {
+          openPoziGoModal(e);
+        }
+      });
+    }
+
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        window.location.href = POZI_GO_URL;
+      });
+    }
+
+    var closeBtn = document.getElementById('poziGoModalClose');
+    if (closeBtn) closeBtn.addEventListener('click', closePoziGoModal);
+
+    var modal = document.getElementById('poziGoModal');
+    if (modal) modal.addEventListener('click', function(e){
+      if (e.target === modal) closePoziGoModal();
+    });
+
+    var copyBtn = document.getElementById('poziGoCopyLink');
+    if (copyBtn) copyBtn.addEventListener('click', async function(){
+      var status = document.getElementById('poziGoModalStatus');
+      var link = window.location.origin + POZI_GO_URL;
+      try{
+        await navigator.clipboard.writeText(link);
+        if (status) status.textContent = 'POZi Go link copied.';
+      }catch(err){
+        if (status) status.textContent = link;
+      }
+    });
+
+    var openLink = document.getElementById('poziGoOpenLink');
+    if (openLink) openLink.setAttribute('href', POZI_GO_URL);
+
+    var continueBtn = document.getElementById('mobileContinueSite');
+    if (continueBtn) continueBtn.addEventListener('click', hideMobileGateway);
+
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closePoziGoModal();
+    });
+
+    showMobileGateway();
   });
 })();
 </script>
