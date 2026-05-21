@@ -5191,6 +5191,37 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-thunder-shift-left-pass">
+/* Shift Thunder artwork slightly left so the visible energy sits closer to the user-side panel */
+@media (min-width:980px){
+  .buildr-thunder-core{
+    transform:translateX(-10%) !important;
+  }
+
+  .buildr-thunder-img{
+    transform:translateX(-10%) !important;
+  }
+
+  /* Preserve the existing float animation while biasing the art left */
+  @keyframes buildrFloat{
+    0%,100%{transform:translateX(-10%) translateY(0) scale(1);}
+    50%{transform:translateX(-10%) translateY(-8px) scale(1.035);}
+  }
+
+  .buildr-tension-shell::before{
+    background:
+      radial-gradient(ellipse 44% 42% at 44% 50%,rgba(118,60,255,.16),transparent 64%),
+      radial-gradient(ellipse 38% 30% at 44% 48%,rgba(0,255,136,.06),transparent 70%) !important;
+  }
+
+  /* Feather the right-side glow a little so text panels stay clean */
+  .buildr-thunder-core::after{
+    opacity:.58 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
