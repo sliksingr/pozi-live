@@ -5402,6 +5402,67 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-thunder-final-position-pulse">
+/* Final Thunder/BUILDr artwork position + soft pulse refinement */
+@media (min-width:980px){
+  .buildr-thunder-core{
+    transform:translateX(-5%) translateY(0.2%) !important;
+    opacity:.92 !important;
+  }
+
+  .buildr-thunder-img{
+    transform:translateX(-5%) translateY(0.2%) scale(1) !important;
+    animation:buildrFloatFinal 6.5s ease-in-out infinite !important;
+  }
+
+  @keyframes buildrFloatFinal{
+    0%,100%{
+      transform:translateX(-5%) translateY(0.2%) scale(1);
+      filter:drop-shadow(0 0 64px rgba(116,68,255,.55)) drop-shadow(0 0 28px rgba(0,255,136,.18));
+      opacity:.90;
+    }
+    50%{
+      transform:translateX(-5%) translateY(-7px) scale(1.028);
+      filter:drop-shadow(0 0 82px rgba(116,68,255,.72)) drop-shadow(0 0 38px rgba(0,255,136,.28));
+      opacity:.96;
+    }
+  }
+
+  .buildr-tension-shell::before{
+    background:
+      radial-gradient(ellipse 48% 44% at 45% 51%,rgba(118,60,255,.11),transparent 66%),
+      radial-gradient(ellipse 40% 32% at 45% 49%,rgba(0,255,136,.045),transparent 72%) !important;
+    animation:buildrGlowBreath 7s ease-in-out infinite !important;
+  }
+
+  @keyframes buildrGlowBreath{
+    0%,100%{
+      opacity:.72;
+      filter:blur(0px);
+    }
+    50%{
+      opacity:.96;
+      filter:blur(2px);
+    }
+  }
+
+  .buildr-thunder-core::before,
+  .buildr-thunder-core::after{
+    animation:buildrLineBreath 6.5s ease-in-out infinite !important;
+  }
+
+  @keyframes buildrLineBreath{
+    0%,100%{opacity:.48;}
+    50%{opacity:.78;}
+  }
+
+  .buildr-thunder-core::after{
+    opacity:.50 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
