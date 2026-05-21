@@ -4848,6 +4848,132 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-buildr-reading-workspace-final">
+/* BUILDr reading/workspace pass:
+   keep thunder centered, widen the BUILDr response, and keep user input visible. */
+@media (min-width:980px){
+  .buildr-tension-wrap{
+    max-width:1420px !important;
+  }
+
+  .buildr-tension-shell{
+    grid-template-columns:minmax(320px,.9fr) minmax(360px,1.15fr) minmax(440px,1.35fr) !important;
+    gap:18px !important;
+    align-items:start !important;
+    padding:26px !important;
+  }
+
+  .buildr-panel-left{
+    position:sticky !important;
+    top:calc(var(--nh, 76px) + 18px) !important;
+    align-self:start !important;
+    max-height:calc(100vh - var(--nh, 76px) - 38px) !important;
+    overflow:auto !important;
+  }
+
+  .buildr-panel-right{
+    align-self:start !important;
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    padding:26px !important;
+  }
+
+  .buildr-thunder-core{
+    min-height:600px !important;
+    margin:0 -90px !important;
+    opacity:.92 !important;
+  }
+
+  .buildr-thunder-img{
+    width:min(980px,78vw) !important;
+    max-width:none !important;
+  }
+
+  .buildr-response-stack{
+    gap:14px !important;
+  }
+
+  .buildr-bubble{
+    font-size:14px !important;
+    line-height:1.68 !important;
+    padding:18px !important;
+  }
+
+  .buildr-bubble strong{
+    font-size:13px !important;
+  }
+
+  #buildrAnswer.buildr-live-answer{
+    max-height:min(62vh,760px) !important;
+    overflow:auto !important;
+    padding-right:8px !important;
+  }
+
+  #buildrAnswer .buildr-msg,
+  #buildrUserStream .buildr-msg{
+    max-width:100% !important;
+  }
+
+  .buildr-output-panel,
+  .buildr-notes-panel,
+  .buildr-basket-panel{
+    width:100% !important;
+  }
+}
+
+@media (min-width:1240px){
+  .buildr-tension-wrap{
+    max-width:1500px !important;
+  }
+
+  .buildr-tension-shell{
+    grid-template-columns:minmax(340px,.86fr) minmax(420px,1.18fr) minmax(520px,1.55fr) !important;
+    gap:20px !important;
+  }
+
+  .buildr-panel-right{
+    padding:28px !important;
+  }
+}
+
+@media (min-width:1500px){
+  .buildr-tension-wrap{
+    max-width:1580px !important;
+  }
+
+  .buildr-tension-shell{
+    grid-template-columns:minmax(360px,.82fr) minmax(460px,1.15fr) minmax(600px,1.68fr) !important;
+  }
+}
+
+/* Internal scrollbars only where helpful */
+.buildr-panel-left::-webkit-scrollbar,
+#buildrAnswer::-webkit-scrollbar{
+  width:7px;
+}
+.buildr-panel-left::-webkit-scrollbar-thumb,
+#buildrAnswer::-webkit-scrollbar-thumb{
+  background:rgba(0,255,136,.24);
+  border-radius:999px;
+}
+
+/* Keep stacked mobile/tablet portrait intact */
+@media (max-width:979px){
+  .buildr-panel-left{
+    position:relative !important;
+    top:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  #buildrAnswer.buildr-live-answer{
+    max-height:none !important;
+    overflow:visible !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
