@@ -5463,6 +5463,66 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-mobile-app-gate-final">
+.mobile-go-card-final{
+  padding:30px 22px 24px !important;
+}
+.mobile-go-card-final h1{
+  font-family:var(--fhero, var(--fd)) !important;
+  font-size:clamp(36px,11vw,54px) !important;
+  line-height:.98 !important;
+  letter-spacing:-.045em !important;
+  margin-bottom:14px !important;
+}
+.mobile-go-card-final p{
+  max-width:360px !important;
+  margin:0 auto 18px !important;
+}
+.mobile-go-feature-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin:0 0 20px;
+}
+.mobile-go-feature-row span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  color:#dbe6ff;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:11px;
+  font-weight:700;
+}
+.mobile-go-gateway.show{
+  display:flex !important;
+}
+body.mobile-gateway-active{
+  overflow:hidden !important;
+}
+body.mobile-gateway-active > *:not(.mobile-go-gateway){
+  display:none !important;
+}
+body.mobile-gateway-active .mobile-go-gateway{
+  display:flex !important;
+  pointer-events:auto !important;
+}
+#mobileContinueSite{
+  display:none !important;
+}
+@media(min-width:769px){
+  .mobile-go-gateway{display:none !important;}
+  body.mobile-gateway-active > *:not(.mobile-go-gateway){
+    display:initial;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -8671,23 +8731,28 @@ document.addEventListener('click', function(e){
 <!-- Mobile POZi Go gateway -->
 <div class="mobile-go-gateway" id="mobileGoGateway" aria-hidden="true">
   <div class="mobile-go-bg"></div>
-  <div class="mobile-go-card">
+  <div class="mobile-go-card mobile-go-card-final">
     <img class="mobile-go-logo logo-dark" src="/logo-dark.png" alt="POZi">
     <img class="mobile-go-logo logo-light" src="/logo-light.png" alt="POZi">
 
     <div class="mobile-go-kicker">POZi Go</div>
-    <h1>Project planning, inventory, and scanning on your phone.</h1>
+    <h1>BUILDr in your pocket.</h1>
     <p>
-      POZi Go is the mobile field experience for BUILDr, live sourcing, project notes, diagrams, and quick inventory workflows.
+      POZi Go is the mobile app for project planning, photo-powered BUILDr guidance, build notes, diagrams, live inventory, and source-ready project lists.
     </p>
 
+    <div class="mobile-go-feature-row">
+      <span>Photo to BUILDr</span>
+      <span>Project notes</span>
+      <span>Inventory sourcing</span>
+    </div>
+
     <div class="mobile-go-actions">
-      <a class="mobile-go-primary" href="/pozi-go.html">Open POZi Go</a>
-      <button class="mobile-go-secondary" id="mobileContinueSite" type="button">Continue to full site</button>
+      <a class="mobile-go-primary" id="mobileGoInstallLink" href="https://pozi.live/install">Open / Get POZi Go</a>
     </div>
 
     <div class="mobile-go-mini">
-      BUILDr organizes the project. POZi Go helps you use it in the field.
+      POZi Live is best on desktop. POZi Go is designed for your phone.
     </div>
   </div>
 </div>
@@ -8695,7 +8760,7 @@ document.addEventListener('click', function(e){
 
 <script id="pozi-go-onboarding-js">
 (function(){
-  var POZI_GO_URL = '/pozi-go.html';
+  var POZI_GO_URL = 'https://pozi.live/install';
 
   function isPhone(){
     return (/iphone|ipod|android.*mobile/i.test(navigator.userAgent) || window.innerWidth <= 680);
@@ -8720,7 +8785,6 @@ document.addEventListener('click', function(e){
 
   function showMobileGateway(){
     if (!isPhone()) return;
-    if (sessionStorage.getItem('pozi_continue_full_site') === '1') return;
     var gateway = document.getElementById('mobileGoGateway');
     if (!gateway) return;
     gateway.classList.add('show');
@@ -8728,18 +8792,12 @@ document.addEventListener('click', function(e){
     document.body.classList.add('mobile-gateway-active');
   }
 
-  function hideMobileGateway(){
-    var gateway = document.getElementById('mobileGoGateway');
-    if (!gateway) return;
-    gateway.classList.remove('show');
-    gateway.setAttribute('aria-hidden','true');
-    document.body.classList.remove('mobile-gateway-active');
-    sessionStorage.setItem('pozi_continue_full_site','1');
-  }
-
   document.addEventListener('DOMContentLoaded', function(){
     var desktopBtn = document.getElementById('poziGoBtn');
     var mobileBtn = document.getElementById('mobilePoziGo');
+    var installLink = document.getElementById('mobileGoInstallLink');
+
+    if (installLink) installLink.setAttribute('href', POZI_GO_URL);
 
     if (desktopBtn) {
       desktopBtn.addEventListener('click', function(e){
@@ -8770,20 +8828,16 @@ document.addEventListener('click', function(e){
     var copyBtn = document.getElementById('poziGoCopyLink');
     if (copyBtn) copyBtn.addEventListener('click', async function(){
       var status = document.getElementById('poziGoModalStatus');
-      var link = window.location.origin + POZI_GO_URL;
       try{
-        await navigator.clipboard.writeText(link);
-        if (status) status.textContent = 'POZi Go link copied.';
+        await navigator.clipboard.writeText(POZI_GO_URL);
+        if (status) status.textContent = 'POZi Go install link copied.';
       }catch(err){
-        if (status) status.textContent = link;
+        if (status) status.textContent = POZI_GO_URL;
       }
     });
 
     var openLink = document.getElementById('poziGoOpenLink');
     if (openLink) openLink.setAttribute('href', POZI_GO_URL);
-
-    var continueBtn = document.getElementById('mobileContinueSite');
-    if (continueBtn) continueBtn.addEventListener('click', hideMobileGateway);
 
     document.addEventListener('keydown', function(e){
       if (e.key === 'Escape') closePoziGoModal();
