@@ -5108,6 +5108,89 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-buildr-clean-workflow-intros">
+/* Final cleanup: make the starter UI read like workflow labels, not nested demo cards */
+#buildrUserStream .buildr-starter-card,
+#buildrAnswer .buildr-starter-card,
+.buildr-clean-intro{
+  background:rgba(255,255,255,.028) !important;
+  border:1px solid rgba(255,255,255,.075) !important;
+  box-shadow:none !important;
+  border-radius:14px !important;
+  padding:14px !important;
+  min-height:0 !important;
+  max-width:100% !important;
+}
+
+#buildrAnswer .buildr-starter-card{
+  min-height:0 !important;
+  justify-content:flex-start !important;
+}
+
+.buildr-clean-heading{
+  font-family:var(--fd) !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1.25 !important;
+  letter-spacing:-.015em !important;
+  color:#f4f6ff !important;
+  margin:0 0 10px !important;
+}
+
+.buildr-clean-pills,
+.buildr-starter-pills{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:7px !important;
+}
+
+.buildr-clean-pills span,
+.buildr-starter-pills span{
+  min-height:26px !important;
+  padding:0 10px !important;
+  border-radius:999px !important;
+  font-family:var(--fb) !important;
+  font-size:11px !important;
+  font-weight:650 !important;
+  letter-spacing:.02em !important;
+  color:#cfd8f6 !important;
+  background:rgba(255,255,255,.045) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:none !important;
+}
+
+.buildr-clean-pills span:first-child,
+.buildr-starter-pills span:first-child{
+  color:#aaffd0 !important;
+  background:rgba(0,255,136,.065) !important;
+  border-color:rgba(0,255,136,.16) !important;
+}
+
+/* Hide old YOU / BUILDr badge treatment if any legacy markup remains */
+#buildrUserStream .buildr-role-label,
+#buildrAnswer .buildr-role-label{
+  display:none !important;
+}
+
+/* Reduce the bulky inner card look */
+.buildr-prompt-box{
+  padding:14px !important;
+}
+.buildr-prompt-label{
+  margin-bottom:10px !important;
+}
+.buildr-bubble.hot{
+  padding:16px !important;
+}
+.buildr-bubble.hot > strong{
+  margin-bottom:10px !important;
+}
+#buildrAnswer{
+  margin-top:0 !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -5264,13 +5347,13 @@ body.mobile-gateway-active .mobile-go-gateway{
         <div class="buildr-prompt-box">
           <div class="buildr-prompt-label">Your side of the build</div>
           <div id="buildrUserStream" class="buildr-chat-stream" aria-live="polite">
-            <div class="buildr-msg user buildr-starter-card">
-              <strong class="buildr-role-label you">YOU</strong>
-              <div class="buildr-starter-title">Start with a project.</div>
-              <div class="buildr-starter-pills">
+            <div class="buildr-msg user buildr-starter-card buildr-clean-intro">
+              <div class="buildr-clean-heading">Start with the basics.</div>
+              <div class="buildr-clean-pills">
                 <span>Project</span>
                 <span>Size</span>
                 <span>Budget</span>
+                <span>Location</span>
               </div>
             </div>
           </div>
@@ -5330,13 +5413,13 @@ body.mobile-gateway-active .mobile-go-gateway{
           <div class="buildr-bubble hot">
             <strong>BUILDr conversation</strong>
             <div id="buildrAnswer" class="buildr-live-answer">
-              <div class="buildr-msg ai buildr-starter-card">
-                <strong class="buildr-role-label buildr">BUILDr</strong>
-                <div class="buildr-starter-title">I’ll turn it into a plan.</div>
-                <div class="buildr-starter-pills">
-                  <span>Build Plan</span>
+              <div class="buildr-msg ai buildr-starter-card buildr-clean-intro buildr-clean-intro-ai">
+                <div class="buildr-clean-heading">BUILDr organizes the next steps.</div>
+                <div class="buildr-clean-pills">
+                  <span>Plan</span>
                   <span>Materials</span>
-                  <span>Guidance</span>
+                  <span>Notes</span>
+                  <span>Diagrams</span>
                 </div>
               </div>
             </div>
