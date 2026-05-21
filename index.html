@@ -4746,6 +4746,108 @@ body.mobile-gateway-active .mobile-go-gateway{
 }
 </style>
 
+
+<style id="pozi-buildr-wide-conversation-pass">
+/* BUILDr wider conversation workspace on tablet/desktop */
+@media (min-width: 980px){
+  .buildr-shell,
+  .builder-shell,
+  .buildr-workspace,
+  .builder-workspace,
+  .buildr-main,
+  .builder-main{
+    grid-template-columns:minmax(300px,1.08fr) minmax(220px,.72fr) minmax(340px,1.18fr) !important;
+    gap:22px !important;
+  }
+
+  .buildr-left,
+  .builder-left,
+  .buildr-input-panel,
+  .builder-input-panel,
+  .buildr-user-panel,
+  .builder-user-panel{
+    max-width:none !important;
+    width:100% !important;
+  }
+
+  .buildr-right,
+  .builder-right,
+  .buildr-response-panel,
+  .builder-response-panel,
+  .buildr-output-panel,
+  .builder-output-panel{
+    max-width:none !important;
+    width:100% !important;
+  }
+
+  .buildr-center,
+  .builder-center,
+  .buildr-visual,
+  .builder-visual{
+    min-width:0 !important;
+  }
+
+  .buildr-center img,
+  .builder-center img,
+  .buildr-visual img,
+  .builder-visual img{
+    max-width:100% !important;
+    object-fit:cover !important;
+  }
+
+  .buildr-chat,
+  .builder-chat,
+  .buildr-conversation,
+  .builder-conversation,
+  .buildr-response-feed,
+  .builder-response-feed{
+    max-width:none !important;
+  }
+
+  .buildr-msg,
+  .builder-msg,
+  .buildr-bubble,
+  .builder-bubble,
+  .user-message,
+  .builder-message{
+    max-width:100% !important;
+  }
+
+  .buildr-output,
+  .builder-output,
+  .buildr-notes,
+  .builder-notes{
+    max-height:520px !important;
+    overflow:auto !important;
+  }
+}
+
+/* On wider desktop, give the two conversation columns even more breathing room */
+@media (min-width: 1240px){
+  .buildr-shell,
+  .builder-shell,
+  .buildr-workspace,
+  .builder-workspace,
+  .buildr-main,
+  .builder-main{
+    grid-template-columns:minmax(340px,1.15fr) minmax(240px,.62fr) minmax(380px,1.25fr) !important;
+    gap:24px !important;
+  }
+}
+
+/* Keep mobile stacked and unchanged */
+@media (max-width: 979px){
+  .buildr-shell,
+  .builder-shell,
+  .buildr-workspace,
+  .builder-workspace,
+  .buildr-main,
+  .builder-main{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
