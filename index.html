@@ -48,8 +48,12 @@ try { localStorage.setItem('pozi-theme','dark'); } catch(e){}
 <meta property="og:image:alt" content="POZi stormbrain lightning logo">
 <meta name="twitter:image" content="https://pozi.live/pozi-social-card.png">
 
-<link rel="icon" href="/logo-dark.png">
-<link rel="apple-touch-icon" href="/logo-dark.png">
+<!-- Dynamic favicon setup for light/dark browser tabs -->
+<link rel="icon" type="image/png" href="/logo-light.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" href="/logo-dark.png" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="/logo-light.png">
+<meta name="theme-color" content="#f8f8fc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0f1a" media="(prefers-color-scheme: dark)">
 
 <!-- POZi How It Works build notes folded into existing flow v3 -->
 <!-- POZi humanized build-list copy update -->
