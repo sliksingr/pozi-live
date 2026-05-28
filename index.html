@@ -754,80 +754,6 @@ footer { padding:32px 40px; display:flex; align-items:center; justify-content:sp
 @media(max-width:760px){.live-search-row{grid-template-columns:1fr}.live-search-btn{width:100%}.live-page-shell{padding-left:18px;padding-right:18px}}
 
 
-/* ─────────────────────────────────────────
-   LIGHT MODE READABILITY TUNING
-───────────────────────────────────────── */
-[data-theme="light"]{
-  --muted:#4f556f;
-}
-
-[data-theme="light"] p,
-[data-theme="light"] .sec-sub,
-[data-theme="light"] .hero-desc,
-[data-theme="light"] .saving-desc,
-[data-theme="light"] .bc-step-desc,
-[data-theme="light"] .ba-text,
-[data-theme="light"] .tier-desc,
-[data-theme="light"] .tf-text,
-[data-theme="light"] .value-desc,
-[data-theme="light"] .worth-desc,
-[data-theme="light"] .tdesc,
-[data-theme="light"] .md,
-[data-theme="light"] .promise-text,
-[data-theme="light"] .sc-label,
-[data-theme="light"] .sc-val,
-[data-theme="light"] .cta-sub,
-[data-theme="light"] .footer-link,
-[data-theme="light"] .footer-copy,
-[data-theme="light"] .live-result-store,
-[data-theme="light"] .modal-sub,
-[data-theme="light"] .go-sub,
-[data-theme="light"] .compare-sub,
-[data-theme="light"] .compare-mini-meta{
-  color:#4f556f !important;
-}
-
-[data-theme="light"] .tf-text strong,
-[data-theme="light"] .worth-title,
-[data-theme="light"] .value-title,
-[data-theme="light"] .tier-name,
-[data-theme="light"] .store-name,
-[data-theme="light"] .live-result-name,
-[data-theme="light"] .ttitle,
-[data-theme="light"] .bc-sub-title,
-[data-theme="light"] .saving-title,
-[data-theme="light"] .promise-title{
-  color:#141826 !important;
-}
-
-[data-theme="light"] .tier-label,
-[data-theme="light"] .form-label,
-[data-theme="light"] .eyebrow,
-[data-theme="light"] .slabel,
-[data-theme="light"] .ss-eyebrow,
-[data-theme="light"] .compare-eyebrow{
-  color:#009a52 !important;
-}
-
-[data-theme="light"] .pricing-card,
-[data-theme="light"] .value-card,
-[data-theme="light"] .saving-card,
-[data-theme="light"] .sc-card,
-[data-theme="light"] .worth-card,
-[data-theme="light"] .tier-card,
-[data-theme="light"] .tcard,
-[data-theme="light"] .store-card,
-[data-theme="light"] .live-search-card{
-  box-shadow:0 10px 30px rgba(18,25,40,0.06);
-}
-
-[data-theme="light"] .sc-head{
-  background:#10131d !important;
-}
-
-[data-theme="light"] .footer-slogans{
-  color:#6a7088 !important;
-}
 
 
 /* ════════════════════════════════════
@@ -5756,6 +5682,204 @@ body.mobile-gateway-active .mobile-go-gateway{
 #buildrBasketBtn.is-created:hover{
   transform:translateY(-2px) !important;
 }
+
+
+/* ─────────────────────────────────────────
+   LIGHT MODE READABILITY TUNING — GLOBAL
+   Late override for all website pages/cards.
+───────────────────────────────────────── */
+[data-theme="light"]{
+  --muted:#4b526d;
+}
+
+/* General body/supporting copy */
+[data-theme="light"] p,
+[data-theme="light"] small,
+[data-theme="light"] li,
+[data-theme="light"] span,
+[data-theme="light"] .sec-sub,
+[data-theme="light"] .hero-desc,
+[data-theme="light"] .saving-desc,
+[data-theme="light"] .bc-step-desc,
+[data-theme="light"] .ba-text,
+[data-theme="light"] .tier-desc,
+[data-theme="light"] .tf-text,
+[data-theme="light"] .value-desc,
+[data-theme="light"] .worth-desc,
+[data-theme="light"] .tdesc,
+[data-theme="light"] .md,
+[data-theme="light"] .promise-text,
+[data-theme="light"] .sc-label,
+[data-theme="light"] .sc-val,
+[data-theme="light"] .cta-sub,
+[data-theme="light"] .footer-link,
+[data-theme="light"] .footer-copy,
+[data-theme="light"] .live-result-store,
+[data-theme="light"] .modal-sub,
+[data-theme="light"] .go-sub,
+[data-theme="light"] .compare-sub,
+[data-theme="light"] .compare-mini-meta{
+  color:#4b526d !important;
+}
+
+/* Stronger text/headlines inside light cards */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] strong,
+[data-theme="light"] .sec-title,
+[data-theme="light"] .stitle,
+[data-theme="light"] .cta-title,
+[data-theme="light"] .mq,
+[data-theme="light"] .ttitle,
+[data-theme="light"] .tf-text strong,
+[data-theme="light"] .worth-title,
+[data-theme="light"] .value-title,
+[data-theme="light"] .tier-name,
+[data-theme="light"] .store-name,
+[data-theme="light"] .live-result-name,
+[data-theme="light"] .bc-sub-title,
+[data-theme="light"] .saving-title,
+[data-theme="light"] .promise-title{
+  color:#121624 !important;
+}
+
+/* BUILDr visual/demo area — previously too washed out */
+[data-theme="light"] [class*="buildr"],
+[data-theme="light"] [class*="Buildr"],
+[data-theme="light"] [class*="BUILDr"],
+[data-theme="light"] .builder-card,
+[data-theme="light"] .builder-copy,
+[data-theme="light"] .builder-demo,
+[data-theme="light"] .builder-panel,
+[data-theme="light"] .builder-output,
+[data-theme="light"] .builder-response,
+[data-theme="light"] .builder-note,
+[data-theme="light"] .builder-note p,
+[data-theme="light"] .builder-output p,
+[data-theme="light"] .buildr-output,
+[data-theme="light"] .buildr-output p,
+[data-theme="light"] .buildr-copy,
+[data-theme="light"] .buildr-copy p,
+[data-theme="light"] .buildr-card p,
+[data-theme="light"] .buildr-card span,
+[data-theme="light"] .buildr-card small,
+[data-theme="light"] .buildr-flow p,
+[data-theme="light"] .buildr-flow span,
+[data-theme="light"] .buildr-visual p,
+[data-theme="light"] .buildr-visual span,
+[data-theme="light"] .buildr-demo p,
+[data-theme="light"] .buildr-demo span,
+[data-theme="light"] .buildr-stage p,
+[data-theme="light"] .buildr-stage span{
+  color:#46506a !important;
+}
+
+[data-theme="light"] [class*="buildr"] h1,
+[data-theme="light"] [class*="buildr"] h2,
+[data-theme="light"] [class*="buildr"] h3,
+[data-theme="light"] [class*="buildr"] h4,
+[data-theme="light"] [class*="buildr"] strong,
+[data-theme="light"] [class*="Buildr"] h1,
+[data-theme="light"] [class*="Buildr"] h2,
+[data-theme="light"] [class*="Buildr"] h3,
+[data-theme="light"] [class*="Buildr"] h4,
+[data-theme="light"] [class*="Buildr"] strong,
+[data-theme="light"] [class*="BUILDr"] h1,
+[data-theme="light"] [class*="BUILDr"] h2,
+[data-theme="light"] [class*="BUILDr"] h3,
+[data-theme="light"] [class*="BUILDr"] h4,
+[data-theme="light"] [class*="BUILDr"] strong{
+  color:#101522 !important;
+}
+
+/* Keep green labels visible, not neon-faded */
+[data-theme="light"] .eyebrow,
+[data-theme="light"] .slabel,
+[data-theme="light"] .ss-eyebrow,
+[data-theme="light"] .compare-eyebrow,
+[data-theme="light"] [class*="eyebrow"],
+[data-theme="light"] [class*="kicker"],
+[data-theme="light"] [class*="label"]{
+  color:#008f4d !important;
+}
+
+/* Muted chips/buttons inside BUILDr demo that were nearly invisible */
+[data-theme="light"] .pill,
+[data-theme="light"] .badge,
+[data-theme="light"] [class*="chip"],
+[data-theme="light"] [class*="pill"]{
+  color:#2f374f !important;
+  border-color:rgba(45,55,80,.20) !important;
+}
+
+/* Card depth/readability in light mode */
+[data-theme="light"] .pricing-card,
+[data-theme="light"] .value-card,
+[data-theme="light"] .saving-card,
+[data-theme="light"] .sc-card,
+[data-theme="light"] .worth-card,
+[data-theme="light"] .tier-card,
+[data-theme="light"] .tcard,
+[data-theme="light"] .store-card,
+[data-theme="light"] .live-search-card,
+[data-theme="light"] [class*="card"],
+[data-theme="light"] [class*="panel"]{
+  box-shadow:0 10px 30px rgba(18,25,40,0.065);
+}
+
+/* Pricing comparison table */
+[data-theme="light"] .sc-head{
+  background:#10131d !important;
+}
+[data-theme="light"] .sc-head,
+[data-theme="light"] .sc-head *{
+  color:#ffffff !important;
+}
+
+/* Footer + secondary marks */
+[data-theme="light"] .footer-slogans{
+  color:#687089 !important;
+}
+
+/* Do not wash out active nav/account text */
+[data-theme="light"] .nl,
+[data-theme="light"] .theme-toggle,
+[data-theme="light"] .nav-tagline{
+  color:#4d5368 !important;
+}
+[data-theme="light"] .nl.active{
+  color:#007a43 !important;
+}
+
+
+
+/* Light mode account button contrast fix */
+[data-theme="light"] .account-btn,
+[data-theme="light"] .account-button,
+[data-theme="light"] .nav-account,
+[data-theme="light"] .acct-btn{
+  background:rgba(22,28,40,.08) !important;
+  border:1px solid rgba(25,35,55,.14) !important;
+  color:#1a2233 !important;
+  box-shadow:0 4px 16px rgba(18,25,40,.08);
+}
+
+[data-theme="light"] .account-btn *,
+[data-theme="light"] .account-button *,
+[data-theme="light"] .nav-account *,
+[data-theme="light"] .acct-btn *{
+  color:#1a2233 !important;
+}
+
+[data-theme="light"] .account-btn:hover,
+[data-theme="light"] .account-button:hover,
+[data-theme="light"] .nav-account:hover,
+[data-theme="light"] .acct-btn:hover{
+  background:rgba(22,28,40,.12) !important;
+}
+
 </style>
 
 </head>
