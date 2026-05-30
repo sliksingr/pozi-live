@@ -253,20 +253,19 @@ exports.handler = async (event) => {
 
       finalData = get.data;
       
+/* ==========================
 
-// DEBUG BLOCK - REMOVE LATER
+   DEBUG LOGGING - REMOVE LATER
 
-return jsonResponse(200, {
+   ========================== */
 
-  ok: true,
+console.log(
 
-  debug_mode: true,
+  "POZI PRODUCT DEBUG:",
 
-  task_id: taskId,
+  JSON.stringify(finalData, null, 2)
 
-  raw: finalData
-
-});
+);
 
 
       const task = finalData?.tasks?.[0];
