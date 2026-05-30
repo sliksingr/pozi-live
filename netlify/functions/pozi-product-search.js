@@ -252,6 +252,22 @@ exports.handler = async (event) => {
       );
 
       finalData = get.data;
+      
+
+// DEBUG BLOCK - REMOVE LATER
+
+return jsonResponse(200, {
+
+  ok: true,
+
+  debug_mode: true,
+
+  task_id: taskId,
+
+  raw: finalData
+
+});
+
 
       const task = finalData?.tasks?.[0];
       const result = task?.result?.[0];
