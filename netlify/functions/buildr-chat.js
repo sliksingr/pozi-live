@@ -280,8 +280,8 @@ Turn messy project ideas into organized, practical, sourcing-ready project plans
 const BUILDR_DAILY_LIMITS = {
   guest: 1,
   free: 3,
-  consumer: 25,
-  pro: 100
+  consumer: 10,
+  pro: 25
 };
 
 function normalizePlanTier(value, hasUser) {
