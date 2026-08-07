@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Email Confirmed — POZi Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
+<style>
+:root {
+  --green:#00ff88;
+  --blue:#38bdf8;
+  --bg:#0f0f1a;
+  --panel:#151525;
+  --border:#2a2a45;
+  --text:#ffffff;
+  --muted:#a8a8c2;
+  --shadow:0 18px 44px rgba(0,0,0,.28);
+  --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center;padding:24px;
+  min-height:100dvh;
+  background:
+    radial-gradient(900px 480px at 50% -10%, rgba(0,255,136,.10), transparent 60%),
+    var(--bg)}
+
+.card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--shadow);padding:34px 28px 30px;text-align:center}
+
+.logo-word{font-family:Syne,sans-serif;font-weight:800;font-size:27px;letter-spacing:-1px;
+  margin-bottom:6px}
+.logo-word .i{color:var(--green)}
+.logo-word .go{font-size:15px;margin-left:2px}
+.brand-tag{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+  margin-bottom:26px}
+
+.check{width:62px;height:62px;margin:0 auto 20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:30px;
+  background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.45);color:var(--green)}
+
+h1{font-family:Syne,sans-serif;font-weight:800;font-size:27px;line-height:1.05;
+  letter-spacing:-.03em;margin-bottom:12px}
+.lead{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:22px}
+
+.steps{text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:14px;padding:16px 18px;margin-bottom:22px}
+.step{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.55;
+  color:var(--muted)}
+.step + .step{margin-top:12px}
+.num{flex:0 0 22px;height:22px;border-radius:50%;background:rgba(0,255,136,.14);
+  color:var(--green);font-size:12px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;margin-top:1px}
+.step b{color:var(--text);font-weight:600}
+
+.note{font-size:12.5px;color:var(--muted);line-height:1.55;opacity:.85}
+.note a{color:var(--blue);text-decoration:none}
+
+@media (max-width:420px){
+  .card{padding:28px 20px 24px}
+  h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+  <main class="card">
+    <div class="logo-word">POZ<span class="i">i</span><span class="go">Go</span></div>
+    <div class="brand-tag">Live inventory. All in one place.</div>
+
+    <div class="check" aria-hidden="true">✓</div>
+
+    <h1>Your email is confirmed</h1>
+    <p class="lead">Your POZi Go account is active. You're all set — just finish signing in from the app.</p>
+
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <span>Close this browser window.</span>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <span>Open <b>POZi Go</b> again.</span>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <span>Sign in with your email and the password you just created.</span>
+      </div>
+    </div>
+
+    <p class="note">
+      Signing in once from the app links this device to your account.
+      Trouble getting in? Email <a href="mailto:info@pozi.live">info@pozi.live</a>.
+    </p>
+  </main>
+
+</body>
+</html>
