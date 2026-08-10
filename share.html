@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Shared Project — POZi Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
+<style>
+:root{
+  --green:#00ff88; --blue:#38bdf8;
+  --bg:#0f0f1a; --panel:#151525; --border:#2a2a45;
+  --text:#fff; --muted:#a8a8c2;
+  --shadow:0 18px 44px rgba(0,0,0,.28); --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif}
+body{padding:0 0 40px}
+
+nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:14px 16px;background:rgba(15,15,26,.92);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo-word{font-family:Syne,sans-serif;font-weight:800;font-size:22px;letter-spacing:-1px;line-height:1}
+.logo-word .i{color:var(--green)}
+.logo-word .go{font-size:13px;margin-left:1px}
+.brand-tag{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.shared-pill{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--green);background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);
+  border-radius:20px;padding:5px 11px;white-space:nowrap}
+
+main{max-width:900px;margin:0 auto;padding:20px 16px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:var(--shadow);padding:22px 20px;margin-bottom:16px}
+h1{font-family:Syne,sans-serif;font-weight:800;font-size:28px;line-height:1.05;
+  letter-spacing:-.03em;margin-bottom:8px;word-break:break-word}
+.sub{color:var(--muted);font-size:14px;line-height:1.6}
+.section-label{font-family:Syne,sans-serif;font-size:12px;font-weight:800;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--green);margin:26px 0 12px}
+
+/* Photo grid — square thumbs, same feel as the app gallery */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px}
+.thumb{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;border:1px solid var(--border);
+  background:#0b0b14;cursor:pointer;transition:transform .15s,border-color .15s}
+.thumb:active{transform:scale(.97)}
+.thumb:hover{border-color:rgba(0,255,136,.3)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .cap{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 6px;font-size:10px;
+  color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.75));
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Build Notes — mirrors the renderer in the app */
+.nh{font-family:Syne,sans-serif;font-size:13px;font-weight:800;letter-spacing:.4px;
+  text-transform:uppercase;color:var(--green);margin:16px 0 7px;padding-bottom:5px;
+  border-bottom:1px solid rgba(0,255,136,.18)}
+.nh:first-child{margin-top:0}
+.nl{margin:0 0 4px;padding-left:16px;list-style:none}
+.nl li{position:relative;font-size:14px;line-height:1.62;margin-bottom:5px;padding-left:2px}
+.nl li:before{content:"";position:absolute;left:-11px;top:8px;width:4px;height:4px;
+  border-radius:50%;background:var(--green);opacity:.55}
+.np{font-size:14px;line-height:1.62;color:var(--muted);margin:0 0 9px}
+.nq{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+
+.state{text-align:center;padding:56px 20px;color:var(--muted);font-size:14px;line-height:1.6}
+.state .big{font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:var(--text);
+  margin-bottom:10px;letter-spacing:-.02em}
+.spinner{width:26px;height:26px;margin:0 auto 16px;border:2px solid rgba(255,255,255,.12);
+  border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+footer{text-align:center;padding:28px 16px 10px;color:var(--muted);font-size:11.5px;line-height:1.6}
+footer a{color:var(--blue);text-decoration:none}
+
+/* ── Photo viewer ─────────────────────────────────────────────────────────── */
+.pv{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.94);display:none}
+.pv.show{display:block}
+.pv-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;touch-action:none}
+.pv-stage img{max-width:100%;max-height:100%;display:block;
+  transform-origin:center center;will-change:transform;transition:transform .05s linear}
+.pv-count{position:absolute;top:24px;left:50%;transform:translateX(-50%);z-index:3;color:#fff;
+  opacity:.7;font-size:13px;letter-spacing:.04em;pointer-events:none;text-align:center;
+  max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-close{position:absolute;top:16px;right:16px;z-index:4;width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:#fff;font-size:20px;
+  line-height:1;display:flex;align-items:center;justify-content:center}
+.pv-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:64px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:28px;
+  line-height:1;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.pv-prev{left:12px} .pv-next{right:12px}
+.pv-cap{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:20px 18px 30px;color:#fff;
+  font-size:13.5px;line-height:1.55;background:linear-gradient(transparent,rgba(0,0,0,.8));
+  pointer-events:none}
+.hidden{display:none!important}
+
+@media (max-width:520px){
+  h1{font-size:23px}
+  .card{padding:18px 16px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:7px}
+  .pv-nav{width:38px;height:56px;font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <div class="logo-word">POZ<span class="i">i</span><span class="go">Go</span></div>
+    <div class="brand-tag">Plan it. Price it. Build it.</div>
+  </div>
+  <div class="shared-pill">Shared Project</div>
+</nav>
+
+<main>
+  <div id="loading" class="state">
+    <div class="spinner"></div>
+    Loading project…
+  </div>
+
+  <div id="errorState" class="state hidden">
+    <div class="big">This link isn't available</div>
+    It may have been turned off by the person who sent it, or it may have expired.
+    Ask them for a fresh link.
+  </div>
+
+  <div id="content" class="hidden">
+    <section class="card">
+      <h1 id="projectName">Project</h1>
+      <div class="sub" id="projectMeta"></div>
+    </section>
+
+    <div id="notesWrap" class="hidden">
+      <div class="section-label">Build Notes</div>
+      <section class="card" id="notesBody"></section>
+    </div>
+
+    <div id="photosWrap" class="hidden">
+      <div class="section-label" id="photosLabel">Photos</div>
+      <div class="grid" id="photoGrid"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Shared with you from POZi Go · <a href="https://pozi.live">pozi.live</a><br>
+  Photo links in this page expire after a short time. Reload the page if images stop loading.
+</footer>
+
+<!-- Photo viewer: pinch or double-tap to zoom, drag to pan, swipe to move between photos -->
+<div id="pv" class="pv">
+  <div id="pvStage" class="pv-stage"><img id="pvImg" alt=""></div>
+  <div id="pvCount" class="pv-count"></div>
+  <button id="pvClose" class="pv-close" aria-label="Close">×</button>
+  <button id="pvPrev" class="pv-nav pv-prev" aria-label="Previous">‹</button>
+  <button id="pvNext" class="pv-nav pv-next" aria-label="Next">›</button>
+  <div id="pvCap" class="pv-cap"></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const SHARE_ENDPOINT = "https://pozi.live/.netlify/functions/share-project";
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+// Same renderer the app uses for Build Notes, so a shared plan reads identically to the
+// one the contractor sees: green section headings, dotted bullets, measurements emphasised.
+function renderNotesHtml(src) {
+  const lines = String(src || "").split(/\r?\n/);
+  let html = "", inList = false;
+
+  const inline = (t) => escapeHtml(t)
+    .replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\b(\d+(?:\.\d+)?(?:\s*[×x]\s*\d+(?:\.\d+)?)?)\s*(inches|inch|feet|foot|in\.|ft\.|")\b/gi,
+             '<span class="nq">$1 $2</span>')
+    .replace(/\b(\d+)\s+(pieces|steps|cuts|boards)\b/gi, '<span class="nq">$1 $2</span>');
+
+  const closeList = () => { if (inList) { html += "</ul>"; inList = false; } };
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) { closeList(); continue; }
+
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) { closeList(); html += `<h4 class="nh">${inline(h[2])}</h4>`; continue; }
+
+    const b = line.match(/^[-*•]\s+(.*)$/);
+    if (b) {
+      if (!inList) { html += '<ul class="nl">'; inList = true; }
+      html += `<li>${inline(b[1])}</li>`;
+      continue;
+    }
+
+    if (line.length < 40 && !/[.:,;!?]$/.test(line)) {
+      closeList(); html += `<h4 class="nh">${inline(line)}</h4>`; continue;
+    }
+
+    closeList();
+    html += `<p class="np">${inline(line)}</p>`;
+  }
+  closeList();
+  return html;
+}
+
+// ── Photo viewer: gestures ported from the app so the two behave identically ──
+let photos = [], vIndex = 0;
+let pvScale = 1, pvX = 0, pvY = 0;
+let pinchStartDist = 0, pinchStartScale = 1;
+let dragging = false, startX = 0, startY = 0, origX = 0, origY = 0, lastTap = 0;
+
+function pvApply() {
+  $("pvImg").style.transform = `translate(${pvX}px, ${pvY}px) scale(${pvScale})`;
+}
+function pvResetZoom() { pvScale = 1; pvX = 0; pvY = 0; pvApply(); }
+function touchDistance(t) {
+  return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+}
+
+function showPhotoAt(i) {
+  if (!photos.length) return;
+  vIndex = (i + photos.length) % photos.length;
+  const p = photos[vIndex];
+  $("pvImg").src = p.url;
+  $("pvCount").textContent = photos.length > 1 ? `${vIndex + 1} of ${photos.length}` : "";
+  $("pvCap").textContent = p.caption || p.category || "";
+  const multi = photos.length > 1;
+  $("pvPrev").classList.toggle("hidden", !multi);
+  $("pvNext").classList.toggle("hidden", !multi);
+  pvResetZoom();
+}
+
+function openViewer(i) {
+  showPhotoAt(i);
+  $("pv").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeViewer() {
+  $("pv").classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+function initGestures() {
+  const stage = $("pvStage");
+
+  stage.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 2) {
+      pinchStartDist = touchDistance(e.touches);
+      pinchStartScale = pvScale;
+      dragging = false;
+      return;
+    }
+    if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTap < 300) {            // double tap toggles zoom
+        pvScale = pvScale > 1 ? 1 : 2.5;
+        if (pvScale === 1) { pvX = 0; pvY = 0; }
+        pvApply(); lastTap = 0; dragging = false;
+        return;
+      }
+      lastTap = now;
+      dragging = true;
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      origX = pvX; origY = pvY;
+    }
+  }, { passive: true });
+
+  stage.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 2 && pinchStartDist > 0) {
+      const ratio = touchDistance(e.touches) / pinchStartDist;
+      pvScale = Math.min(4, Math.max(1, pinchStartScale * ratio));
+      if (pvScale === 1) { pvX = 0; pvY = 0; }
+      pvApply(); e.preventDefault();
+      return;
+    }
+    if (dragging && e.touches.length === 1 && pvScale > 1) {
+      pvX = origX + (e.touches[0].clientX - startX);
+      pvY = origY + (e.touches[0].clientY - startY);
+      pvApply(); e.preventDefault();
+    }
+  }, { passive: false });
+
+  stage.addEventListener("touchend", (e) => {
+    // Swipe only when not zoomed — otherwise that drag was a pan.
+    if (pvScale <= 1 && dragging && e.changedTouches.length) {
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+        showPhotoAt(vIndex + (dx < 0 ? 1 : -1));
+      }
+    }
+    dragging = false; pinchStartDist = 0;
+  }, { passive: true });
+
+  $("pvPrev").onclick = () => showPhotoAt(vIndex - 1);
+  $("pvNext").onclick = () => showPhotoAt(vIndex + 1);
+  $("pvClose").onclick = closeViewer;
+
+  document.addEventListener("keydown", (e) => {
+    if (!$("pv").classList.contains("show")) return;
+    if (e.key === "ArrowRight") showPhotoAt(vIndex + 1);
+    if (e.key === "ArrowLeft")  showPhotoAt(vIndex - 1);
+    if (e.key === "Escape")     closeViewer();
+  });
+}
+
+function showError() {
+  $("loading").classList.add("hidden");
+  $("errorState").classList.remove("hidden");
+}
+
+async function load() {
+  const token = new URLSearchParams(location.search).get("t") || "";
+  if (!token) { showError(); return; }
+
+  try {
+    const res = await fetch(`${SHARE_ENDPOINT}?token=${encodeURIComponent(token)}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.ok === false) { showError(); return; }
+
+    $("projectName").textContent = data.project?.name || "Project";
+
+    photos = Array.isArray(data.photos) ? data.photos : [];
+    const notes = Array.isArray(data.notes) ? data.notes : [];
+
+    const bits = [];
+    if (photos.length) bits.push(`${photos.length} photo${photos.length === 1 ? "" : "s"}`);
+    if (notes.length) bits.push(`${notes.length} build note${notes.length === 1 ? "" : "s"}`);
+    $("projectMeta").textContent = bits.length
+      ? bits.join(" · ")
+      : "This project doesn't have anything shared yet.";
+
+    if (notes.length) {
+      // Notes arrive as { title, body }. A titled note gets its heading rendered above
+      // the rendered body so a client can tell several notes apart at a glance.
+      $("notesBody").innerHTML = notes.map(n => {
+        const head = n.title ? `<h4 class="nh">${escapeHtml(n.title)}</h4>` : "";
+        return head + renderNotesHtml(n.body);
+      }).join('<hr style="border:0;border-top:1px solid var(--border);margin:22px 0">');
+      $("notesWrap").classList.remove("hidden");
+    }
+
+    if (photos.length) {
+      $("photosLabel").textContent = `Photos (${photos.length})`;
+      $("photoGrid").innerHTML = photos.map((p, i) => `
+        <div class="thumb" data-i="${i}">
+          <img src="${escapeHtml(p.url)}" alt="${escapeHtml(p.caption || "Project photo")}" loading="lazy">
+          ${(p.caption || p.category) ? `<div class="cap">${escapeHtml(p.caption || p.category)}</div>` : ""}
+        </div>`).join("");
+      $("photoGrid").addEventListener("click", (e) => {
+        const t = e.target.closest(".thumb");
+        if (t) openViewer(Number(t.getAttribute("data-i")) || 0);
+      });
+      $("photosWrap").classList.remove("hidden");
+    }
+
+    $("loading").classList.add("hidden");
+    $("content").classList.remove("hidden");
+    initGestures();
+  } catch (e) {
+    console.warn("share load failed:", e);
+    showError();
+  }
+}
+
+load();
+</script>
+</body>
+</html>
