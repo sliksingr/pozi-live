@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>POZi — Plan it. Price it. Build it.</title>
+
+<meta name="description" content="POZi Foreman helps you plan a project, work out real quantities and cut lists, then sources the materials from retailers near you.">
+<link rel="canonical" href="https://pozi.live/">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pozi.live/">
+<meta property="og:title" content="POZi — Plan it. Price it. Build it.">
+<meta property="og:description" content="POZi Foreman helps you plan a project, work out real quantities and cut lists, then sources the materials from retailers near you.">
+<meta property="og:site_name" content="POZi">
+<meta property="og:image" content="https://pozi.live/pozi-social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="POZi — Plan it. Price it. Build it.">
+<meta name="twitter:description" content="Plan the project with POZi Foreman, then source the materials near you.">
+<meta name="twitter:image" content="https://pozi.live/pozi-social-card.png">
+
+<link rel="icon" type="image/png" href="/logo-dark.png">
+<link rel="apple-touch-icon" href="/logo-dark.png">
+<meta name="theme-color" content="#0f0f1a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOKENS — identical to the POZi Go app so the two match
+═══════════════════════════════════════════════════════════ */
+:root{
+  --green:#00ff88;
+  --blue:#38bdf8;
+  --bg:#0f0f1a;
+  --panel:#151525;
+  --panel-2:#1a1a2e;
+  --border:#2a2a45;
+  --text:#ffffff;
+  --muted:#a8a8c2;
+  --danger:#ff6680;
+  --shadow:0 18px 44px rgba(0,0,0,.28);
+  --r:22px;
+  --nh:66px;
+  --fh:'Syne',sans-serif;
+  --fb:'Inter',-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);overflow-x:hidden;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#08080f}
+::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:999px}
+.hidden{display:none!important}
+
+/* ═══ PAGE SYSTEM ═══ */
+.page{display:none}
+.page.active{display:block}
+.page-top{height:var(--nh)}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nh);padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(15,15,26,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:11px;cursor:pointer;flex-shrink:0}
+.nav-logo img{width:38px;height:38px;object-fit:contain}
+.logo-word{font-family:var(--fh);font-weight:800;font-size:21px;letter-spacing:-1px;line-height:1}
+.logo-word .i{color:var(--green)}
+.logo-word .go{font-size:12px;margin-left:1px;opacity:.75}
+.nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap}
+.nav-links{display:flex;gap:2px}
+.nl{color:var(--muted);font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;transition:color .18s,background .18s}
+.nl:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.nl.active{color:var(--green);background:rgba(0,255,136,.09)}
+.nav-cta{
+  background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b;
+  font-family:var(--fh);font-weight:800;font-size:12px;padding:10px 17px;border-radius:11px;
+  transition:transform .18s,box-shadow .18s;white-space:nowrap;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,255,136,.22)}
+.hamburger{display:none;flex-direction:column;gap:5px;width:42px;height:42px;align-items:center;justify-content:center}
+.hb{display:block;height:2px;width:19px;background:rgba(255,255,255,.85);border-radius:2px;transition:all .25s}
+.hamburger.open .hb:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
+.hamburger.open .hb:nth-child(2){opacity:0}
+.hamburger.open .hb:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--green)}
+.mobile-menu{
+  position:fixed;inset:var(--nh) 0 0;z-index:890;background:rgba(9,9,18,.985);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;
+}
+.mobile-menu.open{display:flex}
+.m-nl{
+  width:100%;max-width:330px;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:15px;padding:16px 20px;font-family:var(--fh);font-weight:700;font-size:16px;text-align:left;
+}
+.m-nl:hover{background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.22);color:var(--green)}
+.m-cta{
+  width:100%;max-width:330px;background:linear-gradient(135deg,var(--green),var(--blue));
+  color:#04120b;border-radius:15px;padding:16px 20px;font-family:var(--fh);font-weight:800;font-size:16px;margin-top:6px;
+}
+
+/* ═══ SHARED ═══ */
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.wrap-sm{max-width:820px;margin:0 auto;padding:0 24px}
+.section{padding:88px 0}
+.center{text-align:center}
+.eyebrow{
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--green);margin-bottom:14px;
+}
+h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height:1.03}
+.h-xl{font-size:clamp(40px,7vw,76px)}
+.h-lg{font-size:clamp(30px,5vw,50px)}
+.h-md{font-size:clamp(22px,3vw,30px)}
+.grad{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lead{font-size:clamp(15px,1.7vw,18px);color:var(--muted);line-height:1.75;max-width:620px}
+.sub{font-size:14.5px;color:var(--muted);line-height:1.72}
+.center .lead{margin-left:auto;margin-right:auto}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--fh);font-weight:800;font-size:14px;padding:15px 30px;border-radius:14px;
+  transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;
+}
+.btn-p{background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,255,136,.24)}
+.btn-s{background:rgba(255,255,255,.045);color:var(--text);border:1px solid var(--border)}
+.btn-s:hover{background:rgba(255,255,255,.075);border-color:rgba(0,255,136,.24)}
+
+.card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px;box-shadow:var(--shadow);
+}
+.stack{display:grid;gap:18px}
+.stack-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.stack-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+
+/* ═══ HERO ═══ */
+.hero{position:relative;overflow:hidden;padding:78px 0 62px;text-align:center}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%,rgba(0,255,136,.10),transparent 62%),
+    radial-gradient(ellipse 60% 42% at 88% 92%,rgba(56,189,248,.07),transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 40%,#000,transparent);
+  mask-image:radial-gradient(ellipse 75% 70% at 50% 40%,#000,transparent);
+}
+.hero>.wrap{position:relative;z-index:1}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:7px 15px;margin-bottom:26px;
+  background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--green);
+}
+.hero-badge i{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{margin-bottom:20px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:34px}
+
+/* three-beat strip under hero */
+.beats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:52px}
+.beat{
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));
+  border:1px solid var(--border);border-radius:18px;padding:22px;text-align:left;
+}
+.beat-n{
+  font-family:var(--fh);font-size:11px;font-weight:800;letter-spacing:1.6px;color:var(--green);margin-bottom:10px;
+}
+.beat h3{font-size:17px;margin-bottom:7px}
+.beat p{font-size:13px;color:var(--muted);line-height:1.62}
+
+/* ═══ FOREMAN PANEL ═══ */
+.foreman-shell{
+  background:
+    radial-gradient(ellipse 70% 60% at 12% 0%,rgba(0,255,136,.055),transparent 62%),
+    radial-gradient(ellipse 60% 60% at 95% 100%,rgba(56,189,248,.055),transparent 62%),
+    var(--panel);
+  border:1px solid var(--border);border-radius:26px;padding:26px;box-shadow:var(--shadow);
+}
+.foreman-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.foreman-title{font-family:var(--fh);font-weight:800;font-size:20px;letter-spacing:-.02em}
+.foreman-title .i{color:var(--green)}
+.foreman-sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.usage-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.16);
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:.6px;color:#cfffe6;white-space:nowrap;
+}
+
+.chat-stream{
+  display:flex;flex-direction:column;gap:11px;
+  min-height:190px;max-height:420px;overflow-y:auto;
+  padding:16px;border-radius:18px;
+  background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.05);
+  scroll-behavior:smooth;
+}
+.msg{max-width:88%;padding:13px 16px;border-radius:17px;font-size:14px;line-height:1.62;white-space:pre-wrap;word-wrap:break-word}
+.msg.bot{background:var(--panel-2);color:#e9e9f4;align-self:flex-start;border-bottom-left-radius:5px;border:1px solid rgba(255,255,255,.05)}
+.msg.user{background:linear-gradient(135deg,var(--green),#00cc6e);color:#04120b;align-self:flex-end;border-bottom-right-radius:5px;font-weight:600}
+.msg.thinking{color:var(--muted);font-style:italic}
+.msg .nh{
+  font-family:var(--fh);font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  color:var(--green);margin:13px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(0,255,136,.16);
+}
+.msg .nh:first-child{margin-top:0}
+.msg ul{margin:0 0 4px;padding-left:16px;list-style:none}
+.msg li{position:relative;margin-bottom:4px}
+.msg li:before{content:"";position:absolute;left:-11px;top:8px;width:4px;height:4px;border-radius:50%;background:var(--green);opacity:.6}
+.msg .nq{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+
+.chat-input-row{display:flex;gap:10px;align-items:flex-end;margin-top:14px}
+.chat-input{
+  flex:1;min-height:52px;max-height:150px;resize:vertical;
+  background:rgba(255,255,255,.045);border:1px solid var(--border);border-radius:15px;
+  padding:15px 17px;color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.5;outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+.chat-input:focus{border-color:rgba(0,255,136,.32);box-shadow:0 0 0 3px rgba(0,255,136,.06)}
+.chat-input::placeholder{color:#7f829e}
+.chat-send{
+  flex:0 0 auto;min-height:52px;padding:0 22px;border-radius:15px;
+  background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b;
+  font-family:var(--fh);font-weight:800;font-size:14px;
+  transition:transform .18s,box-shadow .18s,opacity .18s;
+}
+.chat-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,255,136,.2)}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.chat-status{margin-top:9px;min-height:17px;font-size:11.5px;line-height:1.45;color:var(--muted)}
+.chat-status.err{color:var(--danger)}
+.chat-status.ok{color:var(--green)}
+
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.preset{
+  padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.045);
+  border:1px solid var(--border);font-size:12px;font-weight:600;color:#d5dbf0;
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.preset:hover{background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.22);transform:translateY(-1px)}
+
+.disclaimer-note{margin-top:16px;text-align:center;font-size:11.5px;color:#8b8ea8;line-height:1.6}
+.disclaimer-btn{
+  margin-top:9px;display:inline-flex;align-items:center;border-radius:999px;padding:7px 14px;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.22);color:var(--green);
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:.5px;
+}
+
+/* ═══ FEATURE TILES ═══ */
+.tile{
+  background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:24px;
+  transition:transform .2s,border-color .2s;
+}
+.tile:hover{transform:translateY(-3px);border-color:rgba(0,255,136,.2)}
+.tile-ico{
+  width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(0,255,136,.14),rgba(56,189,248,.1));
+  border:1px solid rgba(0,255,136,.16);font-size:20px;margin-bottom:14px;
+}
+.tile h3{font-size:16px;margin-bottom:8px}
+.tile p{font-size:13px;color:var(--muted);line-height:1.66}
+
+/* ═══ TIMELINE (How it works) ═══ */
+.timeline{display:flex;flex-direction:column;margin-top:8px}
+.trow{display:grid;grid-template-columns:52px 1fr;gap:0 20px}
+.tcol{display:flex;flex-direction:column;align-items:center}
+.tnum{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-weight:800;font-size:15px;color:#04120b;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+}
+.tline{width:2px;flex:1;min-height:26px;margin-top:8px;background:linear-gradient(180deg,var(--border),transparent)}
+.trow:last-child .tline{display:none}
+.tbody{padding:4px 0 40px}
+.tbody h3{font-size:19px;margin-bottom:9px}
+.tbody p{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:12px}
+.tnote{
+  background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:13px;padding:15px;
+  font-size:12.5px;color:#9ea3bd;line-height:1.62;
+}
+.tnote strong{display:block;color:#dfe4f5;font-family:var(--fh);font-size:12px;margin-bottom:4px}
+
+/* ═══ MODE CARDS ═══ */
+.mode{border-radius:20px;padding:30px;border:1px solid var(--border);background:var(--panel);position:relative;overflow:hidden}
+.mode::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mode-diy::before{background:linear-gradient(90deg,var(--green),transparent)}
+.mode-pro::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.mode h3{font-size:25px;margin-bottom:14px}
+.mode-feat{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px}
+.mode-tick{
+  width:19px;height:19px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;font-size:10px;
+}
+.tick-g{background:rgba(0,255,136,.11);border:1px solid rgba(0,255,136,.26);color:var(--green)}
+.tick-b{background:rgba(56,189,248,.11);border:1px solid rgba(56,189,248,.26);color:var(--blue)}
+.mode-feat span{font-size:13.5px;color:var(--muted);line-height:1.55}
+.mode-eg{
+  margin-top:20px;padding:17px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(0,255,136,.045),rgba(56,189,248,.035));
+  border:1px solid rgba(0,255,136,.12);font-size:13px;color:#cfd5ea;line-height:1.65;
+}
+.mode-eg strong{display:block;font-family:var(--fh);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--green);margin-bottom:7px}
+
+/* ═══ PRICING ═══ */
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
+.plan{
+  background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px 22px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.plan:hover{transform:translateY(-4px);border-color:rgba(0,255,136,.26);box-shadow:0 22px 50px rgba(0,0,0,.3)}
+.plan.featured{border-color:rgba(0,255,136,.28);background:linear-gradient(180deg,#0e1a15,#0f0f1c)}
+.plan.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.plan-badge{
+  position:absolute;top:16px;right:16px;background:var(--green);color:#04120b;
+  font-family:var(--fh);font-weight:800;font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;
+}
+.plan-label{font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.plan-name{font-family:var(--fh);font-size:20px;font-weight:800;margin-bottom:6px}
+.plan-price{font-family:var(--fh);font-size:34px;font-weight:800;line-height:1;margin-top:12px}
+.plan-per{font-size:12.5px;color:var(--muted);margin-top:5px}
+.plan-hr{height:1px;background:var(--border);margin:18px 0}
+.plan-feats{display:flex;flex-direction:column;gap:9px;flex:1;margin-bottom:22px}
+.plan-feat{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--muted);line-height:1.5}
+.plan-feat b{color:#dfe4f5;font-weight:700}
+.plan-tick{color:var(--green);flex-shrink:0;font-size:11px;margin-top:2px}
+.plan-btn{width:100%;padding:14px;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:13.5px;margin-top:auto}
+.plan-btn-p{background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b}
+.plan-btn-s{background:rgba(255,255,255,.045);border:1px solid var(--border);color:var(--text)}
+.plan-btn:hover{transform:translateY(-1px)}
+
+.plan-note{
+  margin-top:26px;padding:20px;border-radius:16px;text-align:center;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  font-size:13px;color:var(--muted);line-height:1.7;
+}
+
+/* ═══ CTA ═══ */
+.cta{
+  border-radius:26px;padding:56px 34px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(56,189,248,.04));
+  border:1px solid rgba(0,255,136,.14);
+}
+.cta::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+
+/* ═══ FOOTER ═══ */
+footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
+.footer-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-brand img{width:32px;height:32px}
+.footer-tag{font-size:9px;letter-spacing:1.3px;text-transform:uppercase;color:#6a6d85;margin-top:3px}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap}
+.footer-link{font-size:12px;color:#8b8ea8;transition:color .18s}
+.footer-link:hover{color:var(--green)}
+.footer-copy{font-size:11px;color:#5c5f75}
+
+/* ═══ MODALS ═══ */
+.modal{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);overflow-y:auto}
+.modal.open{display:flex}
+.sheet{
+  width:min(560px,100%);margin:auto;background:var(--panel);border:1px solid var(--border);
+  border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.6);overflow:hidden;
+}
+.sheet-head{padding:26px 28px 20px;border-bottom:1px solid var(--border);position:relative}
+.sheet-close{
+  position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);color:#9a9db5;font-size:17px;
+  display:flex;align-items:center;justify-content:center;transition:color .18s,background .18s;
+}
+.sheet-close:hover{color:#fff;background:rgba(255,255,255,.1)}
+.sheet-kicker{font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--green);margin-bottom:9px}
+.sheet-title{font-family:var(--fh);font-weight:800;font-size:clamp(22px,4vw,29px);letter-spacing:-.03em;line-height:1.08;margin-bottom:8px}
+.sheet-sub{font-size:13px;color:var(--muted);line-height:1.65}
+.sheet-body{padding:24px 28px 28px;display:flex;flex-direction:column;gap:13px}
+.field-label{font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.field{
+  width:100%;background:rgba(255,255,255,.045);border:1px solid var(--border);border-radius:12px;
+  padding:13px 15px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .18s;
+}
+.field:focus{border-color:rgba(0,255,136,.32)}
+.field::placeholder{color:#7f829e}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-status{text-align:center;font-family:var(--fh);font-weight:700;font-size:13px;min-height:18px}
+.legal p{font-size:13px;color:var(--muted);line-height:1.78;margin-bottom:13px}
+.legal strong{color:#dfe4f5}
+
+/* QR block */
+.qr-row{display:grid;grid-template-columns:112px 1fr;gap:16px;align-items:center;
+  background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:16px;padding:15px}
+.qr-row img{width:112px;height:112px;border-radius:12px;background:#fff;padding:8px}
+.qr-row strong{display:block;font-family:var(--fh);font-size:15px;margin-bottom:5px}
+.qr-row span{font-size:12.5px;color:var(--muted);line-height:1.55}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:900px){
+  .stack-3,.beats{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  nav{padding:0 16px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .section{padding:62px 0}
+  .stack-2,.plans{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .hero{padding:52px 0 44px}
+  .foreman-shell{padding:18px;border-radius:20px}
+  .chat-input-row{flex-direction:column;align-items:stretch}
+  .chat-send{width:100%}
+  .qr-row{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .footer-in{flex-direction:column;text-align:center}
+  .trow{grid-template-columns:44px 1fr;gap:0 15px}
+  .tnum{width:38px;height:38px;font-size:13px}
+  .cta{padding:40px 22px}
+}
+@media(min-width:769px){.mobile-menu{display:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo" data-page="home">
+    <img src="logo-dark.png" alt="POZi">
+    <div>
+      <div class="logo-word">POZ<span class="i">i</span><span class="go">Go</span></div>
+      <div class="nav-tag">Plan it. Price it. Build it.</div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <button class="nl active" data-page="home">Home</button>
+    <button class="nl" data-page="how">How It Works</button>
+    <button class="nl" data-page="pricing">Pricing</button>
+    <button class="nl" data-modal="contactModal">Contact</button>
+  </div>
+
+  <button class="nav-cta" data-modal="goModal">Get POZi Go</button>
+
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span class="hb"></span><span class="hb"></span><span class="hb"></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="m-nl" data-page="home">Home</button>
+  <button class="m-nl" data-page="how">How It Works</button>
+  <button class="m-nl" data-page="pricing">Pricing</button>
+  <button class="m-nl" data-modal="contactModal">Contact</button>
+  <button class="m-cta" data-modal="goModal">Get POZi Go</button>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="page-home" class="page active">
+<div class="page-top"></div>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="wrap">
+    <div class="hero-badge"><i></i> POZi Foreman</div>
+    <h1 class="h-xl">Plan first.<br><span class="grad">Source after.</span></h1>
+    <p class="lead center" style="margin-top:20px">
+      Tell POZi Foreman what you want to build, fix, or design. It works out the real
+      quantities and cut lists — then POZi finds the materials at stores near you.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-p" href="#foreman">Try POZi Foreman</a>
+      <button class="btn btn-s" data-modal="goModal">Get the App</button>
+    </div>
+
+    <div class="beats">
+      <div class="beat">
+        <div class="beat-n">01 — PLAN IT</div>
+        <h3>Describe the job</h3>
+        <p>A conversation, not a form. Foreman asks the questions that actually change the materials, and nothing else.</p>
+      </div>
+      <div class="beat">
+        <div class="beat-n">02 — PRICE IT</div>
+        <h3>Get the real numbers</h3>
+        <p>Build Notes with cut lists, quantities, and the arithmetic shown — so you can check the math before you buy.</p>
+      </div>
+      <div class="beat">
+        <div class="beat-n">03 — BUILD IT</div>
+        <h3>Source it locally</h3>
+        <p>Every item on the list becomes a live product search across approved retailers near your ZIP.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOREMAN LIVE -->
+<section class="section" id="foreman" style="padding-top:20px">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:34px">
+      <div class="eyebrow">Try it here</div>
+      <h2 class="h-lg">Describe the project.<br><span class="grad">Foreman organizes it.</span></h2>
+      <p class="lead center" style="margin-top:16px">
+        Homeowner planning a room, or a contractor pricing a job — explain it in plain language.
+        Foreman turns the conversation into a practical plan.
+      </p>
+    </div>
+
+    <div class="foreman-shell">
+      <div class="foreman-head">
+        <div>
+          <div class="foreman-title">POZ<span class="i">i</span> Foreman</div>
+          <div class="foreman-sub">Plans the project before you spend a dollar on materials.</div>
+        </div>
+        <div class="usage-chip" id="usageChip">Guest session</div>
+      </div>
+
+      <div class="chat-stream" id="chatStream" aria-live="polite">
+        <div class="msg bot">Tell me what you're working on — the project, the space, or the problem. Give me real measurements where you have them and I'll work out the materials.</div>
+      </div>
+
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" rows="1"
+          placeholder="Build a deck, redesign a room, fix a gate, plan an irrigation zone..."></textarea>
+        <button id="chatSend" class="chat-send" type="button">Ask Foreman</button>
+      </div>
+      <div id="chatStatus" class="chat-status"></div>
+
+      <div class="presets">
+        <button class="preset" data-preset="I want to build a 12x20 cedar deck with stairs off a door that sits 4 feet above grade.">Deck &amp; stairs</button>
+        <button class="preset" data-preset="I'm redesigning a living room. Help me plan the layout, lighting, and what to buy.">Room redesign</button>
+        <button class="preset" data-preset="I need to replace a failed irrigation valve and want it serviceable next time.">Irrigation repair</button>
+        <button class="preset" data-preset="I need to build a 60 foot cedar fence with a gate. What materials do I need?">Fence &amp; gate</button>
+      </div>
+
+      <div class="disclaimer-note">
+        Foreman can make mistakes. Always verify measurements, code, permits, and safety requirements.
+        <br><button class="disclaimer-btn" data-modal="legalModal">View Full Disclaimer</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="section" style="padding-top:20px">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:38px">
+      <div class="eyebrow">In the app</div>
+      <h2 class="h-lg">Everything for the job,<br><span class="grad">in one place.</span></h2>
+    </div>
+
+    <div class="stack-3">
+      <div class="tile">
+        <div class="tile-ico">🗂</div>
+        <h3>Projects</h3>
+        <p>Every job gets its own project. Conversations, notes, lists, and photos stay together instead of scattered across texts and napkins.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-ico">📐</div>
+        <h3>Build Notes</h3>
+        <p>Dimensions, cut list, and how every quantity was figured — with the arithmetic written out so you can check it.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-ico">🧾</div>
+        <h3>POZi List</h3>
+        <p>The material list becomes a live product search. Real items from approved retailers, priced and linked.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-ico">📸</div>
+        <h3>Project Photos</h3>
+        <p>Before, during, and after shots organized by project. Snap a photo of a part or a problem and Foreman can read it.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-ico">📍</div>
+        <h3>Local Sourcing</h3>
+        <p>Set your ZIP once. Searches target stores near you instead of returning whatever ships from three states away.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-ico">🔗</div>
+        <h3>Client Sharing</h3>
+        <p>Contractors can send a client a link to the project photos and notes. No app, no account, and you can switch it off anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <div class="eyebrow">Built by someone who does the work</div>
+      <h2 class="h-md" style="margin-bottom:14px">POZi comes from job sites,<br>not a whiteboard.</h2>
+      <p class="lead center" style="font-size:15px">
+        Every rule inside Foreman — equal stair risers, 2×12 stringers, unions either side of a valve —
+        came from a real job where getting it wrong cost time. That's the difference between a plan
+        that technically works and one a contractor would respect.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-p" data-modal="goModal">Get POZi Go</button>
+        <button class="btn btn-s" data-page="how">How It Works →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /home -->
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<div id="page-how" class="page">
+<div class="page-top"></div>
+
+<section class="hero" style="padding:64px 0 34px">
+  <div class="hero-bg"></div>
+  <div class="wrap center">
+    <div class="hero-badge"><i></i> How it works</div>
+    <h1 class="h-lg">From an idea<br><span class="grad">to a loaded truck.</span></h1>
+    <p class="lead center" style="margin-top:18px">
+      POZi turns a project you're describing out loud into an organized plan,
+      a checked material list, and a path to buy it nearby.
+    </p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:22px">
+  <div class="wrap-sm">
+    <div class="timeline">
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">1</div><div class="tline"></div></div>
+        <div class="tbody">
+          <h3>Start with the project</h3>
+          <p>Tell Foreman what you want to do. It asks one question at a time, and only when the answer actually changes the materials — the real stair height, the span, the finish you want.</p>
+          <div class="tnote"><strong>Why it asks</strong>A guess at a measurement becomes a wrong cut list. Foreman would rather ask than assume.</div>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">2</div><div class="tline"></div></div>
+        <div class="tbody">
+          <h3>Build the plan</h3>
+          <p>When there's enough to work with, Foreman produces Build Notes: dimensions, cut list, fasteners and spacing, installation order, and what to check before you start.</p>
+          <div class="tnote"><strong>The math is shown</strong>“84 linear ft ÷ 8 ft stock = 10.5, round up to 11, +1 waste = 12 boards.” You can check every number instead of trusting it.</div>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">3</div><div class="tline"></div></div>
+        <div class="tbody">
+          <h3>Source the materials</h3>
+          <p>The item list becomes a live product search. POZi returns real products from approved retailers, targeted to your ZIP so results are places you can actually drive to.</p>
+          <div class="tnote"><strong>Local first</strong>Set your location once and every search is geo-targeted. Retailers are an approved list — no marketplace resellers.</div>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">4</div></div>
+        <div class="tbody">
+          <h3>Keep it with the job</h3>
+          <p>Notes, lists, and photos stay attached to the project. Come back next week, or next season, and the whole thing is still there.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:34px">
+      <div class="eyebrow">Two ways people use it</div>
+      <h2 class="h-lg">Same tool,<br><span class="grad">different job.</span></h2>
+    </div>
+
+    <div class="stack-2">
+      <div class="mode mode-diy">
+        <div class="eyebrow" style="margin-bottom:10px">DIY &amp; Homeowner</div>
+        <h3>For everyday projects</h3>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Repairs, upgrades, and weekend builds</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Room layout, furniture, and finishes</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Shopping lists organized before you go</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Plain explanations of why a detail matters</span></div>
+        <div class="mode-eg">
+          <strong>Example</strong>
+          “Help me design a living room and find everything within my budget.”
+        </div>
+      </div>
+
+      <div class="mode mode-pro">
+        <div class="eyebrow" style="margin-bottom:10px;color:var(--blue)">Contractor</div>
+        <h3>For builders &amp; pros</h3>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Material takeoffs with the math shown</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Larger jobs and recurring workflows</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Supplier discovery near the job site</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Share photos and notes with the client</span></div>
+        <div class="mode-eg">
+          <strong>Example</strong>
+          “Build a 12×20 cedar deck with stairs and generate the full material list.”
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <h2 class="h-md" style="margin-bottom:14px">Plan the job.<br><span class="grad">Then go get it.</span></h2>
+      <p class="lead center" style="font-size:15px">POZi Foreman works out what you need. POZi finds where to buy it.</p>
+      <div class="hero-actions">
+        <button class="btn btn-p" data-modal="goModal">Get POZi Go</button>
+        <button class="btn btn-s" data-page="pricing">See Pricing →</button>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /how -->
+
+<!-- ═══════════════ PRICING ═══════════════ -->
+<div id="page-pricing" class="page">
+<div class="page-top"></div>
+
+<section class="hero" style="padding:64px 0 34px">
+  <div class="hero-bg"></div>
+  <div class="wrap center">
+    <div class="hero-badge"><i></i> Pricing</div>
+    <h1 class="h-lg">Start free.<br><span class="grad">Upgrade when it pays for itself.</span></h1>
+    <p class="lead center" style="margin-top:18px">
+      A session is one project conversation. Every plan includes the full Build Notes
+      and item list — the tiers differ in how much you can run in a day.
+    </p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:16px">
+  <div class="wrap">
+    <div class="plans">
+
+      <div class="plan">
+        <div class="plan-label">No account</div>
+        <div class="plan-name">Guest</div>
+        <div class="plan-price">Free</div>
+        <div class="plan-per">try it out</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>1 session a day</b>, 5 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Full Build Notes and item list</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Local product search</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>No saving, no photo analysis</span></div>
+        </div>
+        <button class="plan-btn plan-btn-s" data-modal="goModal">Try It</button>
+      </div>
+
+      <div class="plan">
+        <div class="plan-label">Free account</div>
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-per">forever</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>3 sessions a day</b>, 5 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>3 saved projects</b></span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>1 photo analysis a day</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Project photos and notes</span></div>
+        </div>
+        <button class="plan-btn plan-btn-s" data-modal="goModal">Create Account</button>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-badge">Popular</div>
+        <div class="plan-label">For homeowners</div>
+        <div class="plan-name">DIY</div>
+        <div class="plan-price grad">$9.99</div>
+        <div class="plan-per">per month</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>5 sessions a day</b>, 10 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>15 saved projects</b></span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>10 photo analyses a day</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Full photo gallery per project</span></div>
+        </div>
+        <button class="plan-btn plan-btn-p" data-modal="goModal">Get DIY</button>
+      </div>
+
+      <div class="plan">
+        <div class="plan-label">For pros</div>
+        <div class="plan-name">Contractor</div>
+        <div class="plan-price">$19.99</div>
+        <div class="plan-per">per month</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>7 sessions a day</b>, 15 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>Unlimited projects and photos</b></span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Client photo sharing links</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Priority access to new tools</span></div>
+        </div>
+        <button class="plan-btn plan-btn-p" data-modal="goModal">Get Contractor</button>
+      </div>
+
+    </div>
+
+    <div class="plan-note">
+      Plans are managed in the POZi Go app. Cancel anytime — you keep access through the end of the billing period.
+      <br>Running a store or supplier and want to appear in POZi searches?
+      <button class="footer-link" data-modal="contactModal" style="color:var(--green);font-weight:700">Get in touch.</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <h2 class="h-md" style="margin-bottom:14px">Try it on your next job.</h2>
+      <p class="lead center" style="font-size:15px">Guest access needs no account. See whether the numbers hold up before you pay anything.</p>
+      <div class="hero-actions">
+        <button class="btn btn-p" data-page="home">Try POZi Foreman</button>
+        <button class="btn btn-s" data-modal="goModal">Get the App</button>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /pricing -->
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-in">
+    <div>
+      <div class="footer-brand">
+        <img src="logo-dark.png" alt="POZi">
+        <div>
+          <div class="logo-word" style="font-size:17px">POZ<span class="i">i</span></div>
+          <div class="footer-tag">Plan it. Price it. Build it.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-links">
+      <button class="footer-link" data-page="home">Home</button>
+      <button class="footer-link" data-page="how">How It Works</button>
+      <button class="footer-link" data-page="pricing">Pricing</button>
+      <button class="footer-link" data-modal="contactModal">Contact</button>
+      <button class="footer-link" data-modal="legalModal">Disclaimer</button>
+    </div>
+    <div class="footer-copy">© 2026 POZi</div>
+  </div>
+</footer>
+
+<!-- ═══ CONTACT MODAL ═══ -->
+<div class="modal" id="contactModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="contactModal">×</button>
+      <div class="sheet-kicker">Get in touch</div>
+      <div class="sheet-title">Tell us what you need.</div>
+      <p class="sheet-sub">Questions, feedback, a bug, or a store that wants to appear in POZi searches — this reaches us directly.</p>
+    </div>
+    <div class="sheet-body">
+      <div class="field-row">
+        <div><label class="field-label" for="cfName">Name</label><input id="cfName" class="field" type="text" placeholder="Your name" autocomplete="name"></div>
+        <div><label class="field-label" for="cfEmail">Email</label><input id="cfEmail" class="field" type="email" placeholder="you@example.com" autocomplete="email"></div>
+      </div>
+      <div>
+        <label class="field-label" for="cfKind">What's this about?</label>
+        <select id="cfKind" class="field" style="cursor:pointer">
+          <option value="Question">A question about POZi</option>
+          <option value="Feedback">Feedback or a bug report</option>
+          <option value="Retailer">I run a store or supply business</option>
+          <option value="Other">Something else</option>
+        </select>
+      </div>
+      <div><label class="field-label" for="cfMsg">Message</label><textarea id="cfMsg" class="field" rows="4" placeholder="What's on your mind?" style="resize:vertical"></textarea></div>
+      <button class="btn btn-p" id="cfSend" style="width:100%">Send</button>
+      <div class="form-status" id="cfStatus"></div>
+      <p style="text-align:center;font-size:12px;color:#6a6d85">Or email <a href="mailto:info@pozi.live" style="color:var(--green)">info@pozi.live</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ POZi GO MODAL ═══ -->
+<div class="modal" id="goModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="goModal">×</button>
+      <div class="sheet-kicker">POZi Go</div>
+      <div class="sheet-title">POZi Go lives on your phone.</div>
+      <p class="sheet-sub">Photos, projects, and Foreman travel with you to the job site. Scan the code or send yourself the link.</p>
+    </div>
+    <div class="sheet-body">
+      <div class="qr-row">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fpozi.live%2Finstall" alt="QR code to install POZi Go">
+        <div>
+          <strong>Scan with your phone</strong>
+          <span>Point your camera at the code, or use the buttons below to send yourself the link.</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <button class="btn btn-p" id="goOpen">Open Install Page</button>
+        <button class="btn btn-s" id="goCopy">Copy Link</button>
+      </div>
+      <div class="form-status" id="goStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DISCLAIMER MODAL ═══ -->
+<div class="modal" id="legalModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="legalModal">×</button>
+      <div class="sheet-kicker">POZi Disclaimer</div>
+      <div class="sheet-title">Important information</div>
+      <p class="sheet-sub">POZi Foreman is a planning and sourcing tool. It helps organize projects and compare materials — it does not replace professional judgement.</p>
+    </div>
+    <div class="sheet-body legal">
+      <p><strong>Foreman can make mistakes.</strong> Always verify measurements, quantities, materials, local building codes, permits, safety requirements, and manufacturer instructions before purchasing or beginning a project.</p>
+      <p>Electrical, plumbing, excavation, roofing, structural, gas, load-bearing, and other safety-critical work should be reviewed by a qualified professional where appropriate. Call 811 or your local utility-marking service before digging.</p>
+      <p>POZi does not sell products directly. Pricing, availability, delivery, pickup, warranties, and returns are handled by third-party retailers and can change without notice.</p>
+      <p>POZi is actively developed and some features are in beta.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ── Page routing ─────────────────────────────────────────────────────── */
+  function showPage(name){
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    var pg = $('page-' + name);
+    if (pg) pg.classList.add('active');
+    document.querySelectorAll('.nl,.m-nl').forEach(function(n){
+      n.classList.toggle('active', n.dataset.page === name);
+    });
+    closeMobile();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  /* ── Mobile menu ──────────────────────────────────────────────────────── */
+  function closeMobile(){
+    var m = $('mobileMenu'), h = $('hamburger');
+    if (m) m.classList.remove('open');
+    if (h) h.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function toggleMobile(){
+    var m = $('mobileMenu'), h = $('hamburger');
+    var open = m.classList.toggle('open');
+    h.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  /* ── Modals ───────────────────────────────────────────────────────────── */
+  function openModal(id){
+    var m = $(id);
+    if (!m) return;
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeMobile();
+  }
+  function closeModal(id){
+    var m = $(id);
+    if (!m) return;
+    m.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeAllModals(){
+    document.querySelectorAll('.modal.open').forEach(function(m){ m.classList.remove('open'); });
+    document.body.style.overflow = '';
+  }
+
+  /* ── POZi Foreman: streaming chat ─────────────────────────────────────────
+     Same endpoint the app uses. The filename keeps its original `buildr` name
+     because renaming it would break the live function and the database; every
+     visitor-facing label says Foreman.
+     Tier limits are enforced server-side, so there are no client-side counters
+     to disagree with the real ones.                                          */
+  var FOREMAN_ENDPOINT = '/.netlify/functions/buildr-chat-stream';
+  var SESSION_KEY = 'pozi_web_session_id';
+
+  var sessionId = '';
+  try { sessionId = localStorage.getItem(SESSION_KEY) || ''; } catch(e){}
+  if (!sessionId){
+    sessionId = 'web_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,9);
+    try { localStorage.setItem(SESSION_KEY, sessionId); } catch(e){}
+  }
+
+  var history = [];
+  var busy = false;
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // Mirrors the app's Build Notes renderer so a plan reads the same in both places.
+  function renderForemanHtml(src){
+    var lines = String(src || '').split(/\r?\n/);
+    var html = '', inList = false;
+
+    function inline(t){
+      return escapeHtml(t)
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\b(\d+(?:\.\d+)?(?:\s*[×x]\s*\d+(?:\.\d+)?)?)\s*(inches|inch|feet|foot|in\.|ft\.)\b/gi,
+                 '<span class="nq">$1 $2</span>')
+        .replace(/\b(\d+)\s+(pieces|boards|steps|cuts|risers|treads)\b/gi, '<span class="nq">$1 $2</span>');
+    }
+    function closeList(){ if (inList){ html += '</ul>'; inList = false; } }
+
+    for (var i = 0; i < lines.length; i++){
+      var line = lines[i].trim();
+      if (!line){ closeList(); continue; }
+
+      var h = line.match(/^(#{1,6})\s+(.*)$/);
+      if (h){ closeList(); html += '<div class="nh">' + inline(h[2]) + '</div>'; continue; }
+
+      var b = line.match(/^[-*•]\s+(.*)$/);
+      if (b){
+        if (!inList){ html += '<ul>'; inList = true; }
+        html += '<li>' + inline(b[1]) + '</li>';
+        continue;
+      }
+      // Short line with no trailing punctuation reads as a section heading.
+      if (line.length < 42 && !/[.:,;!?]$/.test(line)){
+        closeList(); html += '<div class="nh">' + inline(line) + '</div>'; continue;
+      }
+      closeList();
+      html += '<div>' + inline(line) + '</div>';
+    }
+    closeList();
+    return html;
+  }
+
+  function addMsg(text, role){
+    var stream = $('chatStream');
+    var div = document.createElement('div');
+    div.className = 'msg ' + role;
+    if (role === 'user') div.textContent = text;
+    else div.innerHTML = renderForemanHtml(text);
+    stream.appendChild(div);
+    stream.scrollTop = stream.scrollHeight;
+    return div;
+  }
+
+  function setStatus(text, kind){
+    var el = $('chatStatus');
+    el.textContent = text || '';
+    el.className = 'chat-status' + (kind ? ' ' + kind : '');
+  }
+
+  // The conversation is replayed each turn because the endpoint is stateless.
+  function buildPrompt(next){
+    var prior = history.slice(-8).map(function(m){
+      return (m.role === 'user' ? 'User: ' : 'Foreman: ') + m.text;
+    }).join('\n\n');
+    return prior ? (prior + '\n\nUser: ' + next) : next;
+  }
+
+  async function askForeman(){
+    if (busy) return;
+    var input = $('chatInput');
+    var text = (input.value || '').trim();
+    if (!text){ setStatus('Type a project or a question first.', 'err'); input.focus(); return; }
+
+    busy = true;
+    var btn = $('chatSend');
+    btn.disabled = true;
+    btn.textContent = 'Thinking…';
+    setStatus('');
+
+    addMsg(text, 'user');
+    history.push({ role:'user', text:text });
+    input.value = '';
+    input.style.height = '';
+
+    var promptForServer = buildPrompt(text);
+    var pending = addMsg('Working it out…', 'bot thinking');
+    var full = '';
+
+    try {
+      var res = await fetch(FOREMAN_ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ prompt: promptForServer, session_id: sessionId })
+      });
+
+      if (!res.ok || !res.body){
+        var errData = await res.json().catch(function(){ return {}; });
+        throw new Error(errData.error || 'Foreman is unavailable right now.');
+      }
+
+      // Server-sent events: read deltas as they arrive and paint them live.
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      pending.classList.remove('thinking');
+      pending.textContent = '';
+
+      while (true){
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buf += decoder.decode(chunk.value, { stream:true });
+
+        var parts = buf.split('\n\n');
+        buf = parts.pop() || '';
+
+        for (var p = 0; p < parts.length; p++){
+          var lines = parts[p].split('\n');
+          for (var l = 0; l < lines.length; l++){
+            if (lines[l].indexOf('data:') !== 0) continue;
+            var raw = lines[l].slice(5).trim();
+            if (!raw || raw === '[DONE]') continue;
+            var evt;
+            try { evt = JSON.parse(raw); } catch(e){ continue; }
+
+            if (evt.type === 'text' && evt.v){
+              full += evt.v;
+              pending.innerHTML = renderForemanHtml(full);
+              $('chatStream').scrollTop = $('chatStream').scrollHeight;
+            } else if (evt.type === 'error'){
+              throw new Error(evt.error || 'Foreman hit an error.');
+            } else if (evt.type === 'done'){
+              var u = evt.usage || {};
+              var chip = $('usageChip');
+              if (chip && u.limit && typeof u.remaining === 'number'){
+                chip.textContent = u.remaining + ' of ' + u.limit + ' sessions left today';
+              }
+            }
+          }
+        }
+      }
+
+      if (!full){
+        pending.innerHTML = renderForemanHtml('I did not get a response that time. Try again in a moment.');
+        setStatus('No response received.', 'err');
+      } else {
+        history.push({ role:'assistant', text:full });
+        setStatus('Add another detail to keep going.', 'ok');
+      }
+
+    } catch(err){
+      pending.classList.remove('thinking');
+      pending.innerHTML = renderForemanHtml(
+        String(err.message || '').indexOf('limit') > -1
+          ? err.message
+          : 'I could not respond just then. Give it a moment and try again.'
+      );
+      setStatus(err.message || 'Something went wrong.', 'err');
+    } finally {
+      busy = false;
+      btn.disabled = false;
+      btn.textContent = 'Ask Foreman';
+    }
+  }
+
+  /* ── Contact form (mailto) ────────────────────────────────────────────── */
+  function sendContact(){
+    var name = $('cfName').value.trim();
+    var email = $('cfEmail').value.trim();
+    var st = $('cfStatus');
+    if (!name || !email){
+      st.style.color = 'var(--danger)';
+      st.textContent = 'Add your name and email so we can reply.';
+      return;
+    }
+    var kind = $('cfKind').value;
+    var msg = $('cfMsg').value.trim();
+    var body = 'Name: ' + name + '\nEmail: ' + email + '\nAbout: ' + kind + '\n\n' + msg;
+    window.location.href = 'mailto:info@pozi.live?subject=' +
+      encodeURIComponent('POZi — ' + kind) + '&body=' + encodeURIComponent(body);
+    st.style.color = 'var(--green)';
+    st.textContent = 'Opening your email app…';
+  }
+
+  /* ── Wire everything ──────────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function(){
+
+    // One delegated handler covers page links, modal openers, and closers.
+    document.addEventListener('click', function(e){
+      var t = e.target.closest('[data-page],[data-modal],[data-close]');
+      if (!t) return;
+      if (t.dataset.page){ showPage(t.dataset.page); return; }
+      if (t.dataset.modal){ openModal(t.dataset.modal); return; }
+      if (t.dataset.close){ closeModal(t.dataset.close); }
+    });
+
+    // Click the dimmed backdrop to dismiss.
+    document.querySelectorAll('.modal').forEach(function(m){
+      m.addEventListener('click', function(e){ if (e.target === m) closeModal(m.id); });
+    });
+
+    var h = $('hamburger');
+    if (h) h.addEventListener('click', toggleMobile);
+
+    var send = $('chatSend');
+    if (send) send.addEventListener('click', askForeman);
+
+    var input = $('chatInput');
+    if (input){
+      // Enter sends; Shift+Enter makes a new line.
+      input.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); askForeman(); }
+      });
+      // Grow with the text instead of scrolling a one-line box.
+      input.addEventListener('input', function(){
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+      });
+    }
+
+    document.querySelectorAll('.preset').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = $('chatInput');
+        i.value = btn.dataset.preset || '';
+        i.focus();
+        i.dispatchEvent(new Event('input'));
+      });
+    });
+
+    var cf = $('cfSend');
+    if (cf) cf.addEventListener('click', sendContact);
+
+    var goOpen = $('goOpen');
+    if (goOpen) goOpen.addEventListener('click', function(){
+      window.open('https://pozi.live/install', '_blank', 'noopener');
+    });
+
+    var goCopy = $('goCopy');
+    if (goCopy) goCopy.addEventListener('click', async function(){
+      var st = $('goStatus');
+      try {
+        await navigator.clipboard.writeText('https://pozi.live/install');
+        st.textContent = 'Link copied — paste it into a text to yourself.';
+      } catch(e){
+        st.textContent = 'https://pozi.live/install';
+      }
+    });
+
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape'){ closeAllModals(); closeMobile(); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
