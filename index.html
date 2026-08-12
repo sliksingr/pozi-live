@@ -210,17 +210,6 @@ h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height
 .hero h1{margin-bottom:20px}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:34px}
 
-/* three-beat strip under hero */
-.beats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:52px}
-.beat{
-  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));
-  border:1px solid var(--border);border-radius:18px;padding:22px;text-align:left;
-}
-.beat-n{
-  font-family:var(--fh);font-size:11px;font-weight:800;letter-spacing:1.6px;color:var(--green);margin-bottom:10px;
-}
-.beat h3{font-size:17px;margin-bottom:7px}
-.beat p{font-size:13px;color:var(--muted);line-height:1.62}
 
 /* ═══ FOREMAN PANEL ═══ */
 .foreman-shell{
@@ -279,6 +268,16 @@ h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height
 .chat-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,255,136,.2)}
 .chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .chat-status{margin-top:9px;min-height:17px;font-size:11.5px;line-height:1.45;color:var(--muted)}
+/* Hitting a tier cap should offer the way forward, not just report the wall. */
+.upgrade-card{
+  align-self:stretch;max-width:100%;margin-top:4px;padding:18px;border-radius:17px;
+  background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(56,189,248,.06));
+  border:1px solid rgba(0,255,136,.26);
+}
+.upgrade-card h4{font-family:var(--fh);font-weight:800;font-size:15px;margin-bottom:7px}
+.upgrade-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.upgrade-actions{display:flex;gap:9px;flex-wrap:wrap}
+.upgrade-actions .btn{padding:12px 20px;font-size:13px}
 .chat-status.err{color:var(--danger)}
 .chat-status.ok{color:var(--green)}
 
@@ -477,7 +476,7 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:900px){
-  .stack-3,.beats{grid-template-columns:1fr}
+  .stack-3{grid-template-columns:1fr}
   .plans{grid-template-columns:1fr 1fr}
 }
 @media(max-width:768px){
@@ -732,28 +731,11 @@ body.gated>*:not(.phone-gate){display:none!important}
       <button class="btn btn-s" data-signup>Create Free Account</button>
     </div>
 
-    <div class="beats">
-      <div class="beat">
-        <div class="beat-n">01 — PLAN IT</div>
-        <h3>Describe the job</h3>
-        <p>A conversation, not a form. Foreman asks the questions that actually change the materials, and nothing else.</p>
-      </div>
-      <div class="beat">
-        <div class="beat-n">02 — PRICE IT</div>
-        <h3>Get the real numbers</h3>
-        <p>Build Notes with cut lists, quantities, and the arithmetic shown — so you can check the math before you buy.</p>
-      </div>
-      <div class="beat">
-        <div class="beat-n">03 — BUILD IT</div>
-        <h3>Source it locally</h3>
-        <p>Everything stays together as a project — and every item on the list becomes a live product search across approved retailers near your ZIP.</p>
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- FOREMAN LIVE -->
-<section class="section" id="foreman" style="padding-top:20px">
+<section class="section" id="foreman" style="padding-top:8px">
   <div class="wrap">
     <div class="center" style="margin-bottom:34px">
       <div class="eyebrow">Try it here</div>
@@ -1602,6 +1584,8 @@ body.gated>*:not(.phone-gate){display:none!important}
       if (out.error) throw out.error;
       currentUser = out.data.user || null;
       await loadPlan(); paintAccount();
+      var stale = $('chatStream').querySelector('.upgrade-card');
+      if (stale) stale.remove();   // the cap no longer applies
       hint.style.color='var(--green)'; hint.textContent='Signed in.';
       setTimeout(function(){ closeModal('authModal'); }, 700);
     } catch(e){
@@ -2297,6 +2281,31 @@ body.gated>*:not(.phone-gate){display:none!important}
     return div;
   }
 
+  // Shown once, in the conversation, when a tier limit stops the reply.
+  function showUpgradePrompt(){
+    var stream = $('chatStream');
+    if (stream.querySelector('.upgrade-card')) return;
+
+    var card = document.createElement('div');
+    card.className = 'upgrade-card';
+    card.innerHTML = currentUser
+      ? '<h4>You have used today\'s sessions</h4>' +
+        '<p>Your plan resets tomorrow. Upgrading raises the daily limit and message count right away.</p>' +
+        '<div class="upgrade-actions">' +
+          '<button class="btn btn-p" data-upgrade>See Plans</button>' +
+        '</div>'
+      : '<h4>Keep this conversation going</h4>' +
+        '<p>A free account gives you 3 sessions a day with 5 messages each, saves your projects, ' +
+        'and keeps everything you have planned so far.</p>' +
+        '<div class="upgrade-actions">' +
+          '<button class="btn btn-p" data-upgrade-signup>Create Free Account</button>' +
+          '<button class="btn btn-s" data-upgrade>See Plans</button>' +
+        '</div>';
+
+    stream.appendChild(card);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
   function setStatus(text, kind){
     var el = $('chatStatus');
     el.textContent = text || '';
@@ -2398,12 +2407,19 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     } catch(err){
       pending.classList.remove('thinking');
-      pending.innerHTML = renderForemanHtml(
-        String(err.message || '').indexOf('limit') > -1
-          ? err.message
-          : 'I could not respond just then. Give it a moment and try again.'
-      );
-      setStatus(err.message || 'Something went wrong.', 'err');
+      var msg = String(err.message || '');
+      var isLimit = /limit|session/i.test(msg);
+
+      if (isLimit){
+        // The server enforces the cap; here we just make the next step obvious
+        // instead of leaving someone stuck at a wall with no button.
+        pending.innerHTML = renderForemanHtml(msg);
+        showUpgradePrompt();
+        setStatus('', '');
+      } else {
+        pending.innerHTML = renderForemanHtml('I could not respond just then. Give it a moment and try again.');
+        setStatus(msg || 'Something went wrong.', 'err');
+      }
     } finally {
       busy = false;
       btn.disabled = false;
@@ -2519,6 +2535,12 @@ body.gated>*:not(.phone-gate){display:none!important}
       var first = $('projItems').querySelector('[data-search]');
       showPage('search');
       if (first) setTimeout(function(){ runSearch(first.getAttribute('data-search')); }, 120);
+    });
+
+    // Upgrade prompt inside the chat
+    $('chatStream').addEventListener('click', function(e){
+      if (e.target.closest('[data-upgrade-signup]')){ startSignup(); return; }
+      if (e.target.closest('[data-upgrade]')) showPage('pricing');
     });
 
     // Pricing — four cards, four different paths
