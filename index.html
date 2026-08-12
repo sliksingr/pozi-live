@@ -378,6 +378,13 @@ h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height
 .plan-btn-s{background:rgba(255,255,255,.045);border:1px solid var(--border);color:var(--text)}
 .plan-btn:hover{transform:translateY(-1px)}
 
+.plan.is-current{border-color:rgba(0,255,136,.45);box-shadow:0 0 0 1px rgba(0,255,136,.12),0 20px 46px rgba(0,0,0,.3)}
+.plan-current-tag{
+  position:absolute;top:16px;right:16px;background:rgba(0,255,136,.14);border:1px solid rgba(0,255,136,.45);
+  color:var(--green);font-family:var(--fh);font-weight:800;font-size:9px;letter-spacing:1px;
+  text-transform:uppercase;padding:4px 9px;border-radius:999px;
+}
+.plan-btn:disabled{opacity:.55;cursor:default;transform:none}
 .plan-note{
   margin-top:26px;padding:20px;border-radius:16px;text-align:center;
   background:rgba(255,255,255,.03);border:1px solid var(--border);
@@ -1067,7 +1074,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap">
     <div class="plans">
 
-      <div class="plan">
+      <div class="plan" id="planGuest">
         <div class="plan-label">No account</div>
         <div class="plan-name">Guest</div>
         <div class="plan-price">Free</div>
@@ -1079,10 +1086,10 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Local product search</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>No saving, no photo analysis</span></div>
         </div>
-        <button class="plan-btn plan-btn-s" data-try-foreman>Try It Free</button>
+        <button class="plan-btn plan-btn-s" id="btnGuest">Try It Now</button>
       </div>
 
-      <div class="plan">
+      <div class="plan" id="planFree">
         <div class="plan-label">Free account</div>
         <div class="plan-name">Free</div>
         <div class="plan-price">$0</div>
@@ -1094,10 +1101,10 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>1 photo analysis a day</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Project photos and notes</span></div>
         </div>
-        <button class="plan-btn plan-btn-s" data-signup>Create Account</button>
+        <button class="plan-btn plan-btn-s" id="btnFree">Create Free Account</button>
       </div>
 
-      <div class="plan featured">
+      <div class="plan featured" id="planDiy">
         <div class="plan-badge">Popular</div>
         <div class="plan-label">For homeowners</div>
         <div class="plan-name">DIY</div>
@@ -1110,10 +1117,10 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>10 photo analyses a day</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Full photo gallery per project</span></div>
         </div>
-        <button class="plan-btn plan-btn-p" data-plan="consumer">Get DIY</button>
+        <button class="plan-btn plan-btn-p" id="btnDiy">Get DIY</button>
       </div>
 
-      <div class="plan">
+      <div class="plan" id="planPro">
         <div class="plan-label">For pros</div>
         <div class="plan-name">Contractor</div>
         <div class="plan-price">$19.99</div>
@@ -1125,7 +1132,7 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Client photo sharing links</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Priority access to new tools</span></div>
         </div>
-        <button class="plan-btn plan-btn-p" data-plan="pro">Get Contractor</button>
+        <button class="plan-btn plan-btn-p" id="btnPro">Get Contractor</button>
       </div>
 
     </div>
@@ -1549,6 +1556,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     $('acctDelete').classList.toggle('hidden', !signedIn);
     $('acctPlanTag').textContent = signedIn ? (PLAN_INFO[currentPlan] || PLAN_INFO.free).name : 'Guest';
     syncNavCta();
+    paintPricing();
   }
 
   function openPlanModal(){
@@ -1621,11 +1629,17 @@ body.gated>*:not(.phone-gate){display:none!important}
       hint.textContent = out.data.session
         ? 'Account created and signed in.'
         : 'Account created. Check your email to confirm, then sign in.';
-      if (pendingPlan){
-        var lbl = pendingPlan === 'pro' ? 'Contractor' : 'DIY';
-        hint.textContent += ' Then open POZi Go to activate ' + lbl + '.';
-        pendingPlan = null;
+      // Resume the plan they picked before signing up.
+      if (pendingCheckout && out.data.session){
+        var want = pendingCheckout; pendingCheckout = null;
+        setTimeout(function(){ closeModal('authModal'); startCheckout(want); }, 900);
+      } else if (pendingCheckout){
+        var lbl2 = pendingCheckout === 'pro' ? 'Contractor' : 'DIY';
+        hint.textContent += ' Once confirmed, sign in and start ' + lbl2 + '.';
+      } else if (out.data.session){
+        setTimeout(function(){ closeModal('authModal'); goToForeman(); }, 900);
       }
+      pendingPlan = null;
     } catch(e){
       hint.style.color='var(--danger)'; hint.textContent = e.message || 'Could not create the account.';
     } finally { btn.disabled = false; btn.textContent = 'Create My Account'; }
@@ -2032,6 +2046,97 @@ body.gated>*:not(.phone-gate){display:none!important}
     }
   }
 
+  /* ── Pricing actions ───────────────────────────────────────────────────
+     Four cards, four genuinely different paths — not four buttons that all
+     open the app.
+       Guest      → straight into a Foreman conversation (disclaimer gates it)
+       Free       → create an account, then land in Foreman
+       DIY / Pro  → account first if needed, then Stripe checkout
+     startCheckout is the single place Stripe gets wired in later.            */
+  var PLAN_PRICE = { consumer:'$9.99', pro:'$19.99' };
+  var pendingCheckout = null;
+
+  // Stub until Stripe exists. Everything upstream of this is already correct,
+  // so switching it on is a matter of filling in this one function.
+  async function startCheckout(plan){
+    var label = plan === 'pro' ? 'Contractor' : 'DIY';
+    openModal('goModal');
+    var st = $('goStatus');
+    if (st){
+      st.textContent = 'Checkout for ' + label + ' (' + PLAN_PRICE[plan] + '/mo) is being connected. ' +
+        "You're signed in as " + (currentUser ? currentUser.email : 'your account') +
+        ' — activate ' + label + ' in the POZi Go app in the meantime.';
+    }
+  }
+
+  function goToForeman(){
+    showPage('home');
+    setTimeout(function(){
+      var el = $('foreman');
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      var input = $('chatInput');
+      if (input) input.focus({ preventScroll:true });
+    }, 180);
+  }
+
+  // Guest: no account, no friction — go straight to the conversation.
+  function planGuestAction(){ goToForeman(); }
+
+  // Free account: sign up, then drop them into Foreman rather than a dead end.
+  function planFreeAction(){
+    if (currentUser){ goToForeman(); return; }
+    pendingCheckout = null;
+    startSignup();
+    $('authSub').textContent = 'Create your free account, then start planning with Foreman.';
+  }
+
+  // Paid: an account has to exist before money changes hands.
+  function planPaidAction(plan){
+    if (!currentUser){
+      pendingCheckout = plan;
+      startSignup();
+      var label = plan === 'pro' ? 'Contractor' : 'DIY';
+      $('authSub').textContent = 'Create your account first — then you can start ' + label +
+        ' (' + PLAN_PRICE[plan] + '/mo).';
+      return;
+    }
+    if (currentPlan === plan){ openPlanModal(); return; }
+    startCheckout(plan);
+  }
+
+  // Marks whichever card the person is actually on and softens its button.
+  function paintPricing(){
+    var map = { planGuest:!currentUser, planFree:currentUser && currentPlan === 'free',
+                planDiy:currentPlan === 'consumer', planPro:currentPlan === 'pro' };
+    Object.keys(map).forEach(function(id){
+      var card = $(id);
+      if (!card) return;
+      var isCurrent = !!map[id] && (id !== 'planGuest' || !currentUser);
+      card.classList.toggle('is-current', isCurrent);
+      var tag = card.querySelector('.plan-current-tag');
+      if (isCurrent && !tag && id !== 'planGuest'){
+        tag = document.createElement('div');
+        tag.className = 'plan-current-tag';
+        tag.textContent = 'Your plan';
+        card.appendChild(tag);
+      } else if (!isCurrent && tag){ tag.remove(); }
+    });
+
+    if (currentUser){
+      $('btnFree').textContent = currentPlan === 'free' ? 'Start Planning' : 'Create Free Account';
+      $('btnDiy').textContent  = currentPlan === 'consumer' ? 'Your Current Plan' : 'Get DIY';
+      $('btnPro').textContent  = currentPlan === 'pro' ? 'Your Current Plan' : 'Get Contractor';
+      $('btnDiy').disabled = currentPlan === 'consumer';
+      $('btnPro').disabled = currentPlan === 'pro';
+    } else {
+      $('btnFree').textContent = 'Create Free Account';
+      $('btnDiy').textContent = 'Get DIY';
+      $('btnPro').textContent = 'Get Contractor';
+      $('btnDiy').disabled = false;
+      $('btnPro').disabled = false;
+    }
+  }
+
   /* ── Phone gateway ─────────────────────────────────────────────────────
      Swap APP_STORE_URL for the real App Store listing once POZi Go is live;
      it is the only place the install link is defined. */
@@ -2410,6 +2515,13 @@ body.gated>*:not(.phone-gate){display:none!important}
       showPage('search');
       if (first) setTimeout(function(){ runSearch(first.getAttribute('data-search')); }, 120);
     });
+
+    // Pricing — four cards, four different paths
+    $('btnGuest').addEventListener('click', planGuestAction);
+    $('btnFree').addEventListener('click', planFreeAction);
+    $('btnDiy').addEventListener('click', function(){ planPaidAction('consumer'); });
+    $('btnPro').addEventListener('click', function(){ planPaidAction('pro'); });
+    paintPricing();
 
     // Search
     $('sGo').addEventListener('click', function(){ runSearch(); });
