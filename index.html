@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>POZi — Plan it. Price it. Build it.</title>
 
-<meta name="description" content="POZi Foreman helps you plan a project, work out real quantities and cut lists, then sources the materials from retailers near you.">
+<meta name="description" content="POZi Foreman plans your project and works out real quantities and cut lists. POZi organizes it — notes, lists, and photos in one place — and sources the materials from retailers near you.">
 <link rel="canonical" href="https://pozi.live/">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pozi.live/">
 <meta property="og:title" content="POZi — Plan it. Price it. Build it.">
-<meta property="og:description" content="POZi Foreman helps you plan a project, work out real quantities and cut lists, then sources the materials from retailers near you.">
+<meta property="og:description" content="POZi Foreman plans your project and works out real quantities and cut lists. POZi organizes it — notes, lists, and photos in one place — and sources the materials from retailers near you.">
 <meta property="og:site_name" content="POZi">
 <meta property="og:image" content="https://pozi.live/pozi-social-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -74,9 +74,42 @@ nav{
 .nav-logo{display:flex;align-items:center;gap:11px;cursor:pointer;flex-shrink:0}
 .nav-logo img{width:38px;height:38px;object-fit:contain}
 .logo-word{font-family:var(--fh);font-weight:800;font-size:21px;letter-spacing:-1px;line-height:1}
-.logo-word .i{color:var(--green)}
+/* The dot on the "i" fires off like a beam and resets — the POZi signature. */
+.logo-word .i,.foreman-title .i{color:var(--green)}
+.pozi-i{position:relative;display:inline-flex;justify-content:center;color:var(--green)}
+.pozi-i .stem{color:var(--green)}
+.pozi-i .dot{
+  position:absolute;top:.04em;left:50%;transform:translateX(-50%);
+  width:.19em;height:.19em;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green),0 0 12px rgba(0,255,136,.45);
+  animation:iDot 2.6s ease-in-out infinite;
+}
+.pozi-i .beam{
+  position:absolute;top:.125em;left:50%;height:.07em;width:0;border-radius:4px;
+  background:linear-gradient(90deg,var(--green),rgba(0,255,136,.55),transparent);
+  transform-origin:left center;animation:iBeam 2.6s ease-in-out infinite;pointer-events:none;
+}
+@keyframes iDot{
+  0%,26%   {transform:translateX(-50%) scale(1);opacity:1}
+  29%      {transform:translateX(-50%) scale(1.35);opacity:1}
+  50%      {transform:translateX(3em) scale(.2);opacity:0}
+  51%      {transform:translateX(-50%) scale(0);opacity:0}
+  63%,100% {transform:translateX(-50%) scale(1);opacity:1}
+}
+@keyframes iBeam{
+  0%,28%   {width:0;opacity:0}
+  33%      {width:.5em;opacity:1}
+  49%      {width:3em;opacity:.7}
+  53%,100% {width:0;opacity:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .pozi-i .dot,.pozi-i .beam{animation:none}
+  .pozi-i .beam{display:none}
+}
 .logo-word .go{font-size:12px;margin-left:1px;opacity:.75}
-.nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap}
+.nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap;line-height:1.5}
+/* The original POZi tagline, kept as its own green line under the verbs. */
+.nav-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
 .nav-links{display:flex;gap:2px}
 .nl{color:var(--muted);font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;transition:color .18s,background .18s}
 .nl:hover{color:var(--text);background:rgba(255,255,255,.06)}
@@ -362,7 +395,8 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 .footer-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
 .footer-brand{display:flex;align-items:center;gap:10px}
 .footer-brand img{width:32px;height:32px}
-.footer-tag{font-size:9px;letter-spacing:1.3px;text-transform:uppercase;color:#6a6d85;margin-top:3px}
+.footer-tag{font-size:9px;letter-spacing:1.3px;text-transform:uppercase;color:#6a6d85;margin-top:3px;line-height:1.5}
+.footer-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
 .footer-links{display:flex;gap:18px;flex-wrap:wrap}
 .footer-link{font-size:12px;color:#8b8ea8;transition:color .18s}
 .footer-link:hover{color:var(--green)}
@@ -398,6 +432,28 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 .legal p{font-size:13px;color:var(--muted);line-height:1.78;margin-bottom:13px}
 .legal strong{color:#dfe4f5}
 
+/* Disclaimer — same content and scroll-to-accept gate as the app. */
+.disc-sheet{
+  width:min(560px,100%);margin:auto;background:#12131f;border:1px solid rgba(255,255,255,.10);
+  border-radius:20px;display:flex;flex-direction:column;max-height:86vh;overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.6);
+}
+.disc-head{padding:20px 20px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.disc-title{font-family:var(--fh);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.disc-sub{font-size:13px;color:var(--muted);margin-top:5px}
+.disc-body{padding:16px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;font-size:14px;line-height:1.55;color:#dfe4ef}
+.disc-body h4{margin:16px 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#8dffc8;font-family:var(--fh)}
+.disc-body p{margin:0 0 10px}
+.disc-body ul{margin:0 0 10px;padding-left:18px}
+.disc-body li{margin-bottom:6px}
+.disc-foot{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:8px}
+.disc-hint{font-size:12px;color:var(--muted);text-align:center;min-height:16px}
+.disc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.disc-actions button{padding:14px;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:14px}
+.disc-accept{border:1px solid rgba(0,255,136,.45);background:linear-gradient(180deg,#00ff88,#00d46f);color:#06210f}
+.disc-accept:disabled{opacity:.4;filter:grayscale(.6);cursor:not-allowed}
+.disc-decline{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#e8ecf5}
+
 /* QR block */
 .qr-row{display:grid;grid-template-columns:112px 1fr;gap:16px;align-items:center;
   background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:16px;padding:15px}
@@ -428,6 +484,49 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
   .cta{padding:40px 22px}
 }
 @media(min-width:769px){.mobile-menu{display:none!important}}
+
+/* ═══ ACCOUNT MENU + AUTH ═══ */
+.acct-wrap{position:relative;display:inline-flex;align-items:center}
+.acct-toggle{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:11px;
+  border:1px solid var(--border);background:rgba(255,255,255,.045);color:#eaeaf7;
+  font-family:var(--fh);font-weight:700;font-size:12.5px;transition:background .18s,border-color .18s;
+}
+.acct-toggle:hover,.acct-toggle.open{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.22)}
+.acct-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(0,255,136,.5)}
+.acct-caret{font-size:10px;color:#8b8ea8}
+.acct-menu{
+  position:absolute;top:calc(100% + 10px);right:0;width:250px;display:none;padding:9px;
+  border-radius:16px;border:1px solid var(--border);background:rgba(14,14,26,.985);
+  box-shadow:0 24px 64px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);z-index:950;
+}
+.acct-menu.open{display:grid;gap:3px}
+.acct-item{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 12px;border-radius:10px;color:#dcdcf0;font-size:13px;font-weight:600;text-align:left;
+  transition:background .16s,color .16s;
+}
+.acct-item:hover{background:rgba(0,255,136,.08);color:#fff}
+.acct-item.danger{color:#ff8fa3}
+.acct-item.danger:hover{background:rgba(255,102,128,.09)}
+.acct-item b{color:var(--green);font-family:var(--fh);font-size:11.5px}
+.acct-hr{height:1px;background:var(--border);margin:4px 2px}
+.acct-email{padding:9px 12px 4px;font-size:11px;color:#7f829e;word-break:break-all;line-height:1.4}
+
+.plan-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;
+  background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);
+  font-family:var(--fh);font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);
+}
+.plan-lines{display:grid;gap:9px;margin-top:16px}
+.plan-line{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--border);
+  font-size:13px;color:var(--muted);
+}
+.plan-line b{color:#e6e9f7;font-family:var(--fh);font-size:12.5px}
+
+@media(max-width:768px){.acct-wrap{display:none}}
 
 /* ═══ PHONE GATEWAY ═══
    Phones get the app, not the site. Detection is user-agent only and never
@@ -473,8 +572,8 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="nav-logo" data-page="home">
     <img src="logo-dark.png" alt="POZi">
     <div>
-      <div class="logo-word">POZ<span class="i">i</span><span class="go">Go</span></div>
-      <div class="nav-tag">Plan it. Price it. Build it.</div>
+      <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
+      <div class="nav-tag">Plan it. Price it. Build it.<span class="aiop">All in one place.</span></div>
     </div>
   </div>
 
@@ -485,7 +584,24 @@ body.gated>*:not(.phone-gate){display:none!important}
     <button class="nl" data-modal="contactModal">Contact</button>
   </div>
 
-  <button class="nav-cta" data-modal="goModal">Get POZi Go</button>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="acct-wrap">
+      <button class="acct-toggle" id="acctToggle" type="button" aria-haspopup="true" aria-expanded="false">
+        <span class="acct-dot" id="acctDot"></span><span id="acctLabel">Account</span><span class="acct-caret">▾</span>
+      </button>
+      <div class="acct-menu" id="acctMenu" aria-hidden="true">
+        <div class="acct-email hidden" id="acctEmail"></div>
+        <button class="acct-item" id="acctAuth" type="button">Sign in / Create account</button>
+        <button class="acct-item" id="acctPlan" type="button">My plan <b id="acctPlanTag">—</b></button>
+        <button class="acct-item" data-modal="goModal" type="button">Get POZi Go</button>
+        <button class="acct-item" data-modal="contactModal" type="button">Contact support</button>
+        <div class="acct-hr"></div>
+        <button class="acct-item hidden" id="acctSignOut" type="button">Sign out</button>
+        <button class="acct-item danger hidden" id="acctDelete" type="button">Delete my account</button>
+      </div>
+    </div>
+    <button class="nav-cta" id="navCta">Create Account</button>
+  </div>
 
   <button class="hamburger" id="hamburger" aria-label="Menu">
     <span class="hb"></span><span class="hb"></span><span class="hb"></span>
@@ -497,6 +613,8 @@ body.gated>*:not(.phone-gate){display:none!important}
   <button class="m-nl" data-page="how">How It Works</button>
   <button class="m-nl" data-page="pricing">Pricing</button>
   <button class="m-nl" data-modal="contactModal">Contact</button>
+  <button class="m-nl" id="mAcctAuth">Sign in / Create account</button>
+  <button class="m-nl" id="mAcctPlan">My plan</button>
   <button class="m-cta" data-modal="goModal">Get POZi Go</button>
 </div>
 
@@ -512,11 +630,12 @@ body.gated>*:not(.phone-gate){display:none!important}
     <h1 class="h-xl">Plan first.<br><span class="grad">Source after.</span></h1>
     <p class="lead center" style="margin-top:20px">
       Tell POZi Foreman what you want to build, fix, or design. It works out the real
-      quantities and cut lists — then POZi finds the materials at stores near you.
+      quantities and cut lists. POZi keeps the whole job organized as a project — conversation,
+      notes, item list, and photos in one place — then finds the materials at stores near you.
     </p>
     <div class="hero-actions">
       <a class="btn btn-p" href="#foreman">Try POZi Foreman</a>
-      <button class="btn btn-s" data-modal="goModal">Get the App</button>
+      <button class="btn btn-s" data-signup>Create Free Account</button>
     </div>
 
     <div class="beats">
@@ -533,7 +652,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div class="beat">
         <div class="beat-n">03 — BUILD IT</div>
         <h3>Source it locally</h3>
-        <p>Every item on the list becomes a live product search across approved retailers near your ZIP.</p>
+        <p>Everything stays together as a project — and every item on the list becomes a live product search across approved retailers near your ZIP.</p>
       </div>
     </div>
   </div>
@@ -554,7 +673,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="foreman-shell">
       <div class="foreman-head">
         <div>
-          <div class="foreman-title">POZ<span class="i">i</span> Foreman</div>
+          <div class="foreman-title">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span> Foreman</div>
           <div class="foreman-sub">Plans the project before you spend a dollar on materials.</div>
         </div>
         <div class="usage-chip" id="usageChip">Guest session</div>
@@ -640,7 +759,7 @@ body.gated>*:not(.phone-gate){display:none!important}
         that technically works and one a contractor would respect.
       </p>
       <div class="hero-actions">
-        <button class="btn btn-p" data-modal="goModal">Get POZi Go</button>
+        <button class="btn btn-p" data-signup>Create Free Account</button>
         <button class="btn btn-s" data-page="how">How It Works →</button>
       </div>
     </div>
@@ -699,8 +818,9 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div class="trow">
         <div class="tcol"><div class="tnum">4</div></div>
         <div class="tbody">
-          <h3>Keep it with the job</h3>
-          <p>Notes, lists, and photos stay attached to the project. Come back next week, or next season, and the whole thing is still there.</p>
+          <h3>It stays a project</h3>
+          <p>This is the part people miss: POZi isn't a search box. Every job is a project that holds its Foreman conversation, Build Notes, item list, and photos together. Come back next week or next season and the whole thing is still there — and contractors can share it straight to a client.</p>
+          <div class="tnote"><strong>One place per job</strong>No more hunting through texts, photo rolls, and receipts to remember what you decided and what you bought.</div>
         </div>
       </div>
 
@@ -749,9 +869,9 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap">
     <div class="cta">
       <h2 class="h-md" style="margin-bottom:14px">Plan the job.<br><span class="grad">Then go get it.</span></h2>
-      <p class="lead center" style="font-size:15px">POZi Foreman works out what you need. POZi finds where to buy it.</p>
+      <p class="lead center" style="font-size:15px">Foreman plans the job and works out the real numbers. POZi keeps it organized as a project — notes, lists, and photos in one place — and sources the materials near you.</p>
       <div class="hero-actions">
-        <button class="btn btn-p" data-modal="goModal">Get POZi Go</button>
+        <button class="btn btn-p" data-signup>Create Free Account</button>
         <button class="btn btn-s" data-page="pricing">See Pricing →</button>
       </div>
     </div>
@@ -791,7 +911,7 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Local product search</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>No saving, no photo analysis</span></div>
         </div>
-        <button class="plan-btn plan-btn-s" data-modal="goModal">Try It</button>
+        <button class="plan-btn plan-btn-s" data-try-foreman>Try It Free</button>
       </div>
 
       <div class="plan">
@@ -806,7 +926,7 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>1 photo analysis a day</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Project photos and notes</span></div>
         </div>
-        <button class="plan-btn plan-btn-s" data-modal="goModal">Create Account</button>
+        <button class="plan-btn plan-btn-s" data-signup>Create Account</button>
       </div>
 
       <div class="plan featured">
@@ -822,7 +942,7 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>10 photo analyses a day</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Full photo gallery per project</span></div>
         </div>
-        <button class="plan-btn plan-btn-p" data-modal="goModal">Get DIY</button>
+        <button class="plan-btn plan-btn-p" data-plan="consumer">Get DIY</button>
       </div>
 
       <div class="plan">
@@ -837,7 +957,7 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Client photo sharing links</span></div>
           <div class="plan-feat"><span class="plan-tick">✓</span><span>Priority access to new tools</span></div>
         </div>
-        <button class="plan-btn plan-btn-p" data-modal="goModal">Get Contractor</button>
+        <button class="plan-btn plan-btn-p" data-plan="pro">Get Contractor</button>
       </div>
 
     </div>
@@ -856,7 +976,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       <h2 class="h-md" style="margin-bottom:14px">Try it on your next job.</h2>
       <p class="lead center" style="font-size:15px">Guest access needs no account. See whether the numbers hold up before you pay anything.</p>
       <div class="hero-actions">
-        <button class="btn btn-p" data-page="home">Try POZi Foreman</button>
+        <button class="btn btn-p" data-try-foreman>Try POZi Foreman</button>
         <button class="btn btn-s" data-modal="goModal">Get the App</button>
       </div>
     </div>
@@ -871,8 +991,8 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div class="footer-brand">
         <img src="logo-dark.png" alt="POZi">
         <div>
-          <div class="logo-word" style="font-size:17px">POZ<span class="i">i</span></div>
-          <div class="footer-tag">Plan it. Price it. Build it.</div>
+          <div class="logo-word" style="font-size:17px">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span></div>
+          <div class="footer-tag">Plan it. Price it. Build it.<span class="aiop">All in one place.</span></div>
         </div>
       </div>
     </div>
@@ -905,10 +1025,92 @@ body.gated>*:not(.phone-gate){display:none!important}
     </div>
     <div class="phone-gate-actions">
       <a class="btn btn-p" id="gateInstall" href="https://pozi.live/install">Get POZi Go</a>
-      <button class="btn btn-s" id="gateStay" type="button">Continue to the website</button>
+      <button class="btn btn-s" id="gateStay" type="button">Continue on the web</button>
     </div>
-    <div class="phone-gate-note">The full website is designed for tablet and desktop.</div>
+    <div class="phone-gate-note">You can still create an account and use Foreman here — the app just works better on a job site.</div>
+    <div class="phone-gate-copy" style="color:var(--green);opacity:.8">All in one place.</div>
     <div class="phone-gate-copy">© 2026 POZi</div>
+  </div>
+</div>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="modal" id="authModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="authModal">×</button>
+      <div class="sheet-kicker">POZi Account</div>
+      <div class="sheet-title" id="authTitle">Sign in to POZi</div>
+      <p class="sheet-sub" id="authSub">One account works on the website and in the POZi Go app.</p>
+    </div>
+    <div class="sheet-body">
+      <input id="authEmail" class="field" type="email" placeholder="Email" autocomplete="username">
+      <input id="authPw" class="field" type="password" placeholder="Password" autocomplete="current-password">
+      <input id="authPw2" class="field hidden" type="password" placeholder="Re-enter password" autocomplete="new-password">
+      <div id="authHint" class="form-status" style="font-size:12px;font-weight:500;text-align:left;color:var(--muted)"></div>
+
+      <button class="btn btn-p" id="authSignIn" style="width:100%">Sign In</button>
+      <button class="btn btn-s" id="authGoSignUp" style="width:100%">Create Account</button>
+      <button class="btn btn-p hidden" id="authDoSignUp" style="width:100%">Create My Account</button>
+      <button class="btn btn-s hidden" id="authBackSignIn" style="width:100%">Already have an account? Sign in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MY PLAN MODAL ═══ -->
+<div class="modal" id="planModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="planModal">×</button>
+      <div class="sheet-kicker">My Plan</div>
+      <div class="sheet-title" id="planTitle">Your POZi plan</div>
+      <p class="sheet-sub" id="planSub">Plans apply everywhere you use POZi — website and app.</p>
+    </div>
+    <div class="sheet-body">
+      <div><span class="plan-pill" id="planPill">Free</span></div>
+      <div class="plan-lines" id="planLines"></div>
+      <button class="btn btn-p" id="planUpgrade" style="width:100%;margin-top:6px">See Plans</button>
+      <p style="text-align:center;font-size:12px;color:#6a6d85">Billing is managed in the POZi Go app.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DELETE ACCOUNT MODAL ═══ -->
+<div class="modal" id="delModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="delModal">×</button>
+      <div class="sheet-kicker">Delete account</div>
+      <div class="sheet-title">Delete your account?</div>
+      <p class="sheet-sub">This cannot be undone.</p>
+    </div>
+    <div class="sheet-body">
+      <div id="delStep1">
+        <p class="sub" style="margin-bottom:12px">Permanently deleting your POZi account also deletes:</p>
+        <ul style="margin:0 0 14px 18px;padding:0;font-size:13.5px;line-height:1.75;color:var(--muted)">
+          <li>every project and its Build Notes</li>
+          <li>all item lists and saved searches</li>
+          <li>all photos and Foreman scans</li>
+          <li>your Foreman conversation history</li>
+          <li>your plan and account record</li>
+        </ul>
+        <p class="sub">This removes your account from the app as well — it's the same account in both places.</p>
+        <div class="form-status" id="delStatus" style="font-size:12px;font-weight:500;color:var(--muted)"></div>
+        <div class="field-row" style="margin-top:16px">
+          <button class="btn btn-s" data-close="delModal">Keep My Account</button>
+          <button class="btn btn-p" id="delNext" style="background:linear-gradient(135deg,#ff6680,#ff4d6d);color:#fff">Delete My Account</button>
+        </div>
+      </div>
+
+      <div id="delStep2" class="hidden">
+        <div class="sheet-title" style="font-size:21px;margin-bottom:10px">Are you absolutely sure?</div>
+        <p class="sub">This is permanent. Your projects, photos, and Build Notes cannot be recovered — not by you and not by us.</p>
+        <div class="form-status" id="delStatus2" style="font-size:12px;font-weight:500;color:var(--muted);margin-top:12px"></div>
+        <div class="field-row" style="margin-top:16px">
+          <button class="btn btn-s" id="delBack">Cancel</button>
+          <button class="btn btn-p" id="delGo" style="background:linear-gradient(135deg,#ff6680,#ff4d6d);color:#fff">Yes, Delete Everything</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -969,28 +1171,392 @@ body.gated>*:not(.phone-gate){display:none!important}
   </div>
 </div>
 
-<!-- ═══ DISCLAIMER MODAL ═══ -->
+<!-- ═══ DISCLAIMER ═══ Same text and scroll-to-accept gate as the app. -->
 <div class="modal" id="legalModal">
-  <div class="sheet">
-    <div class="sheet-head">
-      <button class="sheet-close" data-close="legalModal">×</button>
-      <div class="sheet-kicker">POZi Disclaimer</div>
-      <div class="sheet-title">Important information</div>
-      <p class="sheet-sub">POZi Foreman is a planning and sourcing tool. It helps organize projects and compare materials — it does not replace professional judgement.</p>
+  <div class="disc-sheet">
+    <div class="disc-head">
+      <div class="disc-title">Before you build</div>
+      <div class="disc-sub" id="discSub">Please read this and scroll to the end.</div>
     </div>
-    <div class="sheet-body legal">
-      <p><strong>Foreman can make mistakes.</strong> Always verify measurements, quantities, materials, local building codes, permits, safety requirements, and manufacturer instructions before purchasing or beginning a project.</p>
-      <p>Electrical, plumbing, excavation, roofing, structural, gas, load-bearing, and other safety-critical work should be reviewed by a qualified professional where appropriate. Call 811 or your local utility-marking service before digging.</p>
-      <p>POZi does not sell products directly. Pricing, availability, delivery, pickup, warranties, and returns are handled by third-party retailers and can change without notice.</p>
-      <p>POZi is actively developed and some features are in beta.</p>
+    <div id="discBody" class="disc-body">
+      <p>POZi Foreman is a planning tool. It helps you organize a project, work out quantities, and put together a material list. It is not a substitute for professional judgment.</p>
+
+      <h4>Foreman can be wrong</h4>
+      <p>Foreman is AI and it makes mistakes. Before you buy anything or start work, verify:</p>
+      <ul>
+        <li>measurements, quantities, and cut lengths</li>
+        <li>material suitability for your conditions</li>
+        <li>local building codes and permit requirements</li>
+        <li>manufacturer instructions and load ratings</li>
+      </ul>
+
+      <h4>Some work needs a professional</h4>
+      <p>Have a qualified, licensed professional review anything structural, electrical, plumbing, gas, roofing, excavation, or load-bearing. Call 811 or your local utility-marking service before you dig. Nothing in POZi is engineering approval, a code ruling, or a permit. When in doubt, check with your local building department.</p>
+
+      <h4>Products, prices, and stores</h4>
+      <p>POZi does not sell anything. Search results come from third parties and can be wrong, out of date, or unavailable. Pricing, stock, delivery, warranties, and returns are between you and the retailer.</p>
+
+      <h4>Provided as is</h4>
+      <p>POZi is provided "as is" and "as available", without warranties of any kind, express or implied. To the fullest extent permitted by law, we disclaim all implied warranties, including merchantability, fitness for a particular purpose, accuracy, and non-infringement. We do not warrant that POZi will be uninterrupted, error-free, or that any result will be accurate or complete.</p>
+
+      <h4>You accept the risk</h4>
+      <p>You are responsible for your own project, for your own decisions, and for anyone working on it. To the fullest extent permitted by law, POZi, its owner, employees, contractors, and partners are not liable for any injury, death, property damage, cost, delay, code violation, lost profits, or other loss — direct or indirect — arising from your use of POZi, including material lists, build notes, measurements, quantities, photo analysis, and search results. You use POZi at your own risk.</p>
+
+      <h4>Limit of liability</h4>
+      <p>To the fullest extent permitted by law, our total liability to you for any claim relating to POZi will not exceed the greater of the amount you paid us in the twelve months before the claim, or fifty US dollars.</p>
+
+      <h4>You cover us</h4>
+      <p>You agree to indemnify and hold harmless POZi, its owner, employees, contractors, and partners from any claim, demand, loss, or expense — including reasonable legal fees — brought by you or by a third party, including your own clients, arising from your project, your use of POZi, or your reliance on anything POZi produced.</p>
+
+      <h4>Still in progress</h4>
+      <p>POZi is actively being developed and some features are in beta. Behavior, limits, and these terms may change.</p>
+
+      <p style="opacity:.6;font-size:12px;margin-top:16px">Some places do not allow certain warranty or liability exclusions, so parts of this may not apply to you. If you do not agree, choose Decline. You can review this any time from the footer.</p>
+    </div>
+    <div class="disc-foot">
+      <div id="discHint" class="disc-hint">Scroll to the bottom to continue</div>
+      <div class="disc-actions" id="discActions">
+        <button id="discDecline" class="disc-decline" type="button">Decline</button>
+        <button id="discAccept" class="disc-accept" type="button" disabled>Accept</button>
+      </div>
+      <button id="discClose" class="disc-decline hidden" type="button" style="width:100%">Close</button>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   'use strict';
   var $ = function(id){ return document.getElementById(id); };
+
+  /* ── Disclaimer gate ───────────────────────────────────────────────────
+     Foreman does not answer until this has been read and accepted once. The
+     Accept button stays disabled until the text is actually scrolled to the
+     end, so it cannot be dismissed blindly. Acceptance persists per browser.  */
+  var DISCLAIMER_KEY = 'pozi_disclaimer_accepted_v1';
+  var pendingAfterDisclaimer = null;
+
+  function hasAcceptedDisclaimer(){
+    try { return localStorage.getItem(DISCLAIMER_KEY) === '1'; } catch(e){ return false; }
+  }
+
+  // Two modes: a required gate before the first Foreman message, and a plain
+  // read-only view from the footer.
+  function openDisclaimer(mode){
+    var gate = mode === 'gate';
+    $('discSub').textContent = gate
+      ? 'Please read this and scroll to the end before using Foreman.'
+      : 'You have already accepted this. It is here any time you want it.';
+    $('discActions').classList.toggle('hidden', !gate);
+    $('discClose').classList.toggle('hidden', gate);
+    $('discHint').textContent = gate ? 'Scroll to the bottom to continue' : '';
+    $('discAccept').disabled = true;
+    openModal('legalModal');
+    var body = $('discBody');
+    body.scrollTop = 0;
+    if (gate) checkDiscScroll();
+  }
+
+  function checkDiscScroll(){
+    var body = $('discBody');
+    // 24px of slack so a hair of sub-pixel scroll doesn't block acceptance.
+    var atEnd = body.scrollTop + body.clientHeight >= body.scrollHeight - 24;
+    if (atEnd){
+      $('discAccept').disabled = false;
+      $('discHint').textContent = 'Thanks — you can accept now.';
+    }
+  }
+
+  function acceptDisclaimer(){
+    try { localStorage.setItem(DISCLAIMER_KEY, '1'); } catch(e){}
+    closeModal('legalModal');
+    var next = pendingAfterDisclaimer;
+    pendingAfterDisclaimer = null;
+    if (typeof next === 'function') next();
+  }
+
+  function declineDisclaimer(){
+    pendingAfterDisclaimer = null;
+    closeModal('legalModal');
+    setStatus('You need to accept the disclaimer before Foreman can answer.', 'err');
+  }
+
+  function requireDisclaimer(next){
+    if (hasAcceptedDisclaimer()) return true;
+    pendingAfterDisclaimer = next || null;
+    openDisclaimer('gate');
+    return false;
+  }
+
+  /* ── Account ───────────────────────────────────────────────────────────
+     The website and the app share one Supabase project, so an account created
+     here signs straight into POZi Go, and deleting here removes it from both.
+     Deletion goes through the same delete-account function the app uses — it
+     needs the service role key, which must never live in a browser.          */
+  var SUPABASE_URL = 'https://eaagnkwtflsxiclpcaok.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE';
+  var DELETE_ENDPOINT = '/.netlify/functions/delete-account';
+
+  var sb = (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+      })
+    : null;
+
+  var currentUser = null;
+  var currentPlan = 'free';
+  var authMode = 'signin';
+
+  // Same ladder as the app, so the two never disagree about what a plan includes.
+  var PLAN_INFO = {
+    free:     { name:'Free',       sessions:'3 a day', messages:'5 each', projects:'3',         photos:'1 analysis a day' },
+    consumer: { name:'DIY',        sessions:'5 a day', messages:'10 each', projects:'15',       photos:'10 analyses a day' },
+    pro:      { name:'Contractor', sessions:'7 a day', messages:'15 each', projects:'Unlimited', photos:'Unlimited' }
+  };
+
+  function closeAcctMenu(){
+    var m = $('acctMenu'), t = $('acctToggle');
+    if (!m) return;
+    m.classList.remove('open'); t.classList.remove('open');
+    t.setAttribute('aria-expanded','false'); m.setAttribute('aria-hidden','true');
+  }
+  function toggleAcctMenu(){
+    var m = $('acctMenu'), t = $('acctToggle');
+    var open = m.classList.toggle('open');
+    t.classList.toggle('open', open);
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
+    m.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+
+  function setAuthMode(mode){
+    authMode = mode;
+    var creating = mode === 'signup';
+    $('authPw2').classList.toggle('hidden', !creating);
+    $('authDoSignUp').classList.toggle('hidden', !creating);
+    $('authBackSignIn').classList.toggle('hidden', !creating);
+    $('authSignIn').classList.toggle('hidden', creating);
+    $('authGoSignUp').classList.toggle('hidden', creating);
+    $('authPw').setAttribute('autocomplete', creating ? 'new-password' : 'current-password');
+    $('authPw').placeholder = creating ? 'Create a password' : 'Password';
+    $('authTitle').textContent = creating ? 'Create your POZi account' : 'Sign in to POZi';
+    $('authSub').textContent = creating
+      ? "You'll confirm your email, then sign in. The same account works in the app."
+      : 'One account works on the website and in the POZi Go app.';
+    $('authHint').textContent = '';
+  }
+
+  function checkPwMatch(){
+    if (authMode !== 'signup') return;
+    var a = $('authPw').value, b = $('authPw2').value, hint = $('authHint');
+    if (!b){ hint.textContent = ''; return; }
+    var ok = a === b;
+    hint.textContent = ok ? '✓ Passwords match' : "Passwords don't match yet";
+    hint.style.color = ok ? 'var(--green)' : 'var(--muted)';
+  }
+
+  async function loadPlan(){
+    currentPlan = 'free';
+    if (!sb || !currentUser) return;
+    try {
+      var r = await sb.from('buildr_profiles').select('plan').eq('id', currentUser.id).maybeSingle();
+      var p = r && r.data ? String(r.data.plan || '').toLowerCase() : '';
+      if (p === 'pro') currentPlan = 'pro';
+      else if (p === 'consumer' || p === 'paid') currentPlan = 'consumer';
+    } catch(e){ /* stays free — never block the UI on a plan lookup */ }
+  }
+
+  function paintAccount(){
+    var signedIn = !!currentUser;
+    $('acctLabel').textContent = signedIn ? 'Account' : 'Sign in';
+    $('acctDot').style.background = signedIn ? 'var(--green)' : '#5c5f75';
+    $('acctDot').style.boxShadow = signedIn ? '0 0 10px rgba(0,255,136,.5)' : 'none';
+
+    var emailEl = $('acctEmail');
+    emailEl.textContent = signedIn ? currentUser.email : '';
+    emailEl.classList.toggle('hidden', !signedIn);
+
+    $('acctAuth').classList.toggle('hidden', signedIn);
+    $('acctSignOut').classList.toggle('hidden', !signedIn);
+    $('acctDelete').classList.toggle('hidden', !signedIn);
+    $('acctPlanTag').textContent = signedIn ? (PLAN_INFO[currentPlan] || PLAN_INFO.free).name : 'Guest';
+    syncNavCta();
+  }
+
+  function openPlanModal(){
+    closeAcctMenu();
+    var info = PLAN_INFO[currentPlan] || PLAN_INFO.free;
+    if (!currentUser){
+      $('planTitle').textContent = 'You are browsing as a guest';
+      $('planSub').textContent = 'Create a free account to save projects and keep your plans.';
+      $('planPill').textContent = 'Guest';
+      $('planLines').innerHTML =
+        '<div class="plan-line"><span>Foreman sessions</span><b>1 a day</b></div>' +
+        '<div class="plan-line"><span>Messages per session</span><b>5</b></div>' +
+        '<div class="plan-line"><span>Saved projects</span><b>None</b></div>';
+      $('planUpgrade').textContent = 'Create a Free Account';
+    } else {
+      $('planTitle').textContent = 'Your POZi plan';
+      $('planSub').textContent = 'Plans apply everywhere you use POZi — website and app.';
+      $('planPill').textContent = info.name;
+      $('planLines').innerHTML =
+        '<div class="plan-line"><span>Signed in as</span><b>' + escapeHtml(currentUser.email) + '</b></div>' +
+        '<div class="plan-line"><span>Foreman sessions</span><b>' + info.sessions + '</b></div>' +
+        '<div class="plan-line"><span>Messages per session</span><b>' + info.messages + '</b></div>' +
+        '<div class="plan-line"><span>Saved projects</span><b>' + info.projects + '</b></div>' +
+        '<div class="plan-line"><span>Photo analysis</span><b>' + info.photos + '</b></div>';
+      $('planUpgrade').textContent = currentPlan === 'pro' ? 'See All Plans' : 'Upgrade';
+    }
+    openModal('planModal');
+  }
+
+  async function doSignIn(){
+    var hint = $('authHint');
+    var email = $('authEmail').value.trim(), pw = $('authPw').value;
+    if (!email || !pw){ hint.style.color='var(--danger)'; hint.textContent='Enter your email and password.'; return; }
+    if (!sb){ hint.textContent='Accounts are unavailable right now.'; return; }
+    var btn = $('authSignIn'); btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      var out = await sb.auth.signInWithPassword({ email:email, password:pw });
+      if (out.error) throw out.error;
+      currentUser = out.data.user || null;
+      await loadPlan(); paintAccount();
+      hint.style.color='var(--green)'; hint.textContent='Signed in.';
+      setTimeout(function(){ closeModal('authModal'); }, 700);
+    } catch(e){
+      hint.style.color='var(--danger)'; hint.textContent = e.message || 'Could not sign in.';
+    } finally { btn.disabled = false; btn.textContent = 'Sign In'; }
+  }
+
+  async function doSignUp(){
+    var hint = $('authHint');
+    var email = $('authEmail').value.trim(), pw = $('authPw').value, pw2 = $('authPw2').value;
+    hint.style.color = 'var(--danger)';
+    if (!email){ hint.textContent='Enter your email address.'; return; }
+    if (!pw){ hint.textContent='Choose a password.'; return; }
+    if (pw.length < 6){ hint.textContent='Password must be at least 6 characters.'; return; }
+    if (pw !== pw2){ hint.textContent="Passwords don't match. Check both fields."; return; }
+    if (!sb){ hint.textContent='Accounts are unavailable right now.'; return; }
+
+    var btn = $('authDoSignUp'); btn.disabled = true; btn.textContent = 'Creating…';
+    try {
+      var out = await sb.auth.signUp({
+        email: email, password: pw,
+        options:{ emailRedirectTo: 'https://pozi.live/confirm.html' }
+      });
+      if (out.error) throw out.error;
+      currentUser = out.data.session ? out.data.user : null;
+      await loadPlan(); paintAccount();
+      setAuthMode('signin');
+      $('authPw').value = ''; $('authPw2').value = '';
+      hint.style.color = 'var(--green)';
+      hint.textContent = out.data.session
+        ? 'Account created and signed in.'
+        : 'Account created. Check your email to confirm, then sign in.';
+      if (pendingPlan){
+        var lbl = pendingPlan === 'pro' ? 'Contractor' : 'DIY';
+        hint.textContent += ' Then open POZi Go to activate ' + lbl + '.';
+        pendingPlan = null;
+      }
+    } catch(e){
+      hint.style.color='var(--danger)'; hint.textContent = e.message || 'Could not create the account.';
+    } finally { btn.disabled = false; btn.textContent = 'Create My Account'; }
+  }
+
+  async function doSignOut(){
+    closeAcctMenu();
+    if (sb) { try { await sb.auth.signOut(); } catch(e){} }
+    currentUser = null; currentPlan = 'free';
+    paintAccount();
+  }
+
+  async function doDelete(){
+    var st = $('delStatus2'), btn = $('delGo');
+    if (!sb || !currentUser){ st.textContent = "You're not signed in."; return; }
+    btn.disabled = true; btn.textContent = 'Deleting…';
+    st.style.color = 'var(--muted)';
+    st.textContent = 'Removing your projects, photos, and account…';
+    try {
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+      if (!token) throw new Error('Your session has expired. Sign in again.');
+
+      var res = await fetch(DELETE_ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + token },
+        body: JSON.stringify({ confirm:'DELETE' })
+      });
+      var data = await res.json().catch(function(){ return {}; });
+      if (!res.ok || data.ok === false) throw new Error(data.error || 'Account deletion failed.');
+
+      try { await sb.auth.signOut(); } catch(e){}
+      currentUser = null; currentPlan = 'free';
+      paintAccount();
+      closeModal('delModal');
+      alert('Your account and all of its data have been permanently deleted.');
+    } catch(e){
+      st.style.color = 'var(--danger)';
+      st.textContent = e.message || 'Account deletion failed. Contact info@pozi.live.';
+    } finally { btn.disabled = false; btn.textContent = 'Yes, Delete Everything'; }
+  }
+
+  // A plan button pressed while signed out stashes the intent, so after the
+  // account is created we can pick the flow back up instead of dropping it.
+  var pendingPlan = null;
+
+  function startSignup(){
+    closeAcctMenu();
+    setAuthMode('signup');
+    openModal('authModal');
+  }
+
+  function tryForeman(){
+    showPage('home');
+    setTimeout(function(){
+      var el = $('foreman');
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      var input = $('chatInput');
+      if (input) input.focus({ preventScroll:true });
+    }, 160);
+  }
+
+  // Billing lives in the app for now, so a plan choice routes through account
+  // creation first and then tells the person exactly where to finish.
+  function choosePlan(plan){
+    pendingPlan = plan;
+    var label = plan === 'pro' ? 'Contractor' : 'DIY';
+    if (!currentUser){
+      startSignup();
+      $('authSub').textContent = 'Create your account first, then activate ' + label + ' in the POZi Go app.';
+      return;
+    }
+    if (currentPlan === plan){
+      openPlanModal();
+      return;
+    }
+    openModal('goModal');
+    var st = $('goStatus');
+    if (st) st.textContent = "You're signed in as " + currentUser.email + ". Open POZi Go and choose " + label + " to activate it.";
+  }
+
+  function syncNavCta(){
+    var btn = $('navCta');
+    if (!btn) return;
+    btn.textContent = currentUser ? 'Get POZi Go' : 'Create Account';
+  }
+
+  async function initAuth(){
+    if (!sb) return;
+    try {
+      var out = await sb.auth.getSession();
+      currentUser = out.data.session ? out.data.session.user : null;
+      await loadPlan(); paintAccount();
+      sb.auth.onAuthStateChange(async function(_e, session){
+        currentUser = session ? session.user : null;
+        await loadPlan(); paintAccount();
+      });
+    } catch(e){}
+  }
 
   /* ── Phone gateway ─────────────────────────────────────────────────────
      Swap APP_STORE_URL for the real App Store listing once POZi Go is live;
@@ -1166,6 +1732,9 @@ body.gated>*:not(.phone-gate){display:none!important}
     var text = (input.value || '').trim();
     if (!text){ setStatus('Type a project or a question first.', 'err'); input.focus(); return; }
 
+    // First message only — re-fires this same send once accepted.
+    if (!requireDisclaimer(askForeman)) return;
+
     busy = true;
     var btn = $('chatSend');
     btn.disabled = true;
@@ -1339,6 +1908,79 @@ body.gated>*:not(.phone-gate){display:none!important}
         st.textContent = APP_STORE_URL;
       }
     });
+
+    // Disclaimer
+    $('discBody').addEventListener('scroll', function(){
+      if (!$('discActions').classList.contains('hidden')) checkDiscScroll();
+    });
+    $('discAccept').addEventListener('click', acceptDisclaimer);
+    $('discDecline').addEventListener('click', declineDisclaimer);
+    $('discClose').addEventListener('click', function(){ closeModal('legalModal'); });
+
+    // Any link to the disclaimer opens the read-only view, not the gate.
+    document.querySelectorAll('[data-modal="legalModal"]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.stopImmediatePropagation();
+        openDisclaimer(hasAcceptedDisclaimer() ? 'read' : 'gate');
+      }, true);
+    });
+
+    // Signup / plan / try-Foreman actions, wherever they appear on the page.
+    document.addEventListener('click', function(e){
+      var t = e.target.closest('[data-signup],[data-plan],[data-try-foreman]');
+      if (!t) return;
+      if (t.hasAttribute('data-signup')) { startSignup(); return; }
+      if (t.hasAttribute('data-try-foreman')) { tryForeman(); return; }
+      if (t.hasAttribute('data-plan')) { choosePlan(t.getAttribute('data-plan')); }
+    });
+
+    $('navCta').addEventListener('click', function(){
+      if (currentUser) openModal('goModal');
+      else startSignup();
+    });
+
+    // Account
+    $('acctToggle').addEventListener('click', function(e){ e.stopPropagation(); toggleAcctMenu(); });
+    $('acctAuth').addEventListener('click', function(){ closeAcctMenu(); setAuthMode('signin'); openModal('authModal'); });
+    $('acctPlan').addEventListener('click', openPlanModal);
+    $('acctSignOut').addEventListener('click', doSignOut);
+    $('acctDelete').addEventListener('click', function(){
+      closeAcctMenu();
+      $('delStep1').classList.remove('hidden');
+      $('delStep2').classList.add('hidden');
+      $('delStatus').textContent = ''; $('delStatus2').textContent = '';
+      openModal('delModal');
+    });
+    document.addEventListener('click', function(e){
+      if (!e.target.closest('.acct-wrap')) closeAcctMenu();
+    });
+
+    $('mAcctAuth').addEventListener('click', function(){ closeMobile(); setAuthMode('signin'); openModal('authModal'); });
+    $('mAcctPlan').addEventListener('click', function(){ closeMobile(); openPlanModal(); });
+
+    $('authSignIn').addEventListener('click', doSignIn);
+    $('authGoSignUp').addEventListener('click', function(){ setAuthMode('signup'); });
+    $('authBackSignIn').addEventListener('click', function(){ setAuthMode('signin'); });
+    $('authDoSignUp').addEventListener('click', doSignUp);
+    $('authPw').addEventListener('input', checkPwMatch);
+    $('authPw2').addEventListener('input', checkPwMatch);
+
+    $('planUpgrade').addEventListener('click', function(){
+      closeModal('planModal');
+      if (!currentUser){ setAuthMode('signup'); openModal('authModal'); }
+      else showPage('pricing');
+    });
+
+    $('delNext').addEventListener('click', function(){
+      $('delStep1').classList.add('hidden'); $('delStep2').classList.remove('hidden');
+    });
+    $('delBack').addEventListener('click', function(){
+      $('delStep2').classList.add('hidden'); $('delStep1').classList.remove('hidden');
+    });
+    $('delGo').addEventListener('click', doDelete);
+
+    syncNavCta();
+    initAuth();
 
     var gateInstall = $('gateInstall');
     if (gateInstall) gateInstall.setAttribute('href', APP_STORE_URL);
