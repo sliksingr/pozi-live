@@ -157,7 +157,8 @@ h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height
 .grad{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .lead{font-size:clamp(15px,1.7vw,18px);color:var(--muted);line-height:1.75;max-width:620px}
 .sub{font-size:14.5px;color:var(--muted);line-height:1.72}
-.center .lead{margin-left:auto;margin-right:auto}
+.center .lead,.center .sub,.center p{margin-left:auto;margin-right:auto;text-align:center}
+.cta .lead,.cta p{margin-left:auto;margin-right:auto;text-align:center}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -297,7 +298,8 @@ h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height
   transition:transform .2s,border-color .2s;
 }
 .tile:hover{transform:translateY(-3px);border-color:rgba(0,255,136,.2)}
-.tile-ico{
+.tile-ico{display:none}
+.tile-ico-unused{
   width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,rgba(0,255,136,.14),rgba(56,189,248,.1));
   border:1px solid rgba(0,255,136,.16);font-size:20px;margin-bottom:14px;
@@ -528,6 +530,83 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 
 @media(max-width:768px){.acct-wrap{display:none}}
 
+/* ═══ PROJECTS + SEARCH ═══ */
+.work-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.empty{
+  border:1px dashed var(--border);border-radius:20px;padding:44px 26px;text-align:center;
+  background:rgba(255,255,255,.02);
+}
+.empty h3{font-size:20px;margin-bottom:10px}
+.empty p{font-size:14px;color:var(--muted);line-height:1.7;max-width:460px;margin:0 auto 20px}
+
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.proj-card{
+  text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;
+  transition:transform .18s,border-color .18s;
+}
+.proj-card:hover{transform:translateY(-2px);border-color:rgba(0,255,136,.26)}
+.proj-name{font-family:var(--fh);font-weight:800;font-size:16px;margin-bottom:7px}
+.proj-meta{font-size:12px;color:var(--muted);line-height:1.5}
+.proj-open{margin-top:14px;font-family:var(--fh);font-size:11.5px;font-weight:800;color:var(--green);letter-spacing:.6px}
+
+.detail-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:18px;align-items:start}
+.detail-col{display:grid;gap:16px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:22px}
+.panel-h{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;
+  font-family:var(--fh);font-weight:800;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--green);
+}
+.panel-body{font-size:13.5px;line-height:1.68;color:var(--muted)}
+.panel-scroll{max-height:400px;overflow-y:auto;padding-right:4px}
+.note-block{padding:16px 0;border-bottom:1px solid var(--border)}
+.note-block:last-child{border-bottom:none}
+.note-block .nh{
+  font-family:var(--fh);font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  color:var(--green);margin:13px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(0,255,136,.16);
+}
+.note-block .nh:first-child{margin-top:0}
+.note-block ul{margin:0 0 4px;padding-left:16px;list-style:none}
+.note-block li{position:relative;margin-bottom:4px}
+.note-block li:before{content:"";position:absolute;left:-11px;top:8px;width:4px;height:4px;border-radius:50%;background:var(--green);opacity:.6}
+.note-block .nq{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.item-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;margin:0 6px 6px 0;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.18);
+  font-size:12px;font-weight:600;color:#dbffe c;color:#d9ffe9;
+}
+.search-row{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:10px}
+.search-field{
+  width:100%;min-height:54px;background:rgba(255,255,255,.045);border:1px solid var(--border);
+  border-radius:15px;padding:15px 17px;color:var(--text);font-size:15px;outline:none;transition:border-color .18s;
+}
+.search-field:focus{border-color:rgba(0,255,136,.32)}
+.search-field::placeholder{color:#7f829e}
+.search-btn{
+  min-height:54px;padding:0 26px;border-radius:15px;background:linear-gradient(135deg,var(--green),var(--blue));
+  color:#04120b;font-family:var(--fh);font-weight:800;font-size:14px;white-space:nowrap;
+}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:13px;margin-top:18px}
+.res-card{
+  display:block;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  padding:16px;transition:transform .18s,border-color .18s;
+}
+.res-card:hover{transform:translateY(-2px);border-color:rgba(0,255,136,.28)}
+.res-top{
+  display:flex;justify-content:space-between;gap:10px;font-family:var(--fh);font-size:9.5px;font-weight:800;
+  letter-spacing:1.1px;text-transform:uppercase;color:var(--green);margin-bottom:9px;
+}
+.res-top em{color:#8b8ea8;font-style:normal;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-card strong{display:block;font-size:14px;line-height:1.35;color:#fff;margin-bottom:7px}
+.res-card p{font-size:11.5px;color:var(--muted);line-height:1.55}
+.res-price{font-family:var(--fh);font-weight:800;color:var(--green);font-size:14px;margin-top:9px}
+.res-note{grid-column:1/-1;padding:26px;border-radius:16px;border:1px dashed var(--border);text-align:center;color:var(--muted);font-size:13.5px;line-height:1.7}
+
+@media(max-width:900px){
+  .detail-grid{grid-template-columns:1fr}
+  .search-row{grid-template-columns:1fr}
+  .search-btn{width:100%}
+}
+
 /* ═══ PHONE GATEWAY ═══
    Phones get the app, not the site. Detection is user-agent only and never
    width — an iPad in split view can be under 700px wide and must still get the
@@ -579,9 +658,10 @@ body.gated>*:not(.phone-gate){display:none!important}
 
   <div class="nav-links">
     <button class="nl active" data-page="home">Home</button>
+    <button class="nl" data-page="projects">Projects</button>
+    <button class="nl" data-page="search">Search</button>
     <button class="nl" data-page="how">How It Works</button>
     <button class="nl" data-page="pricing">Pricing</button>
-    <button class="nl" data-modal="contactModal">Contact</button>
   </div>
 
   <div style="display:flex;align-items:center;gap:10px">
@@ -610,6 +690,8 @@ body.gated>*:not(.phone-gate){display:none!important}
 
 <div class="mobile-menu" id="mobileMenu">
   <button class="m-nl" data-page="home">Home</button>
+  <button class="m-nl" data-page="projects">Projects</button>
+  <button class="m-nl" data-page="search">Search</button>
   <button class="m-nl" data-page="how">How It Works</button>
   <button class="m-nl" data-page="pricing">Pricing</button>
   <button class="m-nl" data-modal="contactModal">Contact</button>
@@ -690,12 +772,6 @@ body.gated>*:not(.phone-gate){display:none!important}
       </div>
       <div id="chatStatus" class="chat-status"></div>
 
-      <div class="presets">
-        <button class="preset" data-preset="I want to build a 12x20 cedar deck with stairs off a door that sits 4 feet above grade.">Deck &amp; stairs</button>
-        <button class="preset" data-preset="I'm redesigning a living room. Help me plan the layout, lighting, and what to buy.">Room redesign</button>
-        <button class="preset" data-preset="I need to replace a failed irrigation valve and want it serviceable next time.">Irrigation repair</button>
-        <button class="preset" data-preset="I need to build a 60 foot cedar fence with a gate. What materials do I need?">Fence &amp; gate</button>
-      </div>
 
       <div class="disclaimer-note">
         Foreman can make mistakes. Always verify measurements, code, permits, and safety requirements.
@@ -715,32 +791,26 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     <div class="stack-3">
       <div class="tile">
-        <div class="tile-ico">🗂</div>
         <h3>Projects</h3>
         <p>Every job gets its own project. Conversations, notes, lists, and photos stay together instead of scattered across texts and napkins.</p>
       </div>
       <div class="tile">
-        <div class="tile-ico">📐</div>
         <h3>Build Notes</h3>
         <p>Dimensions, cut list, and how every quantity was figured — with the arithmetic written out so you can check it.</p>
       </div>
       <div class="tile">
-        <div class="tile-ico">🧾</div>
         <h3>POZi List</h3>
         <p>The material list becomes a live product search. Real items from approved retailers, priced and linked.</p>
       </div>
       <div class="tile">
-        <div class="tile-ico">📸</div>
         <h3>Project Photos</h3>
         <p>Before, during, and after shots organized by project. Snap a photo of a part or a problem and Foreman can read it.</p>
       </div>
       <div class="tile">
-        <div class="tile-ico">📍</div>
         <h3>Local Sourcing</h3>
         <p>Set your ZIP once. Searches target stores near you instead of returning whatever ships from three states away.</p>
       </div>
       <div class="tile">
-        <div class="tile-ico">🔗</div>
         <h3>Client Sharing</h3>
         <p>Contractors can send a client a link to the project photos and notes. No app, no account, and you can switch it off anytime.</p>
       </div>
@@ -767,6 +837,104 @@ body.gated>*:not(.phone-gate){display:none!important}
 </section>
 
 </div><!-- /home -->
+
+<!-- ═══════════════ PROJECTS ═══════════════ -->
+<div id="page-projects" class="page">
+<div class="page-top"></div>
+
+<section class="section" style="padding-top:44px">
+  <div class="wrap">
+    <div class="work-head">
+      <div>
+        <div class="eyebrow">Projects</div>
+        <h1 class="h-lg" id="projHeading">Your jobs</h1>
+      </div>
+      <button class="btn btn-s" id="projBack" style="display:none">← All projects</button>
+    </div>
+
+    <!-- signed out -->
+    <div class="empty" id="projSignedOut">
+      <h3>Sign in to see your projects</h3>
+      <p>Projects sync between the website and the POZi Go app. Sign in and everything you've planned is right here.</p>
+      <button class="btn btn-p" data-signup>Create Free Account</button>
+    </div>
+
+    <!-- list -->
+    <div id="projList" class="hidden">
+      <div class="proj-grid" id="projGrid"></div>
+      <div class="empty hidden" id="projEmpty">
+        <h3>No projects yet</h3>
+        <p>Start a conversation with Foreman and your first project will appear here — with its Build Notes, item list, and photos.</p>
+        <button class="btn btn-p" data-try-foreman>Start with Foreman</button>
+      </div>
+    </div>
+
+    <!-- detail -->
+    <div id="projDetail" class="hidden">
+      <div class="detail-grid">
+        <div class="detail-col">
+          <div class="panel">
+            <div class="panel-h"><span>Foreman</span><span id="projMsgCount"></span></div>
+            <div class="chat-stream" id="projChat" style="min-height:240px;max-height:440px"></div>
+            <div class="chat-input-row">
+              <textarea id="projInput" class="chat-input" rows="1" placeholder="Add to this project..."></textarea>
+              <button id="projSend" class="chat-send" type="button">Send</button>
+            </div>
+            <div id="projStatus" class="chat-status"></div>
+          </div>
+        </div>
+
+        <div class="detail-col">
+          <div class="panel">
+            <div class="panel-h"><span>Build Notes</span><span id="projNoteCount"></span></div>
+            <div class="panel-body panel-scroll" id="projNotes"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span>Item List</span></div>
+            <div class="panel-body" id="projItems"></div>
+            <button class="btn btn-s" id="projSource" style="width:100%;margin-top:14px">Source These Materials</button>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span>Photos</span></div>
+            <div class="panel-body" id="projPhotos">Photos are added from the POZi Go app on your phone.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /projects -->
+
+<!-- ═══════════════ SEARCH ═══════════════ -->
+<div id="page-search" class="page">
+<div class="page-top"></div>
+
+<section class="section" style="padding-top:44px">
+  <div class="wrap">
+    <div style="margin-bottom:22px">
+      <div class="eyebrow">POZi Search</div>
+      <h1 class="h-lg">Find the materials.</h1>
+      <p class="lead" style="margin-top:14px">
+        Search any product, material, or tool. POZi checks approved retailers and targets
+        results to your area — quick links first, then product cards with prices.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="search-row">
+        <input id="sQuery" class="search-field" type="search" placeholder="pressure treated 2x12, deck screws, irrigation valve..." autocomplete="off">
+        <input id="sZip" class="search-field" type="text" inputmode="numeric" maxlength="10" placeholder="ZIP code" autocomplete="postal-code">
+        <button id="sGo" class="search-btn" type="button">Search</button>
+      </div>
+      <div id="sStatus" class="chat-status" style="margin-top:12px">Set a ZIP to get results from stores near you.</div>
+    </div>
+
+    <div class="res-grid" id="sResults">
+      <div class="res-note">Search a product to see retailers and prices near you.</div>
+    </div>
+  </div>
+</section>
+</div><!-- /search -->
 
 <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
 <div id="page-how" class="page">
@@ -1554,8 +1722,314 @@ body.gated>*:not(.phone-gate){display:none!important}
       sb.auth.onAuthStateChange(async function(_e, session){
         currentUser = session ? session.user : null;
         await loadPlan(); paintAccount();
+        if (document.getElementById('page-projects').classList.contains('active')) loadProjects();
       });
     } catch(e){}
+  }
+
+  /* ── Projects ──────────────────────────────────────────────────────────
+     Reads and writes the same Supabase tables as the app, so a project
+     started on a phone can be continued at a desk. Every query is scoped to
+     the signed-in user; a client-supplied id is never trusted.              */
+  var activeProject = null;
+
+  function planLimitProjects(){
+    return currentPlan === 'pro' ? Infinity : (currentPlan === 'consumer' ? 15 : 3);
+  }
+
+  async function loadProjects(){
+    $('projSignedOut').classList.toggle('hidden', !!currentUser);
+    $('projList').classList.toggle('hidden', !currentUser);
+    $('projDetail').classList.add('hidden');
+    $('projBack').style.display = 'none';
+    $('projHeading').textContent = 'Your jobs';
+    activeProject = null;
+    if (!currentUser || !sb) return;
+
+    try {
+      var r = await sb.from('buildr_projects')
+        .select('id,name,title,created_at,updated_at')
+        .order('updated_at', { ascending:false })
+        .limit(60);
+      var rows = (r && r.data) || [];
+      var grid = $('projGrid');
+      $('projEmpty').classList.toggle('hidden', rows.length > 0);
+
+      grid.innerHTML = rows.map(function(p){
+        var when = p.updated_at || p.created_at;
+        var ago = when ? new Date(when).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
+        return '<button class="proj-card" data-proj="' + escapeHtml(p.id) + '">' +
+          '<div class="proj-name">' + escapeHtml(p.name || p.title || 'Untitled project') + '</div>' +
+          '<div class="proj-meta">Last worked on ' + escapeHtml(ago) + '</div>' +
+          '<div class="proj-open">Open →</div></button>';
+      }).join('');
+    } catch(e){
+      $('projGrid').innerHTML = '<div class="empty"><p>Could not load your projects. Try again in a moment.</p></div>';
+    }
+  }
+
+  async function openProject(id){
+    if (!sb || !currentUser) return;
+    activeProject = id;
+    $('projList').classList.add('hidden');
+    $('projDetail').classList.remove('hidden');
+    $('projBack').style.display = '';
+    $('projChat').innerHTML = '<div class="msg bot thinking">Loading…</div>';
+    $('projNotes').textContent = '';
+    $('projItems').textContent = '';
+
+    try {
+      var meta = await sb.from('buildr_projects').select('name,title').eq('id', id).maybeSingle();
+      $('projHeading').textContent = (meta.data && (meta.data.name || meta.data.title)) || 'Project';
+
+      var msgs = await sb.from('buildr_project_messages')
+        .select('role,content,body,created_at').eq('project_id', id)
+        .order('created_at', { ascending:true }).limit(80);
+      var mrows = (msgs && msgs.data) || [];
+      $('projMsgCount').textContent = mrows.length ? mrows.length + ' messages' : '';
+      $('projChat').innerHTML = mrows.length
+        ? mrows.map(function(m){
+            var txt = m.content || m.body || '';
+            var role = String(m.role || '').toLowerCase() === 'user' ? 'user' : 'bot';
+            return '<div class="msg ' + role + '">' +
+              (role === 'user' ? escapeHtml(txt) : renderForemanHtml(txt)) + '</div>';
+          }).join('')
+        : '<div class="msg bot">No conversation saved for this project yet. Add to it below.</div>';
+      $('projChat').scrollTop = $('projChat').scrollHeight;
+
+      var notes = await sb.from('buildr_project_notes')
+        .select('title,body,content,created_at').eq('project_id', id)
+        .order('created_at', { ascending:false }).limit(20);
+      var nrows = (notes && notes.data) || [];
+      $('projNoteCount').textContent = nrows.length ? nrows.length + ' notes' : '';
+      $('projNotes').innerHTML = nrows.length
+        ? nrows.map(function(n){
+            var head = n.title ? '<div class="nh">' + escapeHtml(n.title) + '</div>' : '';
+            return '<div class="note-block">' + head + renderForemanHtml(n.body || n.content || '') + '</div>';
+          }).join('')
+        : 'No Build Notes yet. Ask Foreman to build the plan and they will appear here.';
+
+      var lists = await sb.from('buildr_project_item_lists').select('id').eq('project_id', id).limit(5);
+      var listIds = ((lists && lists.data) || []).map(function(x){ return x.id; });
+      if (listIds.length){
+        var items = await sb.from('buildr_project_item_list_items')
+          .select('name,title,query').in('item_list_id', listIds).limit(60);
+        var irows = (items && items.data) || [];
+        $('projItems').innerHTML = irows.length
+          ? irows.map(function(it){
+              var label = it.name || it.title || it.query || '';
+              return '<span class="item-chip" data-search="' + escapeHtml(label) + '">' + escapeHtml(label) + '</span>';
+            }).join('')
+          : 'No item list yet.';
+      } else {
+        $('projItems').textContent = 'No item list yet.';
+      }
+    } catch(e){
+      $('projChat').innerHTML = '<div class="msg bot">Could not load this project.</div>';
+    }
+  }
+
+  // Continuing a project posts through the same streaming endpoint, then saves
+  // both sides so the app sees the same conversation.
+  var projBusy = false;
+  async function sendToProject(){
+    if (projBusy || !activeProject || !currentUser) return;
+    var input = $('projInput');
+    var text = (input.value || '').trim();
+    if (!text) return;
+    if (!requireDisclaimer(sendToProject)) return;
+
+    projBusy = true;
+    var btn = $('projSend');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    var chat = $('projChat');
+    var u = document.createElement('div');
+    u.className = 'msg user'; u.textContent = text;
+    chat.appendChild(u);
+    input.value = ''; input.style.height = '';
+
+    var pending = document.createElement('div');
+    pending.className = 'msg bot thinking';
+    pending.textContent = 'Working it out…';
+    chat.appendChild(pending);
+    chat.scrollTop = chat.scrollHeight;
+
+    var full = '';
+    try {
+      var prior = Array.prototype.slice.call(chat.querySelectorAll('.msg')).slice(-9, -2)
+        .map(function(el){ return (el.classList.contains('user') ? 'User: ' : 'Foreman: ') + el.textContent; })
+        .join('\n\n');
+
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+
+      var res = await fetch(FOREMAN_ENDPOINT, {
+        method:'POST',
+        headers: token
+          ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
+          : { 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          prompt: prior ? (prior + '\n\nUser: ' + text) : text,
+          session_id: 'proj_' + activeProject
+        })
+      });
+      if (!res.ok || !res.body){
+        var ed = await res.json().catch(function(){ return {}; });
+        throw new Error(ed.error || 'Foreman is unavailable right now.');
+      }
+
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
+      pending.classList.remove('thinking'); pending.textContent = '';
+      while (true){
+        var c = await reader.read();
+        if (c.done) break;
+        buf += dec.decode(c.value, { stream:true });
+        var parts = buf.split('\n\n'); buf = parts.pop() || '';
+        for (var p = 0; p < parts.length; p++){
+          var ls = parts[p].split('\n');
+          for (var l = 0; l < ls.length; l++){
+            if (ls[l].indexOf('data:') !== 0) continue;
+            var raw = ls[l].slice(5).trim();
+            if (!raw || raw === '[DONE]') continue;
+            var evt; try { evt = JSON.parse(raw); } catch(e){ continue; }
+            if (evt.type === 'text' && evt.v){
+              full += evt.v;
+              pending.innerHTML = renderForemanHtml(full);
+              chat.scrollTop = chat.scrollHeight;
+            } else if (evt.type === 'error'){
+              throw new Error(evt.error || 'Foreman hit an error.');
+            }
+          }
+        }
+      }
+
+      // Persist both turns so the app shows the same history.
+      try {
+        await sb.from('buildr_project_messages').insert([
+          { project_id: activeProject, user_id: currentUser.id, role:'user', content: text },
+          { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
+        ]);
+        await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
+      } catch(e){ /* the reply is already on screen; a save failure must not lose it */ }
+
+      $('projStatus').textContent = 'Saved to this project.';
+      $('projStatus').className = 'chat-status ok';
+    } catch(err){
+      pending.classList.remove('thinking');
+      pending.innerHTML = renderForemanHtml('I could not respond just then. Try again in a moment.');
+      $('projStatus').textContent = err.message || 'Something went wrong.';
+      $('projStatus').className = 'chat-status err';
+    } finally {
+      projBusy = false;
+      btn.disabled = false; btn.textContent = 'Send';
+    }
+  }
+
+  /* ── Search ────────────────────────────────────────────────────────────
+     Same two functions the app uses: pozi-search returns quick links fast,
+     pozi-product-search runs a start/poll task that trails behind with real
+     product cards and prices.                                              */
+  var ORGANIC_ENDPOINT = '/.netlify/functions/pozi-search';
+  var PRODUCT_ENDPOINT = '/.netlify/functions/pozi-product-search';
+  var searchRun = 0;
+
+  function resultCard(r){
+    var url = r.url || '#';
+    return '<a class="res-card" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
+      '<div class="res-top"><span>' + escapeHtml(r.source === 'product' ? 'Product' : 'Result') + '</span>' +
+      '<em>' + escapeHtml(r.store || r.domain || '') + '</em></div>' +
+      '<strong>' + escapeHtml(r.title || r.name || '') + '</strong>' +
+      (r.description ? '<p>' + escapeHtml(String(r.description).slice(0,150)) + '</p>' : '') +
+      (r.price ? '<div class="res-price">' + escapeHtml(r.price) + '</div>' : '') +
+      '</a>';
+  }
+
+  function normalizeRows(data, kind){
+    var arr = data.results || data.items || data.products || data.organic ||
+      (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0] && data.tasks[0].result[0].items) || [];
+    if (!Array.isArray(arr)) arr = [];
+    return arr.map(function(r){
+      return {
+        title: r.title || r.name || r.product_name || 'POZi result',
+        url: r.url || r.link || r.product_url || r.merchant_url || '',
+        store: r.store || r.store_name || r.seller || r.merchant || r.domain || r.source || '',
+        domain: r.domain || '',
+        description: r.description || r.snippet || r.breadcrumb || '',
+        price: typeof r.price === 'string' ? r.price : (r.price && r.price.displayed) || '',
+        source: kind
+      };
+    }).filter(function(r){ return r.title && r.url; }).slice(0, 16);
+  }
+
+  async function poziFetch(endpoint, payload){
+    var res = await fetch(endpoint, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    var data = await res.json().catch(function(){ return {}; });
+    if (!res.ok || data.ok === false) throw new Error(data.error || 'Search failed.');
+    return data;
+  }
+
+  async function runSearch(prefill){
+    var q = prefill || ($('sQuery').value || '').trim();
+    if (prefill) $('sQuery').value = prefill;
+    var zip = ($('sZip').value || '').trim();
+    if (!q){ $('sStatus').textContent = 'Type a product or material first.'; return; }
+
+    var run = ++searchRun;
+    var grid = $('sResults');
+    $('sStatus').textContent = 'Searching…';
+    $('sStatus').className = 'chat-status';
+    grid.innerHTML = '<div class="res-note">Searching for “' + escapeHtml(q) + '”…</div>';
+
+    var payload = {
+      query: zip ? (q + ' near ' + zip) : (q + ' buy materials stores prices'),
+      location: 'United States', language: 'English', depth: 10
+    };
+
+    // Product cards trail the quick links, exactly as in the app.
+    var productPromise = (async function(){
+      try {
+        var startData = await poziFetch(PRODUCT_ENDPOINT, Object.assign({}, payload, { mode:'start' }));
+        if (!startData.task_id) return [];
+        var deadline = Date.now() + 60000;
+        while (Date.now() < deadline){
+          if (run !== searchRun) return [];
+          await new Promise(function(r){ setTimeout(r, 2500); });
+          if (run !== searchRun) return [];
+          var poll = await poziFetch(PRODUCT_ENDPOINT, { mode:'poll', task_id: startData.task_id });
+          if (poll && poll.pending) continue;
+          return normalizeRows(poll, 'product');
+        }
+        return [];
+      } catch(e){ return []; }
+    })();
+
+    try {
+      var organic = await poziFetch(ORGANIC_ENDPOINT, payload);
+      if (run !== searchRun) return;
+      var rows = normalizeRows(organic, 'organic');
+      grid.innerHTML = rows.length
+        ? rows.map(resultCard).join('') + '<div class="res-note">Quick links are ready — product cards with prices loading…</div>'
+        : '<div class="res-note">No matches for “' + escapeHtml(q) + '”. Try a broader term.</div>';
+      $('sStatus').textContent = rows.length ? 'Found ' + rows.length + ' places to check.' : '';
+
+      var products = await productPromise;
+      if (run !== searchRun) return;
+      if (products.length){
+        grid.innerHTML = products.map(resultCard).join('');
+        $('sStatus').textContent = 'Product results with prices.';
+        $('sStatus').className = 'chat-status ok';
+      } else {
+        grid.innerHTML = rows.map(resultCard).join('');
+      }
+    } catch(err){
+      if (run !== searchRun) return;
+      grid.innerHTML = '<div class="res-note">Search could not finish. Try again in a moment.</div>';
+      $('sStatus').textContent = err.message || 'Search failed.';
+      $('sStatus').className = 'chat-status err';
+    }
   }
 
   /* ── Phone gateway ─────────────────────────────────────────────────────
@@ -1598,6 +2072,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
     var pg = $('page-' + name);
     if (pg) pg.classList.add('active');
+    if (name === 'projects') loadProjects();
     document.querySelectorAll('.nl,.m-nl').forEach(function(n){
       n.classList.toggle('active', n.dataset.page === name);
     });
@@ -1908,6 +2383,38 @@ body.gated>*:not(.phone-gate){display:none!important}
         st.textContent = APP_STORE_URL;
       }
     });
+
+    // Projects
+    $('projBack').addEventListener('click', loadProjects);
+    $('projGrid').addEventListener('click', function(e){
+      var card = e.target.closest('[data-proj]');
+      if (card) openProject(card.getAttribute('data-proj'));
+    });
+    $('projSend').addEventListener('click', sendToProject);
+    $('projInput').addEventListener('keydown', function(e){
+      if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendToProject(); }
+    });
+    $('projInput').addEventListener('input', function(){
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+    });
+    // An item chip jumps straight into Search with that term.
+    $('projItems').addEventListener('click', function(e){
+      var chip = e.target.closest('[data-search]');
+      if (!chip) return;
+      showPage('search');
+      setTimeout(function(){ runSearch(chip.getAttribute('data-search')); }, 120);
+    });
+    $('projSource').addEventListener('click', function(){
+      var first = $('projItems').querySelector('[data-search]');
+      showPage('search');
+      if (first) setTimeout(function(){ runSearch(first.getAttribute('data-search')); }, 120);
+    });
+
+    // Search
+    $('sGo').addEventListener('click', function(){ runSearch(); });
+    $('sQuery').addEventListener('keydown', function(e){ if (e.key === 'Enter') runSearch(); });
+    $('sZip').addEventListener('keydown', function(e){ if (e.key === 'Enter') runSearch(); });
 
     // Disclaimer
     $('discBody').addEventListener('scroll', function(){
