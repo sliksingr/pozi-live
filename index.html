@@ -157,8 +157,13 @@ h1,h2,h3{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height
 .grad{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .lead{font-size:clamp(15px,1.7vw,18px);color:var(--muted);line-height:1.75;max-width:620px}
 .sub{font-size:14.5px;color:var(--muted);line-height:1.72}
+/* .lead is width-capped, so centering the TEXT is not enough — the block needs
+   auto margins too. These selectors cover both cases: .center on the element
+   itself (.lead.center) and .center on an ancestor. */
+.lead.center,.sub.center{margin-left:auto;margin-right:auto;text-align:center}
 .center .lead,.center .sub,.center p{margin-left:auto;margin-right:auto;text-align:center}
-.cta .lead,.cta p{margin-left:auto;margin-right:auto;text-align:center}
+.cta .lead,.cta p,.cta .sub{margin-left:auto;margin-right:auto;text-align:center}
+.hero .lead,.hero p{margin-left:auto;margin-right:auto;text-align:center}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -717,7 +722,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap">
     <div class="hero-badge"><i></i> POZi Foreman</div>
     <h1 class="h-xl">Plan first.<br><span class="grad">Source after.</span></h1>
-    <p class="lead center" style="margin-top:20px">
+    <p class="lead center" style="max-width:660px;margin-left:auto;margin-right:auto;text-align:center;margin-top:20px">
       Tell POZi Foreman what you want to build, fix, or design. It works out the real
       quantities and cut lists. POZi keeps the whole job organized as a project — conversation,
       notes, item list, and photos in one place — then finds the materials at stores near you.
@@ -753,7 +758,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="center" style="margin-bottom:34px">
       <div class="eyebrow">Try it here</div>
       <h2 class="h-lg">Describe the project.<br><span class="grad">Foreman organizes it.</span></h2>
-      <p class="lead center" style="margin-top:16px">
+      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:16px">
         Homeowner planning a room, or a contractor pricing a job — explain it in plain language.
         Foreman turns the conversation into a practical plan.
       </p>
@@ -830,7 +835,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="cta">
       <div class="eyebrow">Built by someone who does the work</div>
       <h2 class="h-md" style="margin-bottom:14px">POZi comes from job sites,<br>not a whiteboard.</h2>
-      <p class="lead center" style="font-size:15px">
+      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;font-size:15px">
         Every rule inside Foreman — equal stair risers, 2×12 stringers, unions either side of a valve —
         came from a real job where getting it wrong cost time. That's the difference between a plan
         that technically works and one a contractor would respect.
@@ -952,7 +957,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap center">
     <div class="hero-badge"><i></i> How it works</div>
     <h1 class="h-lg">From an idea<br><span class="grad">to a loaded truck.</span></h1>
-    <p class="lead center" style="margin-top:18px">
+    <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:18px">
       POZi turns a project you're describing out loud into an organized plan,
       a checked material list, and a path to buy it nearby.
     </p>
@@ -1044,7 +1049,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap">
     <div class="cta">
       <h2 class="h-md" style="margin-bottom:14px">Plan the job.<br><span class="grad">Then go get it.</span></h2>
-      <p class="lead center" style="font-size:15px">Foreman plans the job and works out the real numbers. POZi keeps it organized as a project — notes, lists, and photos in one place — and sources the materials near you.</p>
+      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;font-size:15px">Foreman plans the job and works out the real numbers. POZi keeps it organized as a project — notes, lists, and photos in one place — and sources the materials near you.</p>
       <div class="hero-actions">
         <button class="btn btn-p" data-signup>Create Free Account</button>
         <button class="btn btn-s" data-page="pricing">See Pricing →</button>
@@ -1063,7 +1068,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap center">
     <div class="hero-badge"><i></i> Pricing</div>
     <h1 class="h-lg">Start free.<br><span class="grad">Upgrade when it pays for itself.</span></h1>
-    <p class="lead center" style="margin-top:18px">
+    <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:18px">
       A session is one project conversation. Every plan includes the full Build Notes
       and item list — the tiers differ in how much you can run in a day.
     </p>
@@ -1149,7 +1154,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   <div class="wrap">
     <div class="cta">
       <h2 class="h-md" style="margin-bottom:14px">Try it on your next job.</h2>
-      <p class="lead center" style="font-size:15px">Guest access needs no account. See whether the numbers hold up before you pay anything.</p>
+      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;font-size:15px">Guest access needs no account. See whether the numbers hold up before you pay anything.</p>
       <div class="hero-actions">
         <button class="btn btn-p" data-try-foreman>Try POZi Foreman</button>
         <button class="btn btn-s" data-modal="goModal">Get the App</button>
