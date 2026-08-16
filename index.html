@@ -727,7 +727,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       notes, item list, and photos in one place — then finds the materials at stores near you.
     </p>
     <div class="hero-actions">
-      <a class="btn btn-p" href="#foreman">Try POZi Foreman</a>
+      <a class="btn btn-p" href="#foreman">Try Without an Account</a>
       <button class="btn btn-s" data-signup>Create Free Account</button>
     </div>
 
@@ -740,9 +740,9 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="center" style="margin-bottom:34px">
       <div class="eyebrow">Try it here</div>
       <h2 class="h-lg">Describe the project.<br><span class="grad">Foreman organizes it.</span></h2>
-      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:16px">
-        Homeowner planning a room, or a contractor pricing a job — explain it in plain language.
-        Foreman turns the conversation into a practical plan.
+      <p class="lead center" style="max-width:640px;margin-left:auto;margin-right:auto;text-align:center;margin-top:16px">
+        No account needed to start — you get one session with five messages as a guest.
+        A free account raises that and saves your projects.
       </p>
     </div>
 
@@ -1860,9 +1860,13 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     var full = '';
     try {
-      var prior = Array.prototype.slice.call(chat.querySelectorAll('.msg')).slice(-9, -2)
-        .map(function(el){ return (el.classList.contains('user') ? 'User: ' : 'Foreman: ') + el.textContent; })
-        .join('\n\n');
+      var prior = Array.prototype.slice.call(chat.querySelectorAll('.msg')).slice(-13, -2)
+        .map(function(el){
+          return { role: el.classList.contains('user') ? 'user' : 'assistant', content: el.textContent };
+        })
+        .filter(function(m){ return m.content; });
+      prior.push({ role:'user', content: text });
+      while (prior.length && prior[0].role !== 'user') prior.shift();
 
       var sess = await sb.auth.getSession();
       var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
@@ -1872,10 +1876,7 @@ body.gated>*:not(.phone-gate){display:none!important}
         headers: token
           ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
           : { 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          prompt: prior ? (prior + '\n\nUser: ' + text) : text,
-          session_id: 'proj_' + activeProject
-        })
+        body: JSON.stringify({ messages: prior, session_id: 'proj_' + activeProject })
       });
       if (!res.ok || !res.body){
         var ed = await res.json().catch(function(){ return {}; });
@@ -2312,12 +2313,15 @@ body.gated>*:not(.phone-gate){display:none!important}
     el.className = 'chat-status' + (kind ? ' ' + kind : '');
   }
 
-  // The conversation is replayed each turn because the endpoint is stateless.
-  function buildPrompt(next){
-    var prior = history.slice(-8).map(function(m){
-      return (m.role === 'user' ? 'User: ' : 'Foreman: ') + m.text;
-    }).join('\n\n');
-    return prior ? (prior + '\n\nUser: ' + next) : next;
+  // Real message turns, never a flattened transcript. A transcript reads to the
+  // model as a script to continue, so it writes the user's next line too.
+  function buildTurns(next){
+    var turns = history.slice(-16).map(function(m){
+      return { role: m.role === 'user' ? 'user' : 'assistant', content: m.text };
+    });
+    turns.push({ role:'user', content: next });
+    while (turns.length && turns[0].role !== 'user') turns.shift();
+    return turns;
   }
 
   async function askForeman(){
@@ -2340,7 +2344,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     input.value = '';
     input.style.height = '';
 
-    var promptForServer = buildPrompt(text);
+    var turnsForServer = buildTurns(text);
     var pending = addMsg('Working it out…', 'bot thinking');
     var full = '';
 
@@ -2348,7 +2352,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       var res = await fetch(FOREMAN_ENDPOINT, {
         method:'POST',
         headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({ prompt: promptForServer, session_id: sessionId })
+        body: JSON.stringify({ messages: turnsForServer, session_id: sessionId })
       });
 
       if (!res.ok || !res.body){
