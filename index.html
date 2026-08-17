@@ -1130,7 +1130,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     </div>
 
     <div class="plan-note">
-      Plans are managed in the POZi Go app. Cancel anytime — you keep access through the end of the billing period.
+      Subscribe here on the web — your plan works in the POZi Go app too. Cancel anytime; cancelling ends the subscription immediately.
       <br>Running a store or supplier and want to appear in POZi searches?
       <button class="footer-link" data-modal="contactModal" style="color:var(--green);font-weight:700">Get in touch.</button>
     </div>
@@ -1236,7 +1236,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div><span class="plan-pill" id="planPill">Free</span></div>
       <div class="plan-lines" id="planLines"></div>
       <button class="btn btn-p" id="planUpgrade" style="width:100%;margin-top:6px">See Plans</button>
-      <p style="text-align:center;font-size:12px;color:#6a6d85">Billing is managed in the POZi Go app.</p>
+      <p style="text-align:center;font-size:12px;color:#6a6d85">Billing is handled securely by Stripe. One plan covers the website and the app.</p>
     </div>
   </div>
 </div>
@@ -1703,7 +1703,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     var label = plan === 'pro' ? 'Contractor' : 'DIY';
     if (!currentUser){
       startSignup();
-      $('authSub').textContent = 'Create your account first, then activate ' + label + ' in the POZi Go app.';
+      $('authSub').textContent = 'Create your account first, then continue to checkout for ' + label + '.';
       return;
     }
     if (currentPlan === plan){
@@ -2051,16 +2051,90 @@ body.gated>*:not(.phone-gate){display:none!important}
   var PLAN_PRICE = { consumer:'$9.99', pro:'$19.99' };
   var pendingCheckout = null;
 
-  // Stub until Stripe exists. Everything upstream of this is already correct,
-  // so switching it on is a matter of filling in this one function.
+  // Sends the person to Stripe's hosted checkout. The plan is never granted
+  // here — Stripe's webhook writes it server-side after payment clears, because
+  // a browser returning to a success URL proves nothing.
+  var checkoutBusy = false;
+
   async function startCheckout(plan){
+    if (checkoutBusy) return;
     var label = plan === 'pro' ? 'Contractor' : 'DIY';
+
+    if (!currentUser){ planPaidAction(plan); return; }
+
+    checkoutBusy = true;
+    var btn = $(plan === 'pro' ? 'btnPro' : 'btnDiy');
+    var btnText = btn ? btn.textContent : '';
+    if (btn){ btn.textContent = 'Starting checkout…'; btn.disabled = true; }
+
+    try {
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+      if (!token) throw new Error('Your session has expired. Sign in again.');
+
+      var res = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + token },
+        body: JSON.stringify({ plan: plan })
+      });
+      var out = await res.json();
+      if (!res.ok || !out.url) throw new Error(out.error || 'Checkout could not start.');
+
+      // Same tab, not a popup — iOS blocks popups opened after an await.
+      window.location.assign(out.url);
+    } catch (err){
+      if (btn){ btn.textContent = btnText; btn.disabled = false; }
+      openModal('goModal');
+      var st = $('goStatus');
+      if (st){
+        st.textContent = (err && err.message ? err.message : 'Checkout could not start.') +
+          ' Nothing was charged. Try again, or email info@pozi.live.';
+      }
+    } finally {
+      checkoutBusy = false;
+    }
+  }
+
+  // Coming back from Stripe. The webhook may land a moment after the redirect,
+  // so the plan is re-read rather than assumed, and the URL is cleaned up so a
+  // refresh doesn't replay the message.
+  async function handleCheckoutReturn(){
+    var params = new URLSearchParams(window.location.search);
+    var state = params.get('checkout');
+    if (!state) return;
+
+    history.replaceState({}, '', window.location.pathname);
+
+    if (state === 'cancelled'){
+      openModal('goModal');
+      var sc = $('goStatus');
+      if (sc) sc.textContent = 'Checkout cancelled — nothing was charged. Your plan is unchanged.';
+      return;
+    }
+    if (state !== 'success') return;
+
     openModal('goModal');
     var st = $('goStatus');
+    if (st) st.textContent = 'Payment received. Activating your plan…';
+
+    // Poll briefly: the webhook usually beats the redirect, but not always.
+    for (var i = 0; i < 5; i++){
+      await new Promise(function(r){ setTimeout(r, 1200); });
+      await loadPlan();
+      if (currentPlan === 'consumer' || currentPlan === 'pro'){
+        paintAccount();
+        paintPricing();
+        syncNavCta();
+        if (st){
+          st.textContent = 'You\'re on ' + (currentPlan === 'pro' ? 'Contractor' : 'DIY') +
+            '. Your higher limits are active in the app and here.';
+        }
+        return;
+      }
+    }
     if (st){
-      st.textContent = 'Checkout for ' + label + ' (' + PLAN_PRICE[plan] + '/mo) is being connected. ' +
-        "You're signed in as " + (currentUser ? currentUser.email : 'your account') +
-        ' — activate ' + label + ' in the POZi Go app in the meantime.';
+      st.textContent = 'Payment received. Your plan is taking a moment to activate — ' +
+        'refresh in a minute, and email info@pozi.live if it still looks wrong.';
     }
   }
 
@@ -2635,7 +2709,9 @@ body.gated>*:not(.phone-gate){display:none!important}
     $('delGo').addEventListener('click', doDelete);
 
     syncNavCta();
-    initAuth();
+    // Auth first — handleCheckoutReturn needs a session before it can read the
+    // plan Stripe just granted.
+    initAuth().then(handleCheckoutReturn);
 
     var gateInstall = $('gateInstall');
     if (gateInstall) gateInstall.setAttribute('href', APP_STORE_URL);
