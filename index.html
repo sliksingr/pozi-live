@@ -562,6 +562,8 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 .proj-card:hover{transform:translateY(-2px);border-color:rgba(0,255,136,.26)}
 .proj-name{font-family:var(--fb);font-weight:800;font-size:15.5px;letter-spacing:-.01em;margin-bottom:7px}
 .proj-meta{font-size:12px;color:var(--muted);line-height:1.5}
+/* Counts sit under the date as their own line, matching the app's project rows. */
+.proj-counts{font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px}
 .proj-open{margin-top:14px;font-family:var(--fh);font-size:11.5px;font-weight:800;color:var(--green);letter-spacing:.6px}
 
 .detail-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:18px;align-items:start}
@@ -1338,6 +1340,29 @@ body.gated>*:not(.phone-gate){display:none!important}
   </div>
 </div>
 
+<!-- ═══ LOCATION GATE ═══ Mirrors the app's locModal. Asked once before the first
+     search so results are geo-targeted instead of national. Skippable — a
+     national search is a worse result, not a broken one. -->
+<div class="modal" id="locModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="locModal">×</button>
+      <div class="sheet-kicker">POZi Search</div>
+      <div class="sheet-title">Where are you building?</div>
+      <p class="sheet-sub">POZi checks retailers near you. Without a location we search nationally, and prices and availability may not be what's on the shelf where you are.</p>
+    </div>
+    <div class="sheet-body">
+      <button class="btn btn-p" id="locModalDetect" style="width:100%">Use My Location</button>
+      <input class="field" id="locModalZip" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Or enter your ZIP code" style="margin-top:10px">
+      <div class="field-row" style="margin-top:10px">
+        <button class="btn btn-p" id="locModalSave">Save Location</button>
+        <button class="btn btn-s" id="locModalSkip">Search Nationally</button>
+      </div>
+      <div class="form-status" id="locModalStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ DISCLAIMER ═══ Same text and scroll-to-accept gate as the app. -->
 <div class="modal" id="legalModal">
   <div class="disc-sheet">
@@ -1745,6 +1770,70 @@ body.gated>*:not(.phone-gate){display:none!important}
     return currentPlan === 'pro' ? Infinity : (currentPlan === 'consumer' ? 15 : 3);
   }
 
+  // Counts for every project in one pass — the same approach the app uses.
+  //
+  // The naive version asks each of the five tables per project, so the grid
+  // costs 5 x N requests and gets slower the more jobs you have. This asks each
+  // table once for the whole set and tallies client-side, so it is always five
+  // requests whether there are 3 projects or 300. Every one of these tables is
+  // keyed by project_id, which is why a single .in() filter works across all.
+  //
+  // The row cap stops one enormous project from making this heavier than what it
+  // replaces. Hitting it would undercount a display number, never break anything.
+  var PROJECT_COUNT_ROW_CAP = 5000;
+
+  async function projectCountsBulk(projectIds){
+    var out = {};
+    var ids = (projectIds || []).filter(Boolean);
+    ids.forEach(function(id){ out[id] = { notes:0, lists:0, photos:0, searches:0 }; });
+    if (!sb || !ids.length) return out;
+
+    var TABLES = [
+      ['buildr_project_notes',      'notes'],
+      ['buildr_project_item_lists', 'lists'],
+      ['buildr_project_photos',     'photos'],
+      ['buildr_project_searches',   'searches']
+    ];
+
+    var results = await Promise.all(TABLES.map(function(pair){
+      return sb.from(pair[0]).select('project_id').in('project_id', ids).limit(PROJECT_COUNT_ROW_CAP)
+        .then(function(r){ return (r && r.data) || []; })
+        // One failing table shows 0 for that column instead of blanking the grid.
+        .catch(function(){ return []; });
+    }));
+
+    results.forEach(function(rows, i){
+      var key = TABLES[i][1];
+      rows.forEach(function(row){
+        var id = row && row.project_id;
+        if (id && out[id]) out[id][key] += 1;
+      });
+    });
+
+    return out;
+  }
+
+  // Same labelling the app uses on its project list, so a project reads the same
+  // in both places. The old version here always formatted month + day, which
+  // meant a project from last July was indistinguishable from this July.
+  function projectDateLabel(iso){
+    if (!iso) return '';
+    var then = new Date(iso);
+    if (isNaN(then.getTime())) return '';
+
+    function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+    var days = Math.round((startOfDay(new Date()) - startOfDay(then)) / 86400000);
+
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return days + ' days ago';
+
+    var sameYear = then.getFullYear() === new Date().getFullYear();
+    return then.toLocaleDateString(undefined, sameYear
+      ? { month:'short', day:'numeric' }
+      : { month:'short', day:'numeric', year:'numeric' });
+  }
+
   async function loadProjects(){
     $('projSignedOut').classList.toggle('hidden', !!currentUser);
     $('projList').classList.toggle('hidden', !currentUser);
@@ -1763,12 +1852,19 @@ body.gated>*:not(.phone-gate){display:none!important}
       var grid = $('projGrid');
       $('projEmpty').classList.toggle('hidden', rows.length > 0);
 
+      var counts = await projectCountsBulk(rows.map(function(p){ return p.id; }));
+
       grid.innerHTML = rows.map(function(p){
         var when = p.updated_at || p.created_at;
-        var ago = when ? new Date(when).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
-        return '<button class="proj-card" data-proj="' + escapeHtml(p.id) + '">' +
+        var ago = projectDateLabel(when);
+        var exact = when ? new Date(when).toLocaleString() : '';
+        var c = counts[p.id] || { lists:0, notes:0, photos:0, searches:0 };
+        return '<button class="proj-card" data-proj="' + escapeHtml(p.id) + '"' +
+          (exact ? ' title="Last worked on ' + escapeHtml(exact) + '"' : '') + '>' +
           '<div class="proj-name">' + escapeHtml(p.name || p.title || 'Untitled project') + '</div>' +
-          '<div class="proj-meta">Last worked on ' + escapeHtml(ago) + '</div>' +
+          '<div class="proj-meta">' + (ago ? 'Last worked on ' + escapeHtml(ago) : 'No activity yet') + '</div>' +
+          '<div class="proj-counts">' + c.lists + ' item lists · ' + c.notes + ' notes · ' +
+            c.photos + ' photos · ' + c.searches + ' searches</div>' +
           '<div class="proj-open">Open →</div></button>';
       }).join('');
     } catch(e){
@@ -1943,6 +2039,127 @@ body.gated>*:not(.phone-gate){display:none!important}
   var PRODUCT_ENDPOINT = '/.netlify/functions/pozi-product-search';
   var searchRun = 0;
 
+  /* ── Location ──────────────────────────────────────────────────────────
+     Ported from the app. A bare ZIP in the keyword ("PVC gates near 95949")
+     is only a hint Google may ignore, and it makes the organic query heavy
+     enough to hit the 9s upstream cap. Resolving the ZIP to coordinates once
+     and sending location_coordinate targets properly and keeps the keyword
+     short. The website was missing this entirely — it only ever did the
+     keyword trick, which is why ZIP searches behaved worse here than in the
+     app.                                                                   */
+  var siteZip = '', siteCoord = '', sitePlace = '';
+
+  function persistLocation(){
+    try {
+      if (siteZip) localStorage.setItem('pozi_zip', siteZip); else localStorage.removeItem('pozi_zip');
+      if (siteCoord) localStorage.setItem('pozi_coord', siteCoord); else localStorage.removeItem('pozi_coord');
+      if (sitePlace) localStorage.setItem('pozi_place', sitePlace); else localStorage.removeItem('pozi_place');
+    } catch(e){}
+  }
+
+  function locLabel(){ return sitePlace || (siteZip ? 'ZIP ' + siteZip : ''); }
+
+  function restoreLocation(){
+    try {
+      siteCoord = localStorage.getItem('pozi_coord') || '';
+      sitePlace = localStorage.getItem('pozi_place') || '';
+      siteZip = localStorage.getItem('pozi_zip') || '';
+    } catch(e){}
+    if (siteZip && $('sZip') && !$('sZip').value) $('sZip').value = siteZip;
+  }
+
+  // Forward-geocode a typed ZIP. An unresolved ZIP still searches, just nationally.
+  function setLocationFromZip(zip){
+    siteZip = String(zip || '').trim();
+    if ($('sZip')) $('sZip').value = siteZip;
+    persistLocation();
+    return fetch('https://nominatim.openstreetmap.org/search?postalcode=' +
+                 encodeURIComponent(siteZip) + '&country=US&format=json&addressdetails=1&limit=1')
+      .then(function(r){ return r.json(); })
+      .then(function(list){
+        var hit = Array.isArray(list) && list[0];
+        if (!hit) return false;
+        siteCoord = Number(hit.lat).toFixed(4) + ',' + Number(hit.lon).toFixed(4);
+        var a = hit.address || {};
+        var city = a.city || a.town || a.village || a.county || '';
+        sitePlace = [city, a.state].filter(Boolean).join(', ');
+        persistLocation();
+        return true;
+      })
+      .catch(function(){ return false; });
+  }
+
+  // We already have exact coords here; reverse-geocode only for the label.
+  function setLocationFromCoords(lat, lng){
+    siteCoord = Number(lat).toFixed(4) + ',' + Number(lng).toFixed(4);
+    persistLocation();
+    return fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var a = (data && data.address) || {};
+        var city = a.city || a.town || a.village || a.hamlet || a.county || '';
+        sitePlace = [city, a.state].filter(Boolean).join(', ');
+        if (a.postcode){ siteZip = a.postcode; if ($('sZip')) $('sZip').value = siteZip; }
+        persistLocation();
+        return true;
+      })
+      .catch(function(){ persistLocation(); return true; });
+  }
+
+  // Gate: returns true if we can search now, otherwise opens the modal and
+  // re-fires the pending search once the person answers. Skipping is remembered
+  // for the session so it never nags twice.
+  var pendingAfterLocation = null;
+
+  function requireLocation(next){
+    if (siteZip || siteCoord) return true;
+    var skipped = false;
+    try { skipped = sessionStorage.getItem('pozi_loc_skipped') === '1'; } catch(e){}
+    if (skipped) return true;
+    pendingAfterLocation = next || null;
+    if ($('locModalStatus')) $('locModalStatus').textContent = "Fastest option — we'll pull your ZIP automatically.";
+    if ($('locModalZip')) $('locModalZip').value = '';
+    openModal('locModal');
+    return false;
+  }
+
+  function resolveLocationGate(){
+    closeModal('locModal');
+    var next = pendingAfterLocation;
+    pendingAfterLocation = null;
+    if (typeof next === 'function') next();
+  }
+
+  function wireLocationModal(){
+    var detect = $('locModalDetect'), save = $('locModalSave'), skip = $('locModalSkip'), status = $('locModalStatus');
+
+    if (detect) detect.addEventListener('click', function(){
+      if (!navigator.geolocation){ if (status) status.textContent = "Location isn't available — enter a ZIP below."; return; }
+      if (status) status.textContent = 'Detecting your location…';
+      navigator.geolocation.getCurrentPosition(
+        function(pos){ setLocationFromCoords(pos.coords.latitude, pos.coords.longitude).then(resolveLocationGate); },
+        function(err){
+          if (status) status.textContent = (err && err.code === 1)
+            ? 'Location access denied — enter a ZIP below.'
+            : "Couldn't detect location — enter a ZIP below.";
+        },
+        { enableHighAccuracy:true, timeout:10000, maximumAge:60000 }
+      );
+    });
+
+    if (save) save.addEventListener('click', function(){
+      var zip = String(($('locModalZip') && $('locModalZip').value) || '').trim();
+      if (zip.length < 3){ if (status) status.textContent = 'Enter a valid ZIP code.'; return; }
+      if (status) status.textContent = 'Looking up ' + zip + '…';
+      setLocationFromZip(zip).then(resolveLocationGate);
+    });
+
+    if (skip) skip.addEventListener('click', function(){
+      try { sessionStorage.setItem('pozi_loc_skipped', '1'); } catch(e){}
+      resolveLocationGate();
+    });
+  }
+
   function resultCard(r){
     var url = r.url || '#';
     return '<a class="res-card" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
@@ -1983,19 +2200,33 @@ body.gated>*:not(.phone-gate){display:none!important}
   async function runSearch(prefill){
     var q = prefill || ($('sQuery').value || '').trim();
     if (prefill) $('sQuery').value = prefill;
-    var zip = ($('sZip').value || '').trim();
     if (!q){ $('sStatus').textContent = 'Type a product or material first.'; return; }
 
+    // A ZIP typed straight into the search bar counts as setting a location, so
+    // resolve it to coordinates before searching rather than only passing text.
+    var typedZip = ($('sZip').value || '').trim();
+    if (typedZip && typedZip !== siteZip){
+      $('sStatus').textContent = 'Looking up ' + typedZip + '…';
+      await setLocationFromZip(typedZip);
+    }
+
+    // Ask once, then re-run this exact search with the answer.
+    if (!requireLocation(function(){ runSearch(q); })) return;
+
+    var zip = siteZip;
     var run = ++searchRun;
     var grid = $('sResults');
     $('sStatus').textContent = 'Searching…';
     $('sStatus').className = 'chat-status';
     grid.innerHTML = '<div class="res-note">Searching for “' + escapeHtml(q) + '”…</div>';
 
+    // Keep the keyword lean when we have coordinates — the geo-targeting is
+    // doing the work, and a shorter query is far less likely to hit the 9s cap.
     var payload = {
-      query: zip ? (q + ' near ' + zip) : (q + ' buy materials stores prices'),
+      query: (siteCoord || !zip) ? (q + ' buy materials stores prices') : (q + ' near ' + zip),
       location: 'United States', language: 'English', depth: 10
     };
+    if (siteCoord) payload.location_coordinate = siteCoord + ',20';   // 20km radius
 
     // The two searches are INDEPENDENT. Organic is capped at 9s upstream and a
     // ZIP-scoped query ("... near 95949") is heavy enough to hit that cap, so it
@@ -2053,7 +2284,7 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     if (productResult.rows.length){
       grid.innerHTML = productResult.rows.map(resultCard).join('');
-      $('sStatus').textContent = 'Product results with prices.';
+      $('sStatus').textContent = 'Product results with prices' + (locLabel() ? ' near ' + locLabel() : '') + '.';
       $('sStatus').className = 'chat-status ok';
       return;
     }
@@ -2760,6 +2991,8 @@ body.gated>*:not(.phone-gate){display:none!important}
     $('delGo').addEventListener('click', doDelete);
 
     syncNavCta();
+    restoreLocation();
+    wireLocationModal();
     routeFromHash();
     window.addEventListener('hashchange', routeFromHash);
     // Auth first — handleCheckoutReturn needs a session before it can read the
