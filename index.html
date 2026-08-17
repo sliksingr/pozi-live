@@ -1997,47 +1997,86 @@ body.gated>*:not(.phone-gate){display:none!important}
       location: 'United States', language: 'English', depth: 10
     };
 
-    // Product cards trail the quick links, exactly as in the app.
+    // The two searches are INDEPENDENT. Organic is capped at 9s upstream and a
+    // ZIP-scoped query ("... near 95949") is heavy enough to hit that cap, so it
+    // fails far more often than the product call does.
+    //
+    // Before, organic was awaited directly inside the try, so its timeout jumped
+    // to the catch, wiped the grid, and threw away a product search that was
+    // already succeeding — a ZIP search showed "could not finish" while the
+    // identical search without a ZIP showed products. Neither call may now
+    // decide the outcome alone: each resolves to rows or an empty array, and the
+    // error only shows when BOTH come back with nothing.
+    var organicPromise = (async function(){
+      try {
+        var organic = await poziFetch(ORGANIC_ENDPOINT, payload);
+        return { rows: normalizeRows(organic, 'organic'), error: '' };
+      } catch(e){
+        return { rows: [], error: e && e.message ? e.message : 'Quick links failed.' };
+      }
+    })();
+
     var productPromise = (async function(){
       try {
         var startData = await poziFetch(PRODUCT_ENDPOINT, Object.assign({}, payload, { mode:'start' }));
-        if (!startData.task_id) return [];
+        if (!startData.task_id) return { rows: [], error: '' };
         var deadline = Date.now() + 60000;
         while (Date.now() < deadline){
-          if (run !== searchRun) return [];
+          if (run !== searchRun) return { rows: [], error: '' };
           await new Promise(function(r){ setTimeout(r, 2500); });
-          if (run !== searchRun) return [];
+          if (run !== searchRun) return { rows: [], error: '' };
           var poll = await poziFetch(PRODUCT_ENDPOINT, { mode:'poll', task_id: startData.task_id });
           if (poll && poll.pending) continue;
-          return normalizeRows(poll, 'product');
+          return { rows: normalizeRows(poll, 'product'), error: '' };
         }
-        return [];
-      } catch(e){ return []; }
+        return { rows: [], error: '' };
+      } catch(e){
+        return { rows: [], error: e && e.message ? e.message : 'Product search failed.' };
+      }
     })();
 
-    try {
-      var organic = await poziFetch(ORGANIC_ENDPOINT, payload);
-      if (run !== searchRun) return;
-      var rows = normalizeRows(organic, 'organic');
-      grid.innerHTML = rows.length
-        ? rows.map(resultCard).join('') + '<div class="res-note">Quick links are ready — product cards with prices loading…</div>'
-        : '<div class="res-note">No matches for “' + escapeHtml(q) + '”. Try a broader term.</div>';
-      $('sStatus').textContent = rows.length ? 'Found ' + rows.length + ' places to check.' : '';
+    // Show quick links the moment they arrive rather than waiting on products,
+    // but treat them as a first paint that products may replace.
+    var organicResult = await organicPromise;
+    if (run !== searchRun) return;
+    if (organicResult.rows.length){
+      grid.innerHTML = organicResult.rows.map(resultCard).join('') +
+        '<div class="res-note">Quick links are ready — product cards with prices loading…</div>';
+      $('sStatus').textContent = 'Found ' + organicResult.rows.length + ' places to check.';
+    } else {
+      grid.innerHTML = '<div class="res-note">Looking for product prices…</div>';
+      $('sStatus').textContent = 'Checking retailers…';
+    }
 
-      var products = await productPromise;
-      if (run !== searchRun) return;
-      if (products.length){
-        grid.innerHTML = products.map(resultCard).join('');
-        $('sStatus').textContent = 'Product results with prices.';
-        $('sStatus').className = 'chat-status ok';
-      } else {
-        grid.innerHTML = rows.map(resultCard).join('');
-      }
-    } catch(err){
-      if (run !== searchRun) return;
-      grid.innerHTML = '<div class="res-note">Search could not finish. Try again in a moment.</div>';
-      $('sStatus').textContent = err.message || 'Search failed.';
+    var productResult = await productPromise;
+    if (run !== searchRun) return;
+
+    if (productResult.rows.length){
+      grid.innerHTML = productResult.rows.map(resultCard).join('');
+      $('sStatus').textContent = 'Product results with prices.';
+      $('sStatus').className = 'chat-status ok';
+      return;
+    }
+
+    if (organicResult.rows.length){
+      grid.innerHTML = organicResult.rows.map(resultCard).join('');
+      $('sStatus').textContent = 'Found ' + organicResult.rows.length + ' places to check.';
+      $('sStatus').className = 'chat-status ok';
+      return;
+    }
+
+    // Both empty. Distinguish "nothing matched" from "the search broke", because
+    // the fix is different: reword the query versus try again.
+    var failed = organicResult.error || productResult.error;
+    if (failed){
+      grid.innerHTML = '<div class="res-note">Search could not finish. Try again in a moment' +
+        (zip ? ', or search without a ZIP code.' : '.') + '</div>';
+      $('sStatus').textContent = failed;
       $('sStatus').className = 'chat-status err';
+    } else {
+      grid.innerHTML = '<div class="res-note">No matches for “' + escapeHtml(q) + '”. Try a broader term.</div>';
+      $('sStatus').textContent = '';
+      $('sStatus').className = 'chat-status';
     }
   }
 
@@ -2252,6 +2291,18 @@ body.gated>*:not(.phone-gate){display:none!important}
     });
     closeMobile();
     window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // Deep links. The POZi Go app sends people to pozi.live/#pricing when they tap
+  // Upgrade, so a hash has to actually select a page — without this the link
+  // silently lands on the homepage and the upgrade path looks broken.
+  var PAGES = ['home','projects','search','how','pricing'];
+
+  function routeFromHash(){
+    var name = String(window.location.hash || '').replace(/^#/, '').trim().toLowerCase();
+    if (PAGES.indexOf(name) === -1) return false;
+    showPage(name);
+    return true;
   }
 
   /* ── Mobile menu ──────────────────────────────────────────────────────── */
@@ -2709,6 +2760,8 @@ body.gated>*:not(.phone-gate){display:none!important}
     $('delGo').addEventListener('click', doDelete);
 
     syncNavCta();
+    routeFromHash();
+    window.addEventListener('hashchange', routeFromHash);
     // Auth first — handleCheckoutReturn needs a session before it can read the
     // plan Stripe just granted.
     initAuth().then(handleCheckoutReturn);
