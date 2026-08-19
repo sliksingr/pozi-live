@@ -511,6 +511,10 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 }
 .acct-toggle:hover,.acct-toggle.open{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.22)}
 .acct-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(0,255,136,.5)}
+/* The nav label carries the signed-in email, so it needs a ceiling — a long
+   address would otherwise push the caret and CTA off the bar. */
+#acctLabel{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:900px){#acctLabel{max-width:100px}}
 .acct-caret{font-size:10px;color:#8b8ea8}
 .acct-menu{
   position:absolute;top:calc(100% + 10px);right:0;width:250px;display:none;padding:9px;
@@ -889,6 +893,8 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="panel">
             <div class="panel-h"><span>Build Notes</span><span id="projNoteCount"></span></div>
             <div class="panel-body panel-scroll" id="projNotes"></div>
+            <button class="btn btn-p" id="projBuildPlan" style="width:100%;margin-top:14px">Build the Plan</button>
+            <div class="chat-status" id="projPlanStatus" style="margin-top:8px"></div>
           </div>
           <div class="panel">
             <div class="panel-h"><span>Item List</span></div>
@@ -1560,12 +1566,17 @@ body.gated>*:not(.phone-gate){display:none!important}
 
   function paintAccount(){
     var signedIn = !!currentUser;
-    $('acctLabel').textContent = signedIn ? 'Account' : 'Sign in';
+    // Show WHO is signed in, not just that someone is. A green dot alone left
+    // people opening the menu to find out, and made an app-to-web handoff look
+    // like it had silently signed them out.
+    var email = signedIn ? String(currentUser.email || '') : '';
+    $('acctLabel').textContent = signedIn ? (email || 'Account') : 'Sign in';
+    $('acctToggle').setAttribute('title', signedIn ? 'Signed in as ' + email : 'Sign in to POZi');
     $('acctDot').style.background = signedIn ? 'var(--green)' : '#5c5f75';
     $('acctDot').style.boxShadow = signedIn ? '0 0 10px rgba(0,255,136,.5)' : 'none';
 
     var emailEl = $('acctEmail');
-    emailEl.textContent = signedIn ? currentUser.email : '';
+    emailEl.textContent = signedIn ? 'Signed in as ' + email : '';
     emailEl.classList.toggle('hidden', !signedIn);
 
     $('acctAuth').classList.toggle('hidden', signedIn);
@@ -2028,6 +2039,181 @@ body.gated>*:not(.phone-gate){display:none!important}
     } finally {
       projBusy = false;
       btn.disabled = false; btn.textContent = 'Send';
+    }
+  }
+
+  /* ── Build the Plan ────────────────────────────────────────────────────
+     The website displayed Build Notes and an item list, and the pricing page
+     sold them, but nothing here could ever produce one — only the app could.
+     A web-only subscriber paid for a deliverable the site had no way to make.
+
+     Same endpoint, same mode:'plan', same schema the app writes, so a plan
+     built here is indistinguishable from one built on the phone.             */
+
+  // Ported verbatim from the app so both surfaces cut the deliverable the same
+  // way. If these ever drift, the two clients will disagree about what counts as
+  // a note and what counts as an item.
+  function extractBuildNotes(text){
+    var src = String(text || '');
+    var m = src.match(/build\s*notes\s*:?/i);
+    if (!m) return '';
+    var region = src.slice(m.index + m[0].length);
+    var stop = region.search(/po[sz]i\s*item\s*list|your item list is ready/i);
+    if (stop >= 0) region = region.slice(0, stop);
+    return region.replace(/\*\*/g, '').replace(/^\s*-{3,}\s*$/gm, '').trim();
+  }
+
+  function extractItemList(text){
+    var src = String(text || '');
+    var m = src.match(/po[sz]i\s*item\s*list\s*:?/i);
+    var region = m ? src.slice(m.index + m[0].length) : src;
+    var out = [];
+    var lines = region.split('\n');
+    for (var i = 0; i < lines.length; i++){
+      var raw = lines[i];
+      var isBullet = /^\s*([-*•]|\d+[.)])\s+/.test(raw);
+      var line = raw.replace(/\*\*/g, '').replace(/^\s*([-*•]|\d+[.)])\s*/, '').trim();
+      if (!line) continue;
+      if (/your item list is ready/i.test(line) || /source my items/i.test(line)) break;
+      if (/^po[sz]i\s*item\s*list/i.test(line)) continue;
+      if (!m && !isBullet) continue;
+      out.push(line);
+      if (out.length >= 40) break;
+    }
+    return out;
+  }
+
+  var planBusy = false;
+
+  async function buildProjectPlan(){
+    if (planBusy || !sb || !currentUser || !activeProject) return;
+
+    var status = $('projPlanStatus');
+    var btn = $('projBuildPlan');
+
+    // Read the conversation off the rendered chat, the same source the continue
+    // box uses, so what Foreman plans from is exactly what the user can see.
+    var turns = Array.prototype.slice.call($('projChat').querySelectorAll('.msg'))
+      .filter(function(el){ return !el.classList.contains('thinking'); })
+      .map(function(el){
+        return { role: el.classList.contains('user') ? 'user' : 'assistant', content: el.textContent.trim() };
+      })
+      .filter(function(m){ return m.content; });
+    while (turns.length && turns[0].role !== 'user') turns.shift();
+
+    if (!turns.length){
+      status.textContent = 'Add to the conversation first — there is nothing to plan from yet.';
+      status.className = 'chat-status err';
+      return;
+    }
+
+    // The trigger turn goes last so it is the final thing the model reads, and it
+    // keeps this a single-shot deliverable request rather than another chat reply.
+    turns.push({ role:'user', content:'Build the plan for what we settled on above.' });
+
+    planBusy = true;
+    btn.disabled = true; btn.textContent = 'Working out your quantities…';
+    status.textContent = 'Reading the whole conversation…';
+    status.className = 'chat-status';
+
+    var full = '';
+    try {
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+
+      var res = await fetch(FOREMAN_ENDPOINT, {
+        method:'POST',
+        headers: token
+          ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
+          : { 'Content-Type':'application/json' },
+        body: JSON.stringify({ mode:'plan', messages: turns, session_id: 'proj_' + activeProject })
+      });
+      if (!res.ok || !res.body){
+        var ed = await res.json().catch(function(){ return {}; });
+        throw new Error(ed.error || 'The plan could not be built right now.');
+      }
+
+      // Stream it into the notes panel so a long deliverable shows progress
+      // instead of a spinner.
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
+      $('projNotes').innerHTML = '';
+      while (true){
+        var c = await reader.read();
+        if (c.done) break;
+        buf += dec.decode(c.value, { stream:true });
+        var parts = buf.split('\n\n'); buf = parts.pop() || '';
+        for (var p = 0; p < parts.length; p++){
+          var ls = parts[p].split('\n');
+          for (var l = 0; l < ls.length; l++){
+            if (ls[l].indexOf('data:') !== 0) continue;
+            var raw = ls[l].slice(5).trim();
+            if (!raw || raw === '[DONE]') continue;
+            var evt; try { evt = JSON.parse(raw); } catch(e){ continue; }
+            if (evt.type === 'text' && evt.v){
+              full += evt.v;
+              $('projNotes').innerHTML = renderForemanHtml(extractBuildNotes(full) || full);
+            } else if (evt.type === 'error'){
+              throw new Error(evt.error || 'Foreman hit an error.');
+            }
+          }
+        }
+      }
+
+      if (!full.trim()) throw new Error('The plan came back empty. Try again.');
+
+      var notes = extractBuildNotes(full);
+      var items = extractItemList(full);
+
+      // Written with the SAME columns the app uses — title/body/metadata on notes,
+      // raw_text on the list, item_name/position on the items. A row saved here has
+      // to open correctly on the phone.
+      if (notes){
+        var ni = await sb.from('buildr_project_notes').insert({
+          project_id: activeProject, user_id: currentUser.id,
+          title: 'Build Notes', body: notes, metadata: {}
+        });
+        if (ni.error) console.warn('save notes failed:', ni.error);
+      }
+
+      if (items.length){
+        var li = await sb.from('buildr_project_item_lists').insert({
+          project_id: activeProject, user_id: currentUser.id,
+          title: 'POZi List', raw_text: items.join('\n')
+        }).select().single();
+        if (li.error || !li.data){
+          console.warn('save item list failed:', li.error);
+        } else {
+          var ii = await sb.from('buildr_project_item_list_items').insert(items.map(function(it, i){
+            return { item_list_id: li.data.id, project_id: activeProject,
+                     item_name: it, position: i + 1, user_id: currentUser.id };
+          }));
+          if (ii.error) console.warn('save item list items failed:', ii.error);
+        }
+      }
+
+      // The plan is part of the conversation record, so the app shows it too.
+      try {
+        await sb.from('buildr_project_messages').insert([
+          { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
+        ]);
+        await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
+      } catch(e){ /* already on screen and saved as notes — never lose it over this */ }
+
+      status.textContent = items.length
+        ? 'Build Notes saved · ' + items.length + ' items ready to source.'
+        : 'Build Notes saved.';
+      status.className = 'chat-status ok';
+
+      // Re-open so notes, item list, and counts all come back from the database
+      // rather than from what we happen to be holding in memory.
+      await openProject(activeProject);
+    } catch(err){
+      status.textContent = err.message || 'The plan could not be built.';
+      status.className = 'chat-status err';
+      if (!full.trim()) await openProject(activeProject);
+    } finally {
+      planBusy = false;
+      btn.disabled = false; btn.textContent = 'Build the Plan';
     }
   }
 
@@ -2882,6 +3068,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       if (card) openProject(card.getAttribute('data-proj'));
     });
     $('projSend').addEventListener('click', sendToProject);
+    $('projBuildPlan').addEventListener('click', buildProjectPlan);
     $('projInput').addEventListener('keydown', function(e){
       if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendToProject(); }
     });
