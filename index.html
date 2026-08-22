@@ -256,14 +256,19 @@ h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18
 .msg li:before{content:"";position:absolute;left:-11px;top:8px;width:4px;height:4px;border-radius:50%;background:var(--green);opacity:.6}
 .msg .nq{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 
-.chat-input-row{display:flex;gap:10px;align-items:flex-end;margin-top:14px}
+.chat-input-label{display:block;font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--green);margin:18px 0 7px}
+.chat-input-row{display:flex;gap:10px;align-items:flex-end}
 .chat-input{
-  flex:1;min-height:52px;max-height:150px;resize:vertical;
-  background:rgba(255,255,255,.045);border:1px solid var(--border);border-radius:15px;
-  padding:15px 17px;color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.5;outline:none;
+  flex:1;min-height:58px;max-height:150px;resize:vertical;
+  /* Recessed and clearly outlined — a message bubble is raised and softly bordered, so the
+     two no longer read as the same object. */
+  background:#0b0d18;border:1.5px solid rgba(0,255,136,.22);border-radius:15px;
+  box-shadow:inset 0 1px 6px rgba(0,0,0,.5);
+  padding:15px 17px;color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.5;outline:none;
   transition:border-color .18s,box-shadow .18s;
 }
-.chat-input:focus{border-color:rgba(0,255,136,.32);box-shadow:0 0 0 3px rgba(0,255,136,.06)}
+.chat-input:focus{border-color:rgba(0,255,136,.55);box-shadow:inset 0 1px 6px rgba(0,0,0,.5),0 0 0 3px rgba(0,255,136,.10)}
 .chat-input::placeholder{color:#7f829e}
 .chat-send{
   flex:0 0 auto;min-height:52px;padding:0 22px;border-radius:15px;
@@ -780,9 +785,10 @@ body.gated>*:not(.phone-gate){display:none!important}
         <div class="msg bot">Tell me what you're working on — the project, the space, or the problem. Give me real measurements where you have them and I'll work out the materials.</div>
       </div>
 
+      <label class="chat-input-label" for="chatInput">Your message</label>
       <div class="chat-input-row">
         <textarea id="chatInput" class="chat-input" rows="1"
-          placeholder="Build a deck, redesign a room, fix a gate, plan an irrigation zone..."></textarea>
+          placeholder="Describe your project…"></textarea>
         <button id="chatSend" class="chat-send" type="button">Ask Foreman</button>
       </div>
       <div id="chatStatus" class="chat-status"></div>
@@ -904,8 +910,9 @@ body.gated>*:not(.phone-gate){display:none!important}
           <div class="panel">
             <div class="panel-h"><span>Foreman</span><span id="projMsgCount"></span></div>
             <div class="chat-stream" id="projChat" style="min-height:240px;max-height:440px"></div>
+            <label class="chat-input-label" for="projInput">Your message</label>
             <div class="chat-input-row">
-              <textarea id="projInput" class="chat-input" rows="1" placeholder="Add to this project..."></textarea>
+              <textarea id="projInput" class="chat-input" rows="1" placeholder="Add to this project…"></textarea>
               <button id="projSend" class="chat-send" type="button">Send</button>
             </div>
             <div id="projStatus" class="chat-status"></div>
