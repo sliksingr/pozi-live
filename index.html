@@ -271,6 +271,8 @@ h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18
 }
 .chat-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,255,136,.2)}
 .chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.chat-save-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.chat-save-hint{color:var(--muted);font-size:12px}
 .chat-status{margin-top:9px;min-height:17px;font-size:11.5px;line-height:1.45;color:var(--muted)}
 /* Hitting a tier cap should offer the way forward, not just report the wall. */
 .upgrade-card{
@@ -776,6 +778,14 @@ body.gated>*:not(.phone-gate){display:none!important}
       </div>
       <div id="chatStatus" class="chat-status"></div>
 
+      <!-- Same two doors the app offers. Talking to Foreman needs nothing; keeping the
+           work needs a project, and a project needs an account. Guests are told that
+           plainly instead of being dropped into a flow that quietly cannot save. -->
+      <div class="chat-save-row" id="chatSaveRow">
+        <button class="btn btn-s" id="chatNewProject">Name a project first</button>
+        <span class="chat-save-hint" id="chatSaveHint">Creates the project up front so notes and the plan have a home.</span>
+      </div>
+
 
       <div class="disclaimer-note">
         Foreman can make mistakes. Always verify measurements, code, permits, and safety requirements.
@@ -854,7 +864,11 @@ body.gated>*:not(.phone-gate){display:none!important}
         <div class="eyebrow">Projects</div>
         <h1 class="h-lg" id="projHeading">Your jobs</h1>
       </div>
-      <button class="btn btn-s" id="projBack" style="display:none">← All projects</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-p" id="projNew">+ New Project</button>
+        <button class="btn btn-s" id="projBack" style="display:none">← All projects</button>
+        <button class="btn btn-s" id="projDelete" style="display:none;border-color:rgba(255,120,120,.35);color:#ff9d9d">Delete Project</button>
+      </div>
     </div>
 
     <!-- signed out -->
@@ -1346,6 +1360,27 @@ body.gated>*:not(.phone-gate){display:none!important}
   </div>
 </div>
 
+<!-- ═══ NAME PROJECT ═══ Mirrors the app's naming prompt. Creating the project up front
+     gives notes, photos, and the plan somewhere to live from the first message. -->
+<div class="modal" id="nameProjModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="nameProjModal">×</button>
+      <div class="sheet-kicker">New Project</div>
+      <div class="sheet-title">Name your project</div>
+      <p class="sheet-sub">Something you'll recognise later — "Back deck", "Shower drain", "Fence line".</p>
+    </div>
+    <div class="sheet-body">
+      <input class="field" id="nameProjInput" type="text" maxlength="80" placeholder="Project name">
+      <div class="field-row" style="margin-top:10px">
+        <button class="btn btn-p" id="nameProjSave">Create Project</button>
+        <button class="btn btn-s" data-close="nameProjModal">Cancel</button>
+      </div>
+      <div class="form-status" id="nameProjStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ LOCATION GATE ═══ Mirrors the app's locModal. Asked once before the first
      search so results are geo-targeted instead of national. Skippable — a
      national search is a worse result, not a broken one. -->
@@ -1583,6 +1618,14 @@ body.gated>*:not(.phone-gate){display:none!important}
     $('acctSignOut').classList.toggle('hidden', !signedIn);
     $('acctDelete').classList.toggle('hidden', !signedIn);
     $('acctPlanTag').textContent = signedIn ? (PLAN_INFO[currentPlan] || PLAN_INFO.free).name : 'Guest';
+
+    // The project affordance under the chat says different things to a guest and a member,
+    // so nobody taps it expecting something it cannot do.
+    var newProjBtn = $('chatNewProject'), hint = $('chatSaveHint');
+    if (newProjBtn) newProjBtn.textContent = signedIn ? 'Name a project first' : 'Create a free account to save projects';
+    if (hint) hint.textContent = signedIn
+      ? 'Creates the project up front so notes and the plan have a home.'
+      : 'Guests can talk to Foreman, but projects need a free account.';
     syncNavCta();
     paintPricing();
   }
@@ -1845,11 +1888,114 @@ body.gated>*:not(.phone-gate){display:none!important}
       : { month:'short', day:'numeric', year:'numeric' });
   }
 
+  /* ── Creating and deleting projects ────────────────────────────────────
+     The website could read projects and add to them, but never make one. A web
+     subscriber — the more valuable kind, since Apple takes no cut — had to open
+     the phone app just to start a job. These close that gap and mirror the app's
+     flow exactly, including what a guest is told.                            */
+
+  var pendingAfterProject = null;   // run once the project exists
+
+  function requireAccountForProjects(){
+    if (currentUser) return true;
+    // Not a dead end: the conversation stays open, they just cannot keep it yet.
+    setAuthMode('signup');
+    openModal('authModal');
+    var sub = $('authSub');
+    if (sub) sub.textContent = 'Projects are saved to your account. Create a free one to name this project and keep its notes and plan — or keep talking to Foreman as a guest.';
+    return false;
+  }
+
+  function openNameProject(next){
+    if (!requireAccountForProjects()) return;
+    pendingAfterProject = next || null;
+    if ($('nameProjInput')) $('nameProjInput').value = '';
+    if ($('nameProjStatus')) $('nameProjStatus').textContent = '';
+    openModal('nameProjModal');
+    setTimeout(function(){ if ($('nameProjInput')) $('nameProjInput').focus(); }, 80);
+  }
+
+  async function createProjectFromModal(){
+    var name = String(($('nameProjInput') && $('nameProjInput').value) || '').trim();
+    var status = $('nameProjStatus');
+    if (!name){ if (status) status.textContent = 'Give the project a name first.'; return; }
+    if (!sb || !currentUser){ if (status) status.textContent = 'Sign in first.'; return; }
+
+    var btn = $('nameProjSave');
+    if (btn){ btn.disabled = true; btn.textContent = 'Creating…'; }
+    if (status) status.textContent = '';
+
+    try {
+      var r = await sb.from('buildr_projects')
+        .insert({ name: name, user_id: currentUser.id })
+        .select()
+        .single();
+      if (r.error || !r.data) throw new Error(r.error ? r.error.message : 'Could not create the project.');
+
+      closeModal('nameProjModal');
+      activeProject = r.data.id;
+      var next = pendingAfterProject;
+      pendingAfterProject = null;
+      await loadProjects();
+      if (typeof next === 'function') await next(r.data.id);
+      else await openProject(r.data.id);
+    } catch(err){
+      if (status) status.textContent = err.message || 'Could not create the project.';
+    } finally {
+      if (btn){ btn.disabled = false; btn.textContent = 'Create Project'; }
+    }
+  }
+
+  // Deletion removes the project and everything hanging off it. Ordered children-first so
+  // a foreign key never blocks the delete and nothing is left orphaned — the same order
+  // delete-account.js uses.
+  async function deleteActiveProject(){
+    if (!sb || !currentUser || !activeProject) return;
+    var name = ($('projHeading') && $('projHeading').textContent) || 'this project';
+    if (!window.confirm('Delete "' + name + '"? Its conversation, Build Notes, item list, and photos are removed. This cannot be undone.')) return;
+
+    var btn = $('projDelete');
+    if (btn){ btn.disabled = true; btn.textContent = 'Deleting…'; }
+    try {
+      var lists = await sb.from('buildr_project_item_lists').select('id').eq('project_id', activeProject);
+      var ids = ((lists && lists.data) || []).map(function(l){ return l.id; });
+      if (ids.length) await sb.from('buildr_project_item_list_items').delete().in('item_list_id', ids);
+      await sb.from('buildr_project_item_lists').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_messages').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_notes').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_photos').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_searches').delete().eq('project_id', activeProject);
+      await sb.from('buildr_projects').delete().eq('id', activeProject);
+
+      activeProject = null;
+      showProjectList();
+      await loadProjects();
+    } catch(err){
+      window.alert('Could not delete the project. ' + (err.message || 'Try again in a moment.'));
+    } finally {
+      if (btn){ btn.disabled = false; btn.textContent = 'Delete Project'; }
+    }
+  }
+
+  // Back to the grid. loadProjects() already repaints it; this also resets the header
+  // buttons so Delete never lingers over a list view.
+  function showProjectList(){
+    activeProject = null;
+    if ($('projDetail')) $('projDetail').classList.add('hidden');
+    if ($('projList')) $('projList').classList.remove('hidden');
+    if ($('projBack')) $('projBack').style.display = 'none';
+    if ($('projDelete')) $('projDelete').style.display = 'none';
+    if ($('projNew')) $('projNew').style.display = '';
+    if ($('projHeading')) $('projHeading').textContent = 'Your jobs';
+  }
+
   async function loadProjects(){
     $('projSignedOut').classList.toggle('hidden', !!currentUser);
     $('projList').classList.toggle('hidden', !currentUser);
     $('projDetail').classList.add('hidden');
     $('projBack').style.display = 'none';
+    if ($('projDelete')) $('projDelete').style.display = 'none';
+    if ($('projNew')) $('projNew').style.display = '';
     $('projHeading').textContent = 'Your jobs';
     activeProject = null;
     if (!currentUser || !sb) return;
@@ -1889,6 +2035,8 @@ body.gated>*:not(.phone-gate){display:none!important}
     $('projList').classList.add('hidden');
     $('projDetail').classList.remove('hidden');
     $('projBack').style.display = '';
+    if ($('projDelete')) $('projDelete').style.display = '';
+    if ($('projNew')) $('projNew').style.display = 'none';
     $('projChat').innerHTML = '<div class="msg bot thinking">Loading…</div>';
     $('projNotes').textContent = '';
     $('projItems').textContent = '';
@@ -3062,7 +3210,20 @@ body.gated>*:not(.phone-gate){display:none!important}
     });
 
     // Projects
-    $('projBack').addEventListener('click', loadProjects);
+    $('projBack').addEventListener('click', function(){ showProjectList(); loadProjects(); });
+    $('projNew').addEventListener('click', function(){ openNameProject(); });
+    $('projDelete').addEventListener('click', deleteActiveProject);
+    $('nameProjSave').addEventListener('click', createProjectFromModal);
+    $('nameProjInput').addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); createProjectFromModal(); }
+    });
+    // From the Foreman chat: name a project, then carry the conversation into it.
+    $('chatNewProject').addEventListener('click', function(){
+      openNameProject(async function(pid){
+        showPage('projects');
+        await openProject(pid);
+      });
+    });
     $('projGrid').addEventListener('click', function(e){
       var card = e.target.closest('[data-proj]');
       if (card) openProject(card.getAttribute('data-proj'));
