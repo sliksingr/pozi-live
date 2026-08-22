@@ -121,10 +121,6 @@ nav{
   transition:transform .18s,box-shadow .18s;white-space:nowrap;
 }
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,255,136,.22)}
-/* Signed in, this repeats "Get POZi Go" from the account menu — and that is exactly when
-   the email chip is widest. Drop the duplicate rather than let the row overflow.
-   "Create Account" is never dropped: it is how a guest converts. */
-@media(max-width:1040px){.nav-cta.is-member{display:none}}
 @media(max-width:1250px){#acctLabel{max-width:130px}}
 .hamburger{display:none;flex-direction:column;gap:5px;width:42px;height:42px;align-items:center;justify-content:center}
 .hb{display:block;height:2px;width:19px;background:rgba(255,255,255,.85);border-radius:2px;transition:all .25s}
@@ -278,6 +274,7 @@ h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18
 .chat-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,255,136,.2)}
 .chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .chat-save-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.chat-save-row:has(.hidden) .chat-save-hint{margin-inline:auto;text-align:center}
 .chat-save-hint{color:var(--muted);font-size:12px}
 .chat-status{margin-top:9px;min-height:17px;font-size:11.5px;line-height:1.45;color:var(--muted)}
 /* Hitting a tier cap should offer the way forward, not just report the wall. */
@@ -697,7 +694,6 @@ body.gated>*:not(.phone-gate){display:none!important}
   </div>
 
   <div style="display:flex;align-items:center;gap:10px">
-    <button class="nav-cta" id="navCta">Create Account</button>
     <div class="acct-wrap">
       <button class="acct-toggle" id="acctToggle" type="button" aria-haspopup="true" aria-expanded="false">
         <span class="acct-dot" id="acctDot"></span><span id="acctLabel">Account</span><span class="acct-caret">▾</span>
@@ -1634,11 +1630,17 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     // The project affordance under the chat says different things to a guest and a member,
     // so nobody taps it expecting something it cannot do.
+    // Signed in, this is a real action — name a project before you start. Signed out it is
+    // just a fact worth knowing, so it becomes a line of text rather than a third account
+    // button competing with "Create Free Account" in the hero and the one in the menu.
     var newProjBtn = $('chatNewProject'), hint = $('chatSaveHint');
-    if (newProjBtn) newProjBtn.textContent = signedIn ? 'Name a project first' : 'Create a free account to save projects';
+    if (newProjBtn){
+      newProjBtn.textContent = 'Name a project first';
+      newProjBtn.classList.toggle('hidden', !signedIn);
+    }
     if (hint) hint.textContent = signedIn
       ? 'Creates the project up front so notes and the plan have a home.'
-      : 'Guests can talk to Foreman, but projects need a free account.';
+      : 'Foreman needs a free account to save your projects.';
     syncNavCta();
     paintPricing();
   }
@@ -3305,11 +3307,6 @@ body.gated>*:not(.phone-gate){display:none!important}
       if (t.hasAttribute('data-signup')) { startSignup(); return; }
       if (t.hasAttribute('data-try-foreman')) { tryForeman(); return; }
       if (t.hasAttribute('data-plan')) { choosePlan(t.getAttribute('data-plan')); }
-    });
-
-    $('navCta').addEventListener('click', function(){
-      if (currentUser) openModal('goModal');
-      else startSignup();
     });
 
     // Account
