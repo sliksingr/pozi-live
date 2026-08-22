@@ -107,6 +107,7 @@ nav{
   .pozi-i .beam{display:none}
 }
 .logo-word .go{font-size:12px;margin-left:1px;opacity:.75}
+.lead-lede{color:#fff;font-weight:800}
 .nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap;line-height:1.5}
 /* The original POZi tagline, kept as its own green line under the verbs. */
 .nav-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
@@ -123,7 +124,8 @@ nav{
 /* Signed in, this repeats "Get POZi Go" from the account menu — and that is exactly when
    the email chip is widest. Drop the duplicate rather than let the row overflow.
    "Create Account" is never dropped: it is how a guest converts. */
-@media(max-width:1250px){.nav-cta.is-member{display:none}#acctLabel{max-width:120px}}
+@media(max-width:1040px){.nav-cta.is-member{display:none}}
+@media(max-width:1250px){#acctLabel{max-width:130px}}
 .hamburger{display:none;flex-direction:column;gap:5px;width:42px;height:42px;align-items:center;justify-content:center}
 .hb{display:block;height:2px;width:19px;background:rgba(255,255,255,.85);border-radius:2px;transition:all .25s}
 .hamburger.open .hb:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
@@ -679,7 +681,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     <img src="logo-dark.png" alt="POZi">
     <div>
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
-      <div class="nav-tag">Plan it. Price it. Build it.<span class="aiop">All in one place.</span></div>
+      <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
   </div>
 
@@ -738,9 +740,10 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="hero-badge"><i></i> POZi Foreman</div>
     <h1 class="h-xl">Plan first.<br><span class="grad">Source after.</span></h1>
     <p class="lead center" style="max-width:660px;margin-left:auto;margin-right:auto;text-align:center;margin-top:20px">
-      Tell POZi Foreman what you want to build, fix, or design. It works out the real
-      quantities and cut lists. POZi keeps the whole job organized as a project — conversation,
-      notes, item list, and photos in one place — then finds the materials at stores near you.
+      <b class="lead-lede">Plan it. Price it. Build it.</b> Tell POZi Foreman what you want to
+      build, fix, or design. It works out the real quantities and cut lists. POZi keeps the whole
+      job organized as a project — conversation, notes, item list, and photos in one place —
+      then finds the materials at stores near you.
     </p>
     <div class="hero-actions">
       <a class="btn btn-p" href="#foreman">Try Without an Account</a>
