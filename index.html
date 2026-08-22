@@ -120,6 +120,10 @@ nav{
   transition:transform .18s,box-shadow .18s;white-space:nowrap;
 }
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,255,136,.22)}
+/* Signed in, this repeats "Get POZi Go" from the account menu — and that is exactly when
+   the email chip is widest. Drop the duplicate rather than let the row overflow.
+   "Create Account" is never dropped: it is how a guest converts. */
+@media(max-width:1250px){.nav-cta.is-member{display:none}#acctLabel{max-width:120px}}
 .hamburger{display:none;flex-direction:column;gap:5px;width:42px;height:42px;align-items:center;justify-content:center}
 .hb{display:block;height:2px;width:19px;background:rgba(255,255,255,.85);border-radius:2px;transition:all .25s}
 .hamburger.open .hb:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
@@ -688,6 +692,7 @@ body.gated>*:not(.phone-gate){display:none!important}
   </div>
 
   <div style="display:flex;align-items:center;gap:10px">
+    <button class="nav-cta" id="navCta">Create Account</button>
     <div class="acct-wrap">
       <button class="acct-toggle" id="acctToggle" type="button" aria-haspopup="true" aria-expanded="false">
         <span class="acct-dot" id="acctDot"></span><span id="acctLabel">Account</span><span class="acct-caret">▾</span>
@@ -703,7 +708,6 @@ body.gated>*:not(.phone-gate){display:none!important}
         <button class="acct-item danger hidden" id="acctDelete" type="button">Delete my account</button>
       </div>
     </div>
-    <button class="nav-cta" id="navCta">Create Account</button>
   </div>
 
   <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -1798,6 +1802,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     var btn = $('navCta');
     if (!btn) return;
     btn.textContent = currentUser ? 'Get POZi Go' : 'Create Account';
+    btn.classList.toggle('is-member', !!currentUser);
   }
 
   async function initAuth(){
