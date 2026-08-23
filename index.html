@@ -2450,6 +2450,9 @@ body.gated>*:not(.phone-gate){display:none!important}
   // Set by the app handoff below; read by startCheckout. Declared here so it exists before
   // either of them runs, whatever order the file is read in.
   var appHandoffToken = '';
+  // Declared here because handleAppUpgradeHandoff writes it well above the phone-gate
+  // code that used to own it — `var` would hoist to undefined and set the wrong key.
+  var GATE_DISMISS_KEY = 'pozi_gate_dismissed';
 
   async function buildProjectPlan(){
     if (planBusy || !sb || !currentUser || !activeProject) return;
@@ -2934,7 +2937,14 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     var params = new URLSearchParams(raw);
     var token = params.get('t');
-    history.replaceState({}, '', window.location.pathname);   // wipe it immediately
+
+    // Mark the gate dismissed BEFORE touching the URL. The wipe below used to drop
+    // ?from=app along with the fragment, so showPhoneGate — which runs later in init —
+    // found no marker and put the "better on the app" wall in front of checkout.
+    try { sessionStorage.setItem(GATE_DISMISS_KEY, '1'); } catch(e){}
+
+    // Keep the query string; only the fragment carries the token.
+    history.replaceState({}, '', window.location.pathname + window.location.search);
     if (!token) return false;
 
     appHandoffToken = token;
@@ -3069,7 +3079,6 @@ body.gated>*:not(.phone-gate){display:none!important}
      Swap APP_STORE_URL for the real App Store listing once POZi Go is live;
      it is the only place the install link is defined. */
   var APP_STORE_URL = 'https://pozi.live/install';
-  var GATE_DISMISS_KEY = 'pozi_gate_dismissed';
 
   // User-agent only, deliberately. A width test would catch an iPad in split
   // view or a small laptop window, and those should get the real site.
