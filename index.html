@@ -2933,6 +2933,20 @@ body.gated>*:not(.phone-gate){display:none!important}
   // hour on its own.
   function handleAppUpgradeHandoff(){
     var raw = String(window.location.hash || '').replace(/^#/, '');
+    var cameFromApp = false;
+    try { cameFromApp = new URLSearchParams(window.location.search).get('from') === 'app'; } catch(e){}
+
+    // Arrived from the app but with no token in the fragment. Either the app could not read
+    // its session, or the fragment did not survive the hand-off to the system browser.
+    // Say so plainly instead of silently dropping the person on a signup form.
+    if (cameFromApp && (!raw || raw.indexOf('t=') === -1)){
+      try { sessionStorage.setItem(GATE_DISMISS_KEY, '1'); } catch(e){}
+      showPage('pricing');
+      var warn = $('goStatus');
+      openModal('goModal');
+      if (warn) warn.textContent = 'Signed-in handoff did not carry over (no token in the link). Sign in here once and your plan will apply everywhere.';
+      return false;
+    }
     if (!raw || raw.indexOf('t=') === -1) return false;
 
     var params = new URLSearchParams(raw);
