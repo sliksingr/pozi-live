@@ -1,0 +1,3744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>POZi — Plan it. Price it. Build it.</title>
+
+<meta name="description" content="POZi Foreman plans your project and works out real quantities and cut lists. POZi organizes it — notes, lists, and photos in one place — and sources the materials from retailers near you.">
+<link rel="canonical" href="https://pozi.live/">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pozi.live/">
+<meta property="og:title" content="POZi — Plan it. Price it. Build it.">
+<meta property="og:description" content="POZi Foreman plans your project and works out real quantities and cut lists. POZi organizes it — notes, lists, and photos in one place — and sources the materials from retailers near you.">
+<meta property="og:site_name" content="POZi">
+<meta property="og:image" content="https://pozi.live/pozi-social-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="POZi — Plan it. Price it. Build it.">
+<meta name="twitter:description" content="Plan the project with POZi Foreman, then source the materials near you.">
+<meta name="twitter:image" content="https://pozi.live/pozi-social-card.png">
+
+<link rel="icon" type="image/png" href="/logo-dark.png">
+<link rel="apple-touch-icon" href="/logo-dark.png">
+<meta name="theme-color" content="#0f0f1a">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOKENS — identical to the POZi Go app so the two match
+═══════════════════════════════════════════════════════════ */
+:root{
+  --green:#00ff88;
+  --blue:#38bdf8;
+  --bg:#0f0f1a;
+  --panel:#151525;
+  --panel-2:#1a1a2e;
+  --border:#2a2a45;
+  --text:#ffffff;
+  --muted:#a8a8c2;
+  --danger:#ff6680;
+  --shadow:0 18px 44px rgba(0,0,0,.28);
+  --r:22px;
+  --nh:66px;
+  --fh:'Syne',sans-serif;
+  --fb:'Inter',-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);overflow-x:hidden;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#08080f}
+::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:999px}
+.hidden{display:none!important}
+
+/* ═══ PAGE SYSTEM ═══ */
+.page{display:none}
+.page.active{display:block}
+.page-top{height:var(--nh)}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nh);padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(15,15,26,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:11px;cursor:pointer;flex-shrink:0}
+.nav-logo img{width:38px;height:38px;object-fit:contain}
+.logo-word{font-family:var(--fh);font-weight:800;font-size:21px;letter-spacing:-1px;line-height:1}
+/* The dot on the "i" fires off like a beam and resets — the POZi signature. */
+.logo-word .i,.foreman-title .i{color:var(--green)}
+.pozi-i{position:relative;display:inline-flex;justify-content:center;color:var(--green)}
+.pozi-i .stem{color:var(--green)}
+.pozi-i .dot{
+  position:absolute;top:.04em;left:50%;transform:translateX(-50%);
+  width:.19em;height:.19em;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green),0 0 12px rgba(0,255,136,.45);
+  animation:iDot 2.6s ease-in-out infinite;
+}
+.pozi-i .beam{
+  position:absolute;top:.125em;left:50%;height:.07em;width:0;border-radius:4px;
+  background:linear-gradient(90deg,var(--green),rgba(0,255,136,.55),transparent);
+  transform-origin:left center;animation:iBeam 2.6s ease-in-out infinite;pointer-events:none;
+}
+@keyframes iDot{
+  0%,26%   {transform:translateX(-50%) scale(1);opacity:1}
+  29%      {transform:translateX(-50%) scale(1.35);opacity:1}
+  50%      {transform:translateX(3em) scale(.2);opacity:0}
+  51%      {transform:translateX(-50%) scale(0);opacity:0}
+  63%,100% {transform:translateX(-50%) scale(1);opacity:1}
+}
+@keyframes iBeam{
+  0%,28%   {width:0;opacity:0}
+  33%      {width:.5em;opacity:1}
+  49%      {width:3em;opacity:.7}
+  53%,100% {width:0;opacity:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .pozi-i .dot,.pozi-i .beam{animation:none}
+  .pozi-i .beam{display:none}
+}
+.logo-word .go{font-size:12px;margin-left:1px;opacity:.75}
+.lead-lede{color:#fff;font-weight:800}
+.nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap;line-height:1.5}
+/* The original POZi tagline, kept as its own green line under the verbs. */
+.nav-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
+.nav-links{display:flex;gap:2px}
+.nl{color:var(--muted);font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;transition:color .18s,background .18s}
+.nl:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.nl.active{color:var(--green);background:rgba(0,255,136,.09)}
+.nav-cta{
+  background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b;
+  font-family:var(--fh);font-weight:800;font-size:12px;padding:10px 17px;border-radius:11px;
+  transition:transform .18s,box-shadow .18s;white-space:nowrap;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,255,136,.22)}
+@media(max-width:1250px){#acctLabel{max-width:130px}}
+.hamburger{display:none;flex-direction:column;gap:5px;width:42px;height:42px;align-items:center;justify-content:center}
+.hb{display:block;height:2px;width:19px;background:rgba(255,255,255,.85);border-radius:2px;transition:all .25s}
+.hamburger.open .hb:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--green)}
+.hamburger.open .hb:nth-child(2){opacity:0}
+.hamburger.open .hb:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--green)}
+.mobile-menu{
+  position:fixed;inset:var(--nh) 0 0;z-index:890;background:rgba(9,9,18,.985);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;
+}
+.mobile-menu.open{display:flex}
+.m-nl{
+  width:100%;max-width:330px;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:15px;padding:16px 20px;font-family:var(--fh);font-weight:700;font-size:16px;text-align:left;
+}
+.m-nl:hover{background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.22);color:var(--green)}
+.m-cta{
+  width:100%;max-width:330px;background:linear-gradient(135deg,var(--green),var(--blue));
+  color:#04120b;border-radius:15px;padding:16px 20px;font-family:var(--fh);font-weight:800;font-size:16px;margin-top:6px;
+}
+
+/* ═══ SHARED ═══ */
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.wrap-sm{max-width:820px;margin:0 auto;padding:0 24px}
+.section{padding:88px 0}
+.center{text-align:center}
+.eyebrow{
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--green);margin-bottom:14px;
+}
+h1,h2{font-family:var(--fh);font-weight:800;letter-spacing:-.03em;line-height:1.03}
+/* h3 defaults to Inter — headings under ~20px get promoted to Syne only where
+   they are large enough to stay legible. */
+h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18}
+.h-xl,.h-lg,.h-md{font-family:var(--fh);letter-spacing:-.03em;line-height:1.03}
+.h-xl{font-size:clamp(40px,7vw,76px)}
+.h-lg{font-size:clamp(30px,5vw,50px)}
+.h-md{font-size:clamp(22px,3vw,30px)}
+.grad{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lead{font-size:clamp(15px,1.7vw,18px);color:var(--muted);line-height:1.75;max-width:620px}
+.sub{font-size:14.5px;color:var(--muted);line-height:1.72}
+/* .lead is width-capped, so centering the TEXT is not enough — the block needs
+   auto margins too. These selectors cover both cases: .center on the element
+   itself (.lead.center) and .center on an ancestor. */
+.lead.center,.sub.center{margin-left:auto;margin-right:auto;text-align:center}
+.center .lead,.center .sub,.center p{margin-left:auto;margin-right:auto;text-align:center}
+.cta .lead,.cta p,.cta .sub{margin-left:auto;margin-right:auto;text-align:center}
+.hero .lead,.hero p{margin-left:auto;margin-right:auto;text-align:center}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--fh);font-weight:800;font-size:14px;padding:15px 30px;border-radius:14px;
+  transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;
+}
+.btn-p{background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,255,136,.24)}
+.btn-s{background:rgba(255,255,255,.045);color:var(--text);border:1px solid var(--border)}
+.btn-s:hover{background:rgba(255,255,255,.075);border-color:rgba(0,255,136,.24)}
+
+.card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px;box-shadow:var(--shadow);
+}
+.stack{display:grid;gap:18px}
+.stack-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.stack-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+
+/* ═══ HERO ═══ */
+.hero{position:relative;overflow:hidden;padding:78px 0 62px;text-align:center}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%,rgba(0,255,136,.10),transparent 62%),
+    radial-gradient(ellipse 60% 42% at 88% 92%,rgba(56,189,248,.07),transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 40%,#000,transparent);
+  mask-image:radial-gradient(ellipse 75% 70% at 50% 40%,#000,transparent);
+}
+.hero>.wrap{position:relative;z-index:1}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:7px 15px;margin-bottom:26px;
+  background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--green);
+}
+.hero-badge i{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{margin-bottom:20px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:34px}
+
+
+/* ═══ FOREMAN PANEL ═══ */
+.foreman-shell{
+  background:
+    radial-gradient(ellipse 70% 60% at 12% 0%,rgba(0,255,136,.055),transparent 62%),
+    radial-gradient(ellipse 60% 60% at 95% 100%,rgba(56,189,248,.055),transparent 62%),
+    var(--panel);
+  border:1px solid var(--border);border-radius:26px;padding:26px;box-shadow:var(--shadow);
+}
+.foreman-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.foreman-title{font-family:var(--fh);font-weight:800;font-size:21px;letter-spacing:-.02em}
+.foreman-title .i{color:var(--green)}
+.foreman-sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.usage-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.16);
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:.6px;color:#cfffe6;white-space:nowrap;
+}
+
+.chat-stream{
+  display:flex;flex-direction:column;gap:12px;
+  min-height:190px;max-height:420px;overflow-y:auto;
+  padding:16px;border-radius:18px;
+  background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.05);
+  scroll-behavior:smooth;
+}
+.msg{max-width:84%;padding:13px 15px;border-radius:16px;font-size:15px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+.msg.user{align-self:flex-end;background:#4ade80;color:#06120b;border-bottom-right-radius:5px}
+.msg.bot{align-self:flex-start;background:#1a1a2e;color:#e3e3ef;border:1px solid #30304c;border-bottom-left-radius:5px}
+.msg.thinking{opacity:.7;font-style:italic}
+.msg .nh{
+  font-family:var(--fb);font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  color:var(--green);margin:13px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(0,255,136,.16);
+}
+.msg .nh:first-child{margin-top:0}
+.msg ul{margin:0 0 4px;padding-left:16px;list-style:none}
+.msg li{position:relative;margin-bottom:4px}
+.msg li:before{content:"";position:absolute;left:-11px;top:8px;width:4px;height:4px;border-radius:50%;background:var(--green);opacity:.6}
+.msg .nq{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+
+.chat-input-label{display:block;font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--green);margin:18px 0 7px}
+.chat-input-row{display:flex;gap:10px;align-items:flex-end}
+.chat-input{
+  flex:1;min-height:58px;max-height:150px;resize:vertical;
+  /* Recessed and clearly outlined — a message bubble is raised and softly bordered, so the
+     two no longer read as the same object. */
+  background:#0b0d18;border:1.5px solid rgba(0,255,136,.22);border-radius:15px;
+  box-shadow:inset 0 1px 6px rgba(0,0,0,.5);
+  padding:15px 17px;color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.5;outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+.chat-input:focus{border-color:rgba(0,255,136,.55);box-shadow:inset 0 1px 6px rgba(0,0,0,.5),0 0 0 3px rgba(0,255,136,.10)}
+.chat-input::placeholder{color:#7f829e}
+.chat-send{
+  flex:0 0 auto;min-height:52px;padding:0 22px;border-radius:15px;
+  background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b;
+  font-family:var(--fh);font-weight:800;font-size:14px;
+  transition:transform .18s,box-shadow .18s,opacity .18s;
+}
+.chat-send:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,255,136,.2)}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.empty-sm{color:var(--muted);font-size:13px;line-height:1.5}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.photo-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--border);cursor:pointer}
+.plan-strip{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  margin-top:14px;padding:13px 16px;border-radius:14px;border:1px solid rgba(0,255,136,.22);
+  background:rgba(0,255,136,.05)}
+.plan-strip-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.proj-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;
+  border:1px solid rgba(0,255,136,.32);background:rgba(0,255,136,.09);color:#7dffbf;
+  font-family:var(--fh);font-weight:800;font-size:10px;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+.proj-chip:active{transform:scale(.96)}
+.proj-chip-n{font-size:11px;color:#fff}
+.plan-strip-name{font-family:var(--fh);font-weight:800;font-size:15px;color:#7dffbf}
+.plan-strip-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+.chat-guest-note{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
+.chat-save-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.chat-save-row:has(.hidden) .chat-save-hint{margin-inline:auto;text-align:center}
+.chat-save-hint{color:var(--muted);font-size:12px}
+.chat-status{margin-top:9px;min-height:17px;font-size:11.5px;line-height:1.45;color:var(--muted)}
+/* Hitting a tier cap should offer the way forward, not just report the wall. */
+.upgrade-card{
+  align-self:stretch;max-width:100%;margin-top:4px;padding:18px;border-radius:17px;
+  background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(56,189,248,.06));
+  border:1px solid rgba(0,255,136,.26);
+}
+.upgrade-card h4{font-family:var(--fb);font-weight:800;font-size:15px;letter-spacing:-.01em;margin-bottom:7px}
+.upgrade-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.upgrade-actions{display:flex;gap:9px;flex-wrap:wrap}
+.upgrade-actions .btn{padding:12px 20px;font-size:13px}
+.chat-status.err{color:var(--danger)}
+.chat-status.ok{color:var(--green)}
+
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.preset{
+  padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.045);
+  border:1px solid var(--border);font-size:12px;font-weight:600;color:#d5dbf0;
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.preset:hover{background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.22);transform:translateY(-1px)}
+
+.disclaimer-note{margin-top:16px;text-align:center;font-size:11.5px;color:#8b8ea8;line-height:1.6}
+.disclaimer-btn{
+  margin-top:9px;display:inline-flex;align-items:center;border-radius:999px;padding:7px 14px;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.22);color:var(--green);
+  font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:.5px;
+}
+
+/* ═══ FEATURE TILES ═══ */
+.tile{
+  background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:24px;
+  transition:transform .2s,border-color .2s;
+}
+.tile:hover{transform:translateY(-3px);border-color:rgba(0,255,136,.2)}
+.tile-ico{display:none}
+.tile-ico-unused{
+  width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(0,255,136,.14),rgba(56,189,248,.1));
+  border:1px solid rgba(0,255,136,.16);font-size:20px;margin-bottom:14px;
+}
+.tile h3{font-family:var(--fb);font-weight:800;font-size:16.5px;letter-spacing:-.01em;margin-bottom:8px}
+.tile p{font-size:13px;color:var(--muted);line-height:1.66}
+
+/* ═══ TIMELINE (How it works) ═══ */
+.timeline{display:flex;flex-direction:column;margin-top:8px}
+.trow{display:grid;grid-template-columns:52px 1fr;gap:0 20px}
+.tcol{display:flex;flex-direction:column;align-items:center}
+.tnum{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-weight:800;font-size:15px;color:#04120b;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+}
+.tline{width:2px;flex:1;min-height:26px;margin-top:8px;background:linear-gradient(180deg,var(--border),transparent)}
+.trow:last-child .tline{display:none}
+.tbody{padding:4px 0 40px}
+.tbody h3{font-family:var(--fb);font-weight:800;font-size:18.5px;letter-spacing:-.015em;margin-bottom:9px}
+.tbody p{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:12px}
+.tnote{
+  background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:13px;padding:15px;
+  font-size:12.5px;color:#9ea3bd;line-height:1.62;
+}
+.tnote strong{display:block;color:#dfe4f5;font-family:var(--fh);font-size:12px;margin-bottom:4px}
+
+/* ═══ MODE CARDS ═══ */
+.mode{border-radius:20px;padding:30px;border:1px solid var(--border);background:var(--panel);position:relative;overflow:hidden}
+.mode::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.mode-diy::before{background:linear-gradient(90deg,var(--green),transparent)}
+.mode-pro::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.mode h3{font-family:var(--fh);font-weight:800;font-size:25px;letter-spacing:-.03em;margin-bottom:14px}
+.mode-feat{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px}
+.mode-tick{
+  width:19px;height:19px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;font-size:10px;
+}
+.tick-g{background:rgba(0,255,136,.11);border:1px solid rgba(0,255,136,.26);color:var(--green)}
+.tick-b{background:rgba(56,189,248,.11);border:1px solid rgba(56,189,248,.26);color:var(--blue)}
+.mode-feat span{font-size:13.5px;color:var(--muted);line-height:1.55}
+.mode-eg{
+  margin-top:20px;padding:17px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(0,255,136,.045),rgba(56,189,248,.035));
+  border:1px solid rgba(0,255,136,.12);font-size:13px;color:#cfd5ea;line-height:1.65;
+}
+.mode-eg strong{display:block;font-family:var(--fh);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--green);margin-bottom:7px}
+
+/* ═══ PRICING ═══ */
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
+.plan{
+  background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px 22px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.plan:hover{transform:translateY(-4px);border-color:rgba(0,255,136,.26);box-shadow:0 22px 50px rgba(0,0,0,.3)}
+.plan.featured{border-color:rgba(0,255,136,.28);background:linear-gradient(180deg,#0e1a15,#0f0f1c)}
+.plan.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.plan-badge{
+  position:absolute;top:16px;right:16px;background:var(--green);color:#04120b;
+  font-family:var(--fh);font-weight:800;font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;
+}
+.plan-label{font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.plan-name{font-family:var(--fh);font-size:21px;font-weight:800;margin-bottom:6px}
+.plan-price{font-family:var(--fh);font-size:34px;font-weight:800;line-height:1;margin-top:12px}
+.plan-per{font-size:12.5px;color:var(--muted);margin-top:5px}
+.plan-hr{height:1px;background:var(--border);margin:18px 0}
+.plan-feats{display:flex;flex-direction:column;gap:9px;flex:1;margin-bottom:22px}
+.plan-feat{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--muted);line-height:1.5}
+.plan-feat b{color:#dfe4f5;font-weight:700}
+.plan-tick{color:var(--green);flex-shrink:0;font-size:11px;margin-top:2px}
+/* ── Pricing on a phone ────────────────────────────────────────────────────
+   Four full-height cards is a long scroll on a 390px screen, and someone who
+   arrives from the app's Upgrade button is there to compare and pick — not to
+   read. Tighten the chrome, not the information: name, price, and the limits
+   stay; the padding, type scale, and dead space come down. */
+.plans:has(#planGuest.hidden){max-width:760px;margin-left:auto;margin-right:auto}
+@media(max-width:620px){
+  .plan{padding:16px 16px;border-radius:16px}
+  .plan-label{font-size:9px;letter-spacing:1.4px;margin-bottom:5px}
+  .plan-name{font-size:17px;margin-bottom:2px}
+  .plan-price{font-size:26px;margin-top:7px}
+  .plan-per{font-size:11.5px;margin-top:3px}
+  .plan-hr{margin:11px 0}
+  .plan-feats{gap:6px;margin-bottom:14px}
+  .plan-feat{font-size:12px;line-height:1.4;gap:7px}
+  .plan-badge{top:12px;right:12px;font-size:8px;padding:3px 7px}
+  .plan:hover{transform:none;box-shadow:none}
+}
+
+.plan-btn{width:100%;padding:14px;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:13.5px;margin-top:auto}
+.plan-btn-p{background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b}
+.plan-btn-s{background:rgba(255,255,255,.045);border:1px solid var(--border);color:var(--text)}
+.plan-btn:hover{transform:translateY(-1px)}
+
+.plan.is-current{border-color:rgba(0,255,136,.45);box-shadow:0 0 0 1px rgba(0,255,136,.12),0 20px 46px rgba(0,0,0,.3)}
+.plan-current-tag{
+  position:absolute;top:16px;right:16px;background:rgba(0,255,136,.14);border:1px solid rgba(0,255,136,.45);
+  color:var(--green);font-family:var(--fh);font-weight:800;font-size:9px;letter-spacing:1px;
+  text-transform:uppercase;padding:4px 9px;border-radius:999px;
+}
+.plan-btn:disabled{opacity:.55;cursor:default;transform:none}
+.plan-note{
+  margin-top:26px;padding:20px;border-radius:16px;text-align:center;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  font-size:13px;color:var(--muted);line-height:1.7;
+}
+
+/* ═══ CTA ═══ */
+.cta{
+  border-radius:26px;padding:56px 34px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(56,189,248,.04));
+  border:1px solid rgba(0,255,136,.14);
+}
+.cta::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--blue))}
+
+/* ═══ FOOTER ═══ */
+footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
+.footer-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-brand img{width:32px;height:32px}
+.footer-tag{font-size:9px;letter-spacing:1.3px;text-transform:uppercase;color:#6a6d85;margin-top:3px;line-height:1.5}
+.footer-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap}
+.footer-link{font-size:12px;color:#8b8ea8;transition:color .18s}
+.footer-link:hover{color:var(--green)}
+.footer-copy{font-size:11px;color:#5c5f75}
+
+/* ═══ MODALS ═══ */
+.modal{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);overflow-y:auto}
+.modal.open{display:flex}
+.sheet{
+  width:min(560px,100%);margin:auto;background:var(--panel);border:1px solid var(--border);
+  border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.6);overflow:hidden;
+}
+.sheet-head{padding:26px 28px 20px;border-bottom:1px solid var(--border);position:relative}
+.sheet-close{
+  position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);color:#9a9db5;font-size:17px;
+  display:flex;align-items:center;justify-content:center;transition:color .18s,background .18s;
+}
+.sheet-close:hover{color:#fff;background:rgba(255,255,255,.1)}
+.sheet-kicker{font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--green);margin-bottom:9px}
+.sheet-title{font-family:var(--fh);font-weight:800;font-size:clamp(22px,4vw,29px);letter-spacing:-.03em;line-height:1.08;margin-bottom:8px}
+.sheet-sub{font-size:13px;color:var(--muted);line-height:1.65}
+.sheet-body{padding:24px 28px 28px;display:flex;flex-direction:column;gap:13px}
+.field-label{font-family:var(--fh);font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.field{
+  width:100%;background:rgba(255,255,255,.045);border:1px solid var(--border);border-radius:12px;
+  padding:13px 15px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .18s;
+}
+.field:focus{border-color:rgba(0,255,136,.32)}
+.field::placeholder{color:#7f829e}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-status{text-align:center;font-family:var(--fh);font-weight:700;font-size:13px;min-height:18px}
+.legal p{font-size:13px;color:var(--muted);line-height:1.78;margin-bottom:13px}
+.legal strong{color:#dfe4f5}
+
+/* Disclaimer — same content and scroll-to-accept gate as the app. */
+.disc-sheet{
+  width:min(560px,100%);margin:auto;background:#12131f;border:1px solid rgba(255,255,255,.10);
+  border-radius:20px;display:flex;flex-direction:column;max-height:86vh;overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.6);
+}
+.disc-head{padding:20px 20px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.disc-title{font-family:var(--fh);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.disc-sub{font-size:13px;color:var(--muted);margin-top:5px}
+.disc-body{padding:16px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;font-size:14px;line-height:1.55;color:#dfe4ef}
+.disc-body h4{margin:16px 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#8dffc8;font-family:var(--fh)}
+.disc-body p{margin:0 0 10px}
+.disc-body ul{margin:0 0 10px;padding-left:18px}
+.disc-body li{margin-bottom:6px}
+.disc-foot{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:8px}
+.disc-hint{font-size:12px;color:var(--muted);text-align:center;min-height:16px}
+.disc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.disc-actions button{padding:14px;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:14px}
+.disc-accept{border:1px solid rgba(0,255,136,.45);background:linear-gradient(180deg,#00ff88,#00d46f);color:#06210f}
+.disc-accept:disabled{opacity:.4;filter:grayscale(.6);cursor:not-allowed}
+.disc-decline{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#e8ecf5}
+
+/* QR block */
+.qr-row{display:grid;grid-template-columns:112px 1fr;gap:16px;align-items:center;
+  background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:16px;padding:15px}
+.qr-row img{width:112px;height:112px;border-radius:12px;background:#fff;padding:8px}
+.qr-row strong{display:block;font-family:var(--fb);font-weight:800;font-size:15px;margin-bottom:5px}
+.qr-row span{font-size:12.5px;color:var(--muted);line-height:1.55}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:900px){
+  .stack-3{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  nav{padding:0 16px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .section{padding:62px 0}
+  .stack-2,.plans{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .hero{padding:52px 0 44px}
+  .foreman-shell{padding:18px;border-radius:20px}
+  .chat-input-row{flex-direction:column;align-items:stretch}
+  .chat-send{width:100%}
+  .qr-row{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .footer-in{flex-direction:column;text-align:center}
+  .trow{grid-template-columns:44px 1fr;gap:0 15px}
+  .tnum{width:38px;height:38px;font-size:13px}
+  .cta{padding:40px 22px}
+}
+@media(min-width:769px){.mobile-menu{display:none!important}}
+
+/* ═══ ACCOUNT MENU + AUTH ═══ */
+.acct-wrap{position:relative;display:inline-flex;align-items:center}
+.acct-toggle{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:11px;
+  border:1px solid var(--border);background:rgba(255,255,255,.045);color:#eaeaf7;
+  font-family:var(--fh);font-weight:700;font-size:12.5px;transition:background .18s,border-color .18s;
+}
+.acct-toggle:hover,.acct-toggle.open{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.22)}
+.acct-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(0,255,136,.5)}
+/* The nav label carries the signed-in email, so it needs a ceiling — a long
+   address would otherwise push the caret and CTA off the bar. */
+#acctLabel{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:900px){#acctLabel{max-width:100px}}
+.acct-caret{font-size:10px;color:#8b8ea8}
+.acct-menu{
+  position:absolute;top:calc(100% + 10px);right:0;width:250px;display:none;padding:9px;
+  border-radius:16px;border:1px solid var(--border);background:rgba(14,14,26,.985);
+  box-shadow:0 24px 64px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);z-index:950;
+}
+.acct-menu.open{display:grid;gap:3px}
+.acct-item{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 12px;border-radius:10px;color:#dcdcf0;font-size:13px;font-weight:600;text-align:left;
+  transition:background .16s,color .16s;
+}
+.acct-item:hover{background:rgba(0,255,136,.08);color:#fff}
+.acct-item.danger{color:#ff8fa3}
+.acct-item.danger:hover{background:rgba(255,102,128,.09)}
+.acct-item b{color:var(--green);font-family:var(--fh);font-size:11.5px}
+.acct-hr{height:1px;background:var(--border);margin:6px 2px}
+.acct-cta{width:100%;text-align:center;background:linear-gradient(135deg,var(--green),var(--blue));color:#04120b;font-family:var(--fh);font-weight:800;font-size:12.5px;padding:11px 14px;border-radius:10px;border:none;cursor:pointer;margin-top:2px}
+.acct-cta:hover{filter:brightness(1.06)}
+.acct-cta:active{transform:scale(.985)}
+.acct-email{padding:9px 12px 4px;font-size:11px;color:#7f829e;word-break:break-all;line-height:1.4}
+
+.plan-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;
+  background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);
+  font-family:var(--fh);font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);
+}
+.plan-lines{display:grid;gap:9px;margin-top:16px}
+.plan-line{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--border);
+  font-size:13px;color:var(--muted);
+}
+.plan-line b{color:#e6e9f7;font-family:var(--fh);font-size:12.5px}
+
+@media(max-width:768px){.acct-wrap{display:none}}
+
+/* ═══ PROJECTS + SEARCH ═══ */
+.work-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.empty{
+  border:1px dashed var(--border);border-radius:20px;padding:44px 26px;text-align:center;
+  background:rgba(255,255,255,.02);
+}
+.empty h3{font-family:var(--fh);font-weight:800;font-size:21px;letter-spacing:-.02em;margin-bottom:10px}
+.empty p{font-size:14px;color:var(--muted);line-height:1.7;max-width:460px;margin:0 auto 20px}
+
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.proj-card{
+  text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;
+  transition:transform .18s,border-color .18s;
+}
+.proj-card:hover{transform:translateY(-2px);border-color:rgba(0,255,136,.26)}
+.proj-name{font-family:var(--fb);font-weight:800;font-size:15.5px;letter-spacing:-.01em;margin-bottom:7px}
+.proj-meta{font-size:12px;color:var(--muted);line-height:1.5}
+/* Counts sit under the date as their own line, matching the app's project rows. */
+.proj-counts{font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px}
+.proj-open{margin-top:14px;font-family:var(--fh);font-size:11.5px;font-weight:800;color:var(--green);letter-spacing:.6px}
+
+.detail-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:18px;align-items:start}
+.detail-col{display:grid;gap:16px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:22px}
+.panel-h{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;
+  font-family:var(--fh);font-weight:800;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--green);
+}
+.panel-body{font-size:13.5px;line-height:1.68;color:var(--muted)}
+.panel-scroll{max-height:400px;overflow-y:auto;padding-right:4px}
+.note-block{padding:16px 0;border-bottom:1px solid var(--border)}
+.note-block:last-child{border-bottom:none}
+.note-block .nh{
+  font-family:var(--fb);font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
+  color:var(--green);margin:13px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(0,255,136,.16);
+}
+.note-block .nh:first-child{margin-top:0}
+.note-block ul{margin:0 0 4px;padding-left:16px;list-style:none}
+.note-block li{position:relative;margin-bottom:4px}
+.note-block li:before{content:"";position:absolute;left:-11px;top:8px;width:4px;height:4px;border-radius:50%;background:var(--green);opacity:.6}
+.note-block .nq{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.item-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;margin:0 6px 6px 0;
+  background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.18);
+  font-size:12px;font-weight:600;color:#dbffe c;color:#d9ffe9;
+}
+.search-row{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:10px}
+.search-field{
+  width:100%;min-height:54px;background:rgba(255,255,255,.045);border:1px solid var(--border);
+  border-radius:15px;padding:15px 17px;color:var(--text);font-size:15px;outline:none;transition:border-color .18s;
+}
+.search-field:focus{border-color:rgba(0,255,136,.32)}
+.search-field::placeholder{color:#7f829e}
+.search-btn{
+  min-height:54px;padding:0 26px;border-radius:15px;background:linear-gradient(135deg,var(--green),var(--blue));
+  color:#04120b;font-family:var(--fh);font-weight:800;font-size:14px;white-space:nowrap;
+}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:13px;margin-top:18px}
+.res-card{
+  display:block;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  padding:16px;transition:transform .18s,border-color .18s;
+}
+.res-card:hover{transform:translateY(-2px);border-color:rgba(0,255,136,.28)}
+.res-top{
+  display:flex;justify-content:space-between;gap:10px;font-family:var(--fh);font-size:9.5px;font-weight:800;
+  letter-spacing:1.1px;text-transform:uppercase;color:var(--green);margin-bottom:9px;
+}
+.res-top em{color:#8b8ea8;font-style:normal;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-card strong{display:block;font-size:14px;line-height:1.35;color:#fff;margin-bottom:7px}
+.res-card p{font-size:11.5px;color:var(--muted);line-height:1.55}
+.res-price{font-family:var(--fh);font-weight:800;color:var(--green);font-size:14px;margin-top:9px}
+.res-note{grid-column:1/-1;padding:26px;border-radius:16px;border:1px dashed var(--border);text-align:center;color:var(--muted);font-size:13.5px;line-height:1.7}
+
+@media(max-width:900px){
+  .detail-grid{grid-template-columns:1fr}
+  .search-row{grid-template-columns:1fr}
+  .search-btn{width:100%}
+}
+
+/* ═══ PHONE GATEWAY ═══
+   Phones get the app, not the site. Detection is user-agent only and never
+   width — an iPad in split view can be under 700px wide and must still get the
+   full website. */
+.phone-gate{
+  position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;
+  padding:24px;background:var(--bg);overflow-y:auto;
+}
+.phone-gate.show{display:flex}
+.phone-gate-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 8%,rgba(0,255,136,.16),transparent 58%),
+    radial-gradient(ellipse 70% 45% at 80% 92%,rgba(56,189,248,.14),transparent 60%);
+}
+.phone-gate-card{
+  position:relative;width:min(430px,100%);margin:auto;text-align:center;
+  background:linear-gradient(180deg,rgba(21,21,37,.96),rgba(10,10,20,.97));
+  border:1px solid var(--border);border-radius:28px;
+  box-shadow:0 26px 80px rgba(0,0,0,.55);padding:32px 24px 26px;
+}
+.phone-gate-card img.mark{width:78px;height:78px;object-fit:contain;margin:0 auto 18px}
+.phone-gate-card h1{font-size:clamp(32px,10vw,46px);margin-bottom:14px}
+.phone-gate-card p{color:var(--muted);font-size:15px;line-height:1.68;margin:0 auto 20px;max-width:340px}
+.phone-gate-feats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:22px}
+.phone-gate-feats span{
+  padding:8px 12px;border-radius:999px;font-size:11.5px;font-weight:700;color:#dbe6ff;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+}
+.phone-gate-actions{display:grid;gap:10px}
+.phone-gate-actions .btn{width:100%;padding:16px}
+.phone-gate-note{margin-top:16px;color:#7f829e;font-size:12px;line-height:1.6}
+.phone-gate-copy{margin-top:18px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#5c5f75;font-weight:600}
+body.gated{overflow:hidden}
+body.gated>*:not(.phone-gate){display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo" data-page="home">
+    <img src="logo-dark.png" alt="POZi">
+    <div>
+      <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
+      <div class="nav-tag"><span class="aiop">All in one place.</span></div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <button class="nl active" data-page="home">Home</button>
+    <button class="nl" data-page="projects">Projects</button>
+    <button class="nl" data-page="search">Search</button>
+    <button class="nl" data-page="how">How It Works</button>
+    <button class="nl" data-page="pricing">Pricing</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="acct-wrap">
+      <button class="acct-toggle" id="acctToggle" type="button" aria-haspopup="true" aria-expanded="false">
+        <span class="acct-dot" id="acctDot"></span><span id="acctLabel">Account</span><span class="acct-caret">▾</span>
+      </button>
+      <div class="acct-menu" id="acctMenu" aria-hidden="true">
+        <div class="acct-email hidden" id="acctEmail"></div>
+        <button class="acct-item" id="acctAuth" type="button">Sign in / Create account</button>
+        <button class="acct-item" id="acctPlan" type="button">My plan <b id="acctPlanTag">—</b></button>
+        <button class="acct-item" data-modal="contactModal" type="button">Contact support</button>
+        <button class="acct-item hidden" id="acctSignOut" type="button">Sign out</button>
+        <button class="acct-item danger hidden" id="acctDelete" type="button">Delete my account</button>
+        <div class="acct-hr"></div>
+        <!-- The app download reads as a real button at the bottom, not another line of menu
+             text. As plain text mid-list it disappeared — it is the one item here that is a
+             product action rather than an account setting. -->
+        <button class="acct-cta" data-modal="goModal" type="button">Download POZi Go</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span class="hb"></span><span class="hb"></span><span class="hb"></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="m-nl" data-page="home">Home</button>
+  <button class="m-nl" data-page="projects">Projects</button>
+  <button class="m-nl" data-page="search">Search</button>
+  <button class="m-nl" data-page="how">How It Works</button>
+  <button class="m-nl" data-page="pricing">Pricing</button>
+  <button class="m-nl" data-modal="contactModal">Contact</button>
+  <button class="m-nl" id="mAcctAuth">Sign in / Create account</button>
+  <button class="m-nl" id="mAcctPlan">My plan</button>
+  <button class="m-cta" data-modal="goModal">Get POZi Go</button>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="page-home" class="page active">
+<div class="page-top"></div>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="wrap">
+    <div class="hero-badge"><i></i> POZi Foreman</div>
+    <h1 class="h-xl">Plan first.<br><span class="grad">Source after.</span></h1>
+    <p class="lead center" style="max-width:660px;margin-left:auto;margin-right:auto;text-align:center;margin-top:20px">
+      <b class="lead-lede">Plan it. Price it. Build it.</b> Tell POZi Foreman what you want to
+      build, fix, or design. It works out the real quantities and cut lists. POZi keeps the whole
+      job organized as a project — conversation, notes, item list, and photos in one place —
+      then finds the materials at stores near you.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-p" href="#foreman">Try Without an Account</a>
+      <button class="btn btn-s" data-signup>Create Free Account</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOREMAN LIVE -->
+<section class="section" id="foreman" style="padding-top:8px">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:34px">
+      <div class="eyebrow">Try it here</div>
+      <h2 class="h-lg">Describe the project.<br><span class="grad">Foreman organizes it.</span></h2>
+      <p class="lead center" style="max-width:640px;margin-left:auto;margin-right:auto;text-align:center;margin-top:16px">
+        No account needed to start — you get one session with five messages as a guest.
+        A free account raises that and saves your projects.
+      </p>
+    </div>
+
+    <div class="foreman-shell">
+      <div class="foreman-head">
+        <div>
+          <div class="foreman-title">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span> Foreman</div>
+          <div class="foreman-sub">Plans the project before you spend a dollar on materials.</div>
+        </div>
+        <div class="usage-chip" id="usageChip">Guest session</div>
+      </div>
+
+      <div class="chat-stream" id="chatStream" aria-live="polite">
+        <div class="msg bot">Tell me what you're working on — the project, the space, or the problem. Give me real measurements where you have them and I'll work out the materials.</div>
+      </div>
+
+      <label class="chat-input-label" for="chatInput">Your message</label>
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" rows="1"
+          placeholder="Describe your project…"></textarea>
+        <button id="chatSend" class="chat-send" type="button">Ask Foreman</button>
+      </div>
+      <div id="chatStatus" class="chat-status"></div>
+
+      <!-- Appears the moment Foreman says the plan is ready. -->
+      <div class="chat-save-row hidden" id="homePlanRow">
+        <button class="btn btn-p" id="homeBuildPlan">Build the Plan →</button>
+        <span class="chat-save-hint">Writes Build Notes and the item list into this project.</span>
+      </div>
+
+      <div class="chat-guest-note hidden" id="chatGuestNote">Foreman needs a free account to save your projects.</div>
+
+      <div class="plan-strip hidden" id="planStrip">
+        <div class="plan-strip-text">
+          <div class="plan-strip-head">
+            <span class="plan-strip-name" id="planStripName">Free</span>
+            <button class="proj-chip hidden" id="planStripProjects" type="button" title="Go to your projects">
+              Projects <span class="proj-chip-n" id="planStripProjectsN">0</span>
+            </button>
+          </div>
+          <div class="plan-strip-sub" id="planStripSub"></div>
+        </div>
+        <button class="btn btn-p" id="planStripCta">Upgrade</button>
+      </div>
+
+
+
+      <div class="disclaimer-note">
+        Foreman can make mistakes. Always verify measurements, code, permits, and safety requirements.
+        <br><button class="disclaimer-btn" data-modal="legalModal">View Full Disclaimer</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="section" style="padding-top:20px">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:38px">
+      <div class="eyebrow">In the app</div>
+      <h2 class="h-lg">Everything for the job,<br><span class="grad">in one place.</span></h2>
+    </div>
+
+    <div class="stack-3">
+      <div class="tile">
+        <h3>Projects</h3>
+        <p>Every job gets its own project. Conversations, notes, lists, and photos stay together instead of scattered across texts and napkins.</p>
+      </div>
+      <div class="tile">
+        <h3>Build Notes</h3>
+        <p>Dimensions, cut list, and how every quantity was figured — with the arithmetic written out so you can check it.</p>
+      </div>
+      <div class="tile">
+        <h3>POZi List</h3>
+        <p>The material list becomes a live product search. Real items from approved retailers, priced and linked.</p>
+      </div>
+      <div class="tile">
+        <h3>Project Photos</h3>
+        <p>Before, during, and after shots organized by project. Snap a photo of a part or a problem and Foreman can read it.</p>
+      </div>
+      <div class="tile">
+        <h3>Local Sourcing</h3>
+        <p>Set your ZIP once. Searches target stores near you instead of returning whatever ships from three states away.</p>
+      </div>
+      <div class="tile">
+        <h3>Client Sharing</h3>
+        <p>Contractors can send a client a link to the project photos and notes. No app, no account, and you can switch it off anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <div class="eyebrow">Why not just a chatbot</div>
+      <h2 class="h-md" style="margin-bottom:14px">A chat window forgets.<br><span class="grad">POZi keeps the job.</span></h2>
+      <p class="lead center" style="max-width:640px;margin-left:auto;margin-right:auto;text-align:center;font-size:15px">
+        Ask any AI about a deck and you get an answer you have to copy somewhere before you lose it.
+        POZi holds the whole job together — the conversation, the Build Notes, the item list, and
+        the photos — as a project you can reopen next week. Then it turns that list into a real
+        product search at stores near you.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-p" data-signup>Create Free Account</button>
+        <button class="btn btn-s" data-page="how">How It Works →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /home -->
+
+<!-- ═══════════════ PROJECTS ═══════════════ -->
+<div id="page-projects" class="page">
+<div class="page-top"></div>
+
+<section class="section" style="padding-top:44px">
+  <div class="wrap">
+    <div class="work-head">
+      <div>
+        <div class="eyebrow">Projects</div>
+        <h1 class="h-lg" id="projHeading">Your jobs</h1>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-p" id="projNew">+ New Project</button>
+        <button class="btn btn-s" id="projBack" style="display:none">← All projects</button>
+        <button class="btn btn-s" id="projDelete" style="display:none;border-color:rgba(255,120,120,.35);color:#ff9d9d">Delete Project</button>
+      </div>
+    </div>
+
+    <!-- signed out -->
+    <div class="empty" id="projSignedOut">
+      <h3>Sign in to see your projects</h3>
+      <p>Projects sync between the website and the POZi Go app. Sign in and everything you've planned is right here.</p>
+      <button class="btn btn-p" data-signup>Create Free Account</button>
+    </div>
+
+    <!-- list -->
+    <div id="projList" class="hidden">
+      <div class="proj-grid" id="projGrid"></div>
+      <div class="empty hidden" id="projEmpty">
+        <h3>No projects yet</h3>
+        <p>Start a conversation with Foreman and your first project will appear here — with its Build Notes, item list, and photos.</p>
+        <button class="btn btn-p" data-try-foreman>Start with Foreman</button>
+      </div>
+    </div>
+
+    <!-- detail -->
+    <div id="projDetail" class="hidden">
+      <div class="detail-grid">
+        <div class="detail-col">
+          <div class="panel">
+            <div class="panel-h"><span>Foreman</span><span id="projMsgCount"></span></div>
+            <div class="chat-stream" id="projChat" style="min-height:240px;max-height:440px"></div>
+            <label class="chat-input-label" for="projInput">Your message</label>
+            <div class="chat-input-row">
+              <textarea id="projInput" class="chat-input" rows="1" placeholder="Add to this project…"></textarea>
+              <button id="projSend" class="chat-send" type="button">Send</button>
+            </div>
+            <div id="projStatus" class="chat-status"></div>
+          </div>
+        </div>
+
+        <div class="detail-col">
+          <div class="panel">
+            <div class="panel-h"><span>Build Notes</span><span id="projNoteCount"></span></div>
+            <div class="panel-body panel-scroll" id="projNotes"></div>
+            <button class="btn btn-p" id="projBuildPlan" style="width:100%;margin-top:14px">Build the Plan</button>
+            <div class="chat-status" id="projPlanStatus" style="margin-top:8px"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span>Item List</span></div>
+            <div class="panel-body" id="projItems"></div>
+            <button class="btn btn-s" id="projSource" style="width:100%;margin-top:14px">Source These Materials</button>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span>Photos</span></div>
+            <div class="panel-body" id="projPhotos"></div>
+            <!-- Upload, not capture. Taking a photo belongs to the phone; picking one off a
+                 desktop or iPad is the web's job, and it feeds the SAME buildr-vision call
+                 the app uses so the analysis is identical either way. -->
+            <input type="file" id="photoFile" accept="image/*" class="hidden">
+            <div class="field-row" style="margin-top:12px">
+              <button class="btn btn-p" id="photoUpload">Upload a Photo</button>
+              <button class="btn btn-s" id="photoAnalyze">Upload &amp; Analyze</button>
+            </div>
+            <div class="chat-status" id="photoStatus" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /projects -->
+
+<!-- ═══════════════ SEARCH ═══════════════ -->
+<div id="page-search" class="page">
+<div class="page-top"></div>
+
+<section class="section" style="padding-top:44px">
+  <div class="wrap">
+    <div style="margin-bottom:22px">
+      <div class="eyebrow">POZi Search</div>
+      <h1 class="h-lg">Find the materials.</h1>
+      <p class="lead" style="margin-top:14px">
+        Search any product, material, or tool. POZi checks approved retailers and targets
+        results to your area — quick links first, then product cards with prices.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="search-row">
+        <input id="sQuery" class="search-field" type="search" placeholder="pressure treated 2x12, deck screws, irrigation valve..." autocomplete="off">
+        <input id="sZip" class="search-field" type="text" inputmode="numeric" maxlength="10" placeholder="ZIP code" autocomplete="postal-code">
+        <button id="sGo" class="search-btn" type="button">Search</button>
+      </div>
+      <div id="sStatus" class="chat-status" style="margin-top:12px">Set a ZIP to get results from stores near you.</div>
+    </div>
+
+    <div class="res-grid" id="sResults">
+      <div class="res-note">Search a product to see retailers and prices near you.</div>
+    </div>
+  </div>
+</section>
+</div><!-- /search -->
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<div id="page-how" class="page">
+<div class="page-top"></div>
+
+<section class="hero" style="padding:64px 0 34px">
+  <div class="hero-bg"></div>
+  <div class="wrap center">
+    <div class="hero-badge"><i></i> How it works</div>
+    <h1 class="h-lg">From an idea<br><span class="grad">to a loaded truck.</span></h1>
+    <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:18px">
+      POZi turns a project you're describing out loud into an organized plan,
+      a checked material list, and a path to buy it nearby.
+    </p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:22px">
+  <div class="wrap-sm">
+    <div class="timeline">
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">1</div><div class="tline"></div></div>
+        <div class="tbody">
+          <h3>Start with the project</h3>
+          <p>Tell Foreman what you want to do. It asks one question at a time, and only when the answer actually changes the materials — the real stair height, the span, the finish you want.</p>
+          <div class="tnote"><strong>Why it asks</strong>A guess at a measurement becomes a wrong cut list. Foreman would rather ask than assume.</div>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">2</div><div class="tline"></div></div>
+        <div class="tbody">
+          <h3>Build the plan</h3>
+          <p>When there's enough to work with, Foreman produces Build Notes: dimensions, cut list, fasteners and spacing, installation order, and what to check before you start.</p>
+          <div class="tnote"><strong>The math is shown</strong>“84 linear ft ÷ 8 ft stock = 10.5, round up to 11, +1 waste = 12 boards.” You can check every number instead of trusting it.</div>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">3</div><div class="tline"></div></div>
+        <div class="tbody">
+          <h3>Source the materials</h3>
+          <p>The item list becomes a live product search. POZi returns real products from approved retailers, targeted to your ZIP so results are places you can actually drive to.</p>
+          <div class="tnote"><strong>Local first</strong>Set your location once and every search is geo-targeted. Retailers are an approved list — no marketplace resellers.</div>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="tcol"><div class="tnum">4</div></div>
+        <div class="tbody">
+          <h3>It stays a project</h3>
+          <p>This is the part people miss: POZi isn't a search box. Every job is a project that holds its Foreman conversation, Build Notes, item list, and photos together. Come back next week or next season and the whole thing is still there — and contractors can share it straight to a client.</p>
+          <div class="tnote"><strong>One place per job</strong>No more hunting through texts, photo rolls, and receipts to remember what you decided and what you bought.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="center" style="margin-bottom:34px">
+      <div class="eyebrow">Two ways people use it</div>
+      <h2 class="h-lg">Same tool,<br><span class="grad">different job.</span></h2>
+    </div>
+
+    <div class="stack-2">
+      <div class="mode mode-diy">
+        <div class="eyebrow" style="margin-bottom:10px">DIY &amp; Homeowner</div>
+        <h3>For everyday projects</h3>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Repairs, upgrades, and weekend builds</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Room layout, furniture, and finishes</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Shopping lists organized before you go</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-g">✓</div><span>Plain explanations of why a detail matters</span></div>
+        <div class="mode-eg">
+          <strong>Example</strong>
+          “Help me design a living room and find everything within my budget.”
+        </div>
+      </div>
+
+      <div class="mode mode-pro">
+        <div class="eyebrow" style="margin-bottom:10px;color:var(--blue)">Contractor</div>
+        <h3>For builders &amp; pros</h3>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Material takeoffs with the math shown</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Larger jobs and recurring workflows</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Supplier discovery near the job site</span></div>
+        <div class="mode-feat"><div class="mode-tick tick-b">✓</div><span>Share photos and notes with the client</span></div>
+        <div class="mode-eg">
+          <strong>Example</strong>
+          “Build a 12×20 cedar deck with stairs and generate the full material list.”
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <h2 class="h-md" style="margin-bottom:14px">Plan the job.<br><span class="grad">Then go get it.</span></h2>
+      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;font-size:15px">Foreman plans the job and works out the real numbers. POZi keeps it organized as a project — notes, lists, and photos in one place — and sources the materials near you.</p>
+      <div class="hero-actions">
+        <button class="btn btn-p" data-signup>Create Free Account</button>
+        <button class="btn btn-s" data-page="pricing">See Pricing →</button>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /how -->
+
+<!-- ═══════════════ PRICING ═══════════════ -->
+<div id="page-pricing" class="page">
+<div class="page-top"></div>
+
+<section class="hero" style="padding:64px 0 34px">
+  <div class="hero-bg"></div>
+  <div class="wrap center">
+    <div class="hero-badge"><i></i> Pricing</div>
+    <h1 class="h-lg" id="pricingHeadline">Start free.<br><span class="grad">Upgrade when it pays for itself.</span></h1>
+    <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:18px">
+<span id="pricingSub">A session is one project conversation. Every plan includes the full Build Notes
+      and item list — the tiers differ in how much you can run in a day.</span>
+    </p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:16px">
+  <div class="wrap">
+    <div class="plans">
+
+      <div class="plan" id="planGuest">
+        <div class="plan-label">No account</div>
+        <div class="plan-name">Guest</div>
+        <div class="plan-price">Free</div>
+        <div class="plan-per">try it out</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>1 session a day</b>, 5 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Full Build Notes and item list</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Local product search</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>No saving, no photo analysis</span></div>
+        </div>
+        <button class="plan-btn plan-btn-s" id="btnGuest">Try It Now</button>
+      </div>
+
+      <div class="plan" id="planFree">
+        <div class="plan-label">Free account</div>
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-per">forever</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>3 sessions a day</b>, 5 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>3 saved projects</b></span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>1 photo analysis a day</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Project photos and notes</span></div>
+        </div>
+        <button class="plan-btn plan-btn-s" id="btnFree">Create Free Account</button>
+      </div>
+
+      <div class="plan featured" id="planDiy">
+        <div class="plan-badge">Popular</div>
+        <div class="plan-label">For homeowners</div>
+        <div class="plan-name">DIY</div>
+        <div class="plan-price grad">$9.99</div>
+        <div class="plan-per">per month</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>5 sessions a day</b>, 10 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>15 saved projects</b></span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>10 photo analyses a day</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Full photo gallery per project</span></div>
+        </div>
+        <button class="plan-btn plan-btn-p" id="btnDiy">Get DIY</button>
+      </div>
+
+      <div class="plan" id="planPro">
+        <div class="plan-label">For pros</div>
+        <div class="plan-name">Contractor</div>
+        <div class="plan-price">$19.99</div>
+        <div class="plan-per">per month</div>
+        <div class="plan-hr"></div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>7 sessions a day</b>, 15 messages each</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span><b>Unlimited projects and photos</b></span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Client photo sharing links</span></div>
+          <div class="plan-feat"><span class="plan-tick">✓</span><span>Priority access to new tools</span></div>
+        </div>
+        <button class="plan-btn plan-btn-p" id="btnPro">Get Contractor</button>
+      </div>
+
+    </div>
+
+    <div class="plan-note">
+      Subscribe here on the web — your plan works in the POZi Go app too. Cancel anytime; cancelling ends the subscription immediately.
+      <br>Running a store or supplier and want to appear in POZi searches?
+      <button class="footer-link" data-modal="contactModal" style="color:var(--green);font-weight:700">Get in touch.</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta">
+      <h2 class="h-md" style="margin-bottom:14px">Try it on your next job.</h2>
+      <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;font-size:15px">Guest access needs no account. See whether the numbers hold up before you pay anything.</p>
+      <div class="hero-actions">
+        <button class="btn btn-p" data-try-foreman>Try POZi Foreman</button>
+        <button class="btn btn-s" data-modal="goModal">Get the App</button>
+      </div>
+    </div>
+  </div>
+</section>
+</div><!-- /pricing -->
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-in">
+    <div>
+      <div class="footer-brand">
+        <img src="logo-dark.png" alt="POZi">
+        <div>
+          <div class="logo-word" style="font-size:17px">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span></div>
+          <div class="footer-tag"><span class="aiop">All in one place.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-links">
+      <button class="footer-link" data-page="home">Home</button>
+      <button class="footer-link" data-page="how">How It Works</button>
+      <button class="footer-link" data-page="pricing">Pricing</button>
+      <button class="footer-link" data-modal="contactModal">Contact</button>
+      <button class="footer-link" data-modal="legalModal">Disclaimer</button>
+    </div>
+    <div class="footer-copy">© 2026 POZi</div>
+  </div>
+</footer>
+
+<!-- ═══ PHONE GATEWAY ═══ -->
+<div class="phone-gate" id="phoneGate" aria-hidden="true">
+  <div class="phone-gate-bg"></div>
+  <div class="phone-gate-card">
+    <img class="mark" src="logo-dark.png" alt="POZi">
+    <div class="hero-badge"><i></i> POZi Go</div>
+    <h1>POZi is better<br><span class="grad">on the app.</span></h1>
+    <p>
+      Foreman, your projects, photos, and material lists are built for your phone —
+      right there with you on the job.
+    </p>
+    <div class="phone-gate-feats">
+      <span>Photo to Foreman</span>
+      <span>Build Notes</span>
+      <span>Local sourcing</span>
+    </div>
+    <div class="phone-gate-actions">
+      <a class="btn btn-p" id="gateInstall" href="https://pozi.live/install">Get POZi Go</a>
+      <button class="btn btn-s" id="gateStay" type="button">Continue on the web</button>
+    </div>
+    <div class="phone-gate-note">You can still create an account and use Foreman here — the app just works better on a job site.</div>
+    <div class="phone-gate-copy" style="color:var(--green);opacity:.8">All in one place.</div>
+    <div class="phone-gate-copy">© 2026 POZi</div>
+  </div>
+</div>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="modal" id="authModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="authModal">×</button>
+      <div class="sheet-kicker">POZi Account</div>
+      <div class="sheet-title" id="authTitle">Sign in to POZi</div>
+      <p class="sheet-sub" id="authSub">One account works on the website and in the POZi Go app.</p>
+    </div>
+    <div class="sheet-body">
+      <input id="authEmail" class="field" type="email" placeholder="Email" autocomplete="username">
+      <input id="authPw" class="field" type="password" placeholder="Password" autocomplete="current-password">
+      <input id="authPw2" class="field hidden" type="password" placeholder="Re-enter password" autocomplete="new-password">
+      <div id="authHint" class="form-status" style="font-size:12px;font-weight:500;text-align:left;color:var(--muted)"></div>
+
+      <button class="btn btn-p" id="authSignIn" style="width:100%">Sign In</button>
+      <button class="btn btn-s" id="authGoSignUp" style="width:100%">Create Account</button>
+      <button class="btn btn-p hidden" id="authDoSignUp" style="width:100%">Create My Account</button>
+      <button class="btn btn-s hidden" id="authBackSignIn" style="width:100%">Already have an account? Sign in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MY PLAN MODAL ═══ -->
+<div class="modal" id="planModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="planModal">×</button>
+      <div class="sheet-kicker">My Plan</div>
+      <div class="sheet-title" id="planTitle">Your POZi plan</div>
+      <p class="sheet-sub" id="planSub">Plans apply everywhere you use POZi — website and app.</p>
+    </div>
+    <div class="sheet-body">
+      <div><span class="plan-pill" id="planPill">Free</span></div>
+      <div class="plan-lines" id="planLines"></div>
+      <button class="btn btn-p" id="planUpgrade" style="width:100%;margin-top:6px">See Plans</button>
+      <p style="text-align:center;font-size:12px;color:#6a6d85">Billing is handled securely by Stripe. One plan covers the website and the app.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DELETE ACCOUNT MODAL ═══ -->
+<div class="modal" id="delModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="delModal">×</button>
+      <div class="sheet-kicker">Delete account</div>
+      <div class="sheet-title">Delete your account?</div>
+      <p class="sheet-sub">This cannot be undone.</p>
+    </div>
+    <div class="sheet-body">
+      <div id="delStep1">
+        <p class="sub" style="margin-bottom:12px">Permanently deleting your POZi account also deletes:</p>
+        <ul style="margin:0 0 14px 18px;padding:0;font-size:13.5px;line-height:1.75;color:var(--muted)">
+          <li>every project and its Build Notes</li>
+          <li>all item lists and saved searches</li>
+          <li>all photos and Foreman scans</li>
+          <li>your Foreman conversation history</li>
+          <li>your plan and account record</li>
+        </ul>
+        <p class="sub">This removes your account from the app as well — it's the same account in both places.</p>
+        <div class="form-status" id="delStatus" style="font-size:12px;font-weight:500;color:var(--muted)"></div>
+        <div class="field-row" style="margin-top:16px">
+          <button class="btn btn-s" data-close="delModal">Keep My Account</button>
+          <button class="btn btn-p" id="delNext" style="background:linear-gradient(135deg,#ff6680,#ff4d6d);color:#fff">Delete My Account</button>
+        </div>
+      </div>
+
+      <div id="delStep2" class="hidden">
+        <div class="sheet-title" style="font-size:21px;margin-bottom:10px">Are you absolutely sure?</div>
+        <p class="sub">This is permanent. Your projects, photos, and Build Notes cannot be recovered — not by you and not by us.</p>
+        <div class="form-status" id="delStatus2" style="font-size:12px;font-weight:500;color:var(--muted);margin-top:12px"></div>
+        <div class="field-row" style="margin-top:16px">
+          <button class="btn btn-s" id="delBack">Cancel</button>
+          <button class="btn btn-p" id="delGo" style="background:linear-gradient(135deg,#ff6680,#ff4d6d);color:#fff">Yes, Delete Everything</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTACT MODAL ═══ -->
+<div class="modal" id="contactModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="contactModal">×</button>
+      <div class="sheet-kicker">Get in touch</div>
+      <div class="sheet-title">Tell us what you need.</div>
+      <p class="sheet-sub">Questions, feedback, a bug, or a store that wants to appear in POZi searches — this reaches us directly.</p>
+    </div>
+    <div class="sheet-body">
+      <div class="field-row">
+        <div><label class="field-label" for="cfName">Name</label><input id="cfName" class="field" type="text" placeholder="Your name" autocomplete="name"></div>
+        <div><label class="field-label" for="cfEmail">Email</label><input id="cfEmail" class="field" type="email" placeholder="you@example.com" autocomplete="email"></div>
+      </div>
+      <div>
+        <label class="field-label" for="cfKind">What's this about?</label>
+        <select id="cfKind" class="field" style="cursor:pointer">
+          <option value="Question">A question about POZi</option>
+          <option value="Feedback">Feedback or a bug report</option>
+          <option value="Retailer">I run a store or supply business</option>
+          <option value="Other">Something else</option>
+        </select>
+      </div>
+      <div><label class="field-label" for="cfMsg">Message</label><textarea id="cfMsg" class="field" rows="4" placeholder="What's on your mind?" style="resize:vertical"></textarea></div>
+      <button class="btn btn-p" id="cfSend" style="width:100%">Send</button>
+      <div class="form-status" id="cfStatus"></div>
+      <p style="text-align:center;font-size:12px;color:#6a6d85">Or email <a href="mailto:info@pozi.live" style="color:var(--green)">info@pozi.live</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ POZi GO MODAL ═══ -->
+<div class="modal" id="goModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="goModal">×</button>
+      <div class="sheet-kicker">POZi Go</div>
+      <div class="sheet-title">POZi Go lives on your phone.</div>
+      <p class="sheet-sub">Photos, projects, and Foreman travel with you to the job site. Scan the code or send yourself the link.</p>
+    </div>
+    <div class="sheet-body">
+      <div class="qr-row">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fpozi.live%2Finstall" alt="QR code to install POZi Go">
+        <div>
+          <strong>Scan with your phone</strong>
+          <span>Point your camera at the code, or use the buttons below to send yourself the link.</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <button class="btn btn-p" id="goOpen">Open Install Page</button>
+        <button class="btn btn-s" id="goCopy">Copy Link</button>
+      </div>
+      <div class="form-status" id="goStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAME PROJECT ═══ Mirrors the app's naming prompt. Creating the project up front
+     gives notes, photos, and the plan somewhere to live from the first message. -->
+<div class="modal" id="nameProjModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="nameProjModal">×</button>
+      <div class="sheet-kicker">New Project</div>
+      <div class="sheet-title">Name your project</div>
+      <p class="sheet-sub">Something you'll recognise later — "Back deck", "Shower drain", "Fence line".</p>
+    </div>
+    <div class="sheet-body">
+      <input class="field" id="nameProjInput" type="text" maxlength="80" placeholder="Project name">
+      <div class="field-row" style="margin-top:10px">
+        <button class="btn btn-p" id="nameProjSave">Create Project</button>
+        <button class="btn btn-s" data-close="nameProjModal">Cancel</button>
+      </div>
+      <div class="form-status" id="nameProjStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LOCATION GATE ═══ Mirrors the app's locModal. Asked once before the first
+     search so results are geo-targeted instead of national. Skippable — a
+     national search is a worse result, not a broken one. -->
+<div class="modal" id="locModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="locModal">×</button>
+      <div class="sheet-kicker">POZi Search</div>
+      <div class="sheet-title">Where are you building?</div>
+      <p class="sheet-sub">POZi checks retailers near you. Without a location we search nationally, and prices and availability may not be what's on the shelf where you are.</p>
+    </div>
+    <div class="sheet-body">
+      <button class="btn btn-p" id="locModalDetect" style="width:100%">Use My Location</button>
+      <input class="field" id="locModalZip" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Or enter your ZIP code" style="margin-top:10px">
+      <div class="field-row" style="margin-top:10px">
+        <button class="btn btn-p" id="locModalSave">Save Location</button>
+        <button class="btn btn-s" id="locModalSkip">Search Nationally</button>
+      </div>
+      <div class="form-status" id="locModalStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DISCLAIMER ═══ Same text and scroll-to-accept gate as the app. -->
+<div class="modal" id="legalModal">
+  <div class="disc-sheet">
+    <div class="disc-head">
+      <div class="disc-title">Before you build</div>
+      <div class="disc-sub" id="discSub">Please read this and scroll to the end.</div>
+    </div>
+    <div id="discBody" class="disc-body">
+      <p>POZi Foreman is a planning tool. It helps you organize a project, work out quantities, and put together a material list. It is not a substitute for professional judgment.</p>
+
+      <h4>Foreman can be wrong</h4>
+      <p>Foreman is AI and it makes mistakes. Before you buy anything or start work, verify:</p>
+      <ul>
+        <li>measurements, quantities, and cut lengths</li>
+        <li>material suitability for your conditions</li>
+        <li>local building codes and permit requirements</li>
+        <li>manufacturer instructions and load ratings</li>
+      </ul>
+
+      <h4>Some work needs a professional</h4>
+      <p>Have a qualified, licensed professional review anything structural, electrical, plumbing, gas, roofing, excavation, or load-bearing. Call 811 or your local utility-marking service before you dig. Nothing in POZi is engineering approval, a code ruling, or a permit. When in doubt, check with your local building department.</p>
+
+      <h4>Products, prices, and stores</h4>
+      <p>POZi does not sell anything. Search results come from third parties and can be wrong, out of date, or unavailable. Pricing, stock, delivery, warranties, and returns are between you and the retailer.</p>
+
+      <h4>Provided as is</h4>
+      <p>POZi is provided "as is" and "as available", without warranties of any kind, express or implied. To the fullest extent permitted by law, we disclaim all implied warranties, including merchantability, fitness for a particular purpose, accuracy, and non-infringement. We do not warrant that POZi will be uninterrupted, error-free, or that any result will be accurate or complete.</p>
+
+      <h4>You accept the risk</h4>
+      <p>You are responsible for your own project, for your own decisions, and for anyone working on it. To the fullest extent permitted by law, POZi, its owner, employees, contractors, and partners are not liable for any injury, death, property damage, cost, delay, code violation, lost profits, or other loss — direct or indirect — arising from your use of POZi, including material lists, build notes, measurements, quantities, photo analysis, and search results. You use POZi at your own risk.</p>
+
+      <h4>Limit of liability</h4>
+      <p>To the fullest extent permitted by law, our total liability to you for any claim relating to POZi will not exceed the greater of the amount you paid us in the twelve months before the claim, or fifty US dollars.</p>
+
+      <h4>You cover us</h4>
+      <p>You agree to indemnify and hold harmless POZi, its owner, employees, contractors, and partners from any claim, demand, loss, or expense — including reasonable legal fees — brought by you or by a third party, including your own clients, arising from your project, your use of POZi, or your reliance on anything POZi produced.</p>
+
+      <h4>Still in progress</h4>
+      <p>POZi is actively being developed and some features are in beta. Behavior, limits, and these terms may change.</p>
+
+      <p style="opacity:.6;font-size:12px;margin-top:16px">Some places do not allow certain warranty or liability exclusions, so parts of this may not apply to you. If you do not agree, choose Decline. You can review this any time from the footer.</p>
+    </div>
+    <div class="disc-foot">
+      <div id="discHint" class="disc-hint">Scroll to the bottom to continue</div>
+      <div class="disc-actions" id="discActions">
+        <button id="discDecline" class="disc-decline" type="button">Decline</button>
+        <button id="discAccept" class="disc-accept" type="button" disabled>Accept</button>
+      </div>
+      <button id="discClose" class="disc-decline hidden" type="button" style="width:100%">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ── Disclaimer gate ───────────────────────────────────────────────────
+     Foreman does not answer until this has been read and accepted once. The
+     Accept button stays disabled until the text is actually scrolled to the
+     end, so it cannot be dismissed blindly. Acceptance persists per browser.  */
+  var DISCLAIMER_KEY = 'pozi_disclaimer_accepted_v1';
+  var pendingAfterDisclaimer = null;
+
+  function hasAcceptedDisclaimer(){
+    try { return localStorage.getItem(DISCLAIMER_KEY) === '1'; } catch(e){ return false; }
+  }
+
+  // Two modes: a required gate before the first Foreman message, and a plain
+  // read-only view from the footer.
+  function openDisclaimer(mode){
+    var gate = mode === 'gate';
+    $('discSub').textContent = gate
+      ? 'Please read this and scroll to the end before using Foreman.'
+      : 'You have already accepted this. It is here any time you want it.';
+    $('discActions').classList.toggle('hidden', !gate);
+    $('discClose').classList.toggle('hidden', gate);
+    $('discHint').textContent = gate ? 'Scroll to the bottom to continue' : '';
+    $('discAccept').disabled = true;
+    openModal('legalModal');
+    var body = $('discBody');
+    body.scrollTop = 0;
+    if (gate) checkDiscScroll();
+  }
+
+  function checkDiscScroll(){
+    var body = $('discBody');
+    // 24px of slack so a hair of sub-pixel scroll doesn't block acceptance.
+    var atEnd = body.scrollTop + body.clientHeight >= body.scrollHeight - 24;
+    if (atEnd){
+      $('discAccept').disabled = false;
+      $('discHint').textContent = 'Thanks — you can accept now.';
+    }
+  }
+
+  function acceptDisclaimer(){
+    try { localStorage.setItem(DISCLAIMER_KEY, '1'); } catch(e){}
+    closeModal('legalModal');
+    var next = pendingAfterDisclaimer;
+    pendingAfterDisclaimer = null;
+    if (typeof next === 'function') next();
+  }
+
+  function declineDisclaimer(){
+    pendingAfterDisclaimer = null;
+    closeModal('legalModal');
+    setStatus('You need to accept the disclaimer before Foreman can answer.', 'err');
+  }
+
+  function requireDisclaimer(next){
+    if (hasAcceptedDisclaimer()) return true;
+    pendingAfterDisclaimer = next || null;
+    openDisclaimer('gate');
+    return false;
+  }
+
+  /* ── Account ───────────────────────────────────────────────────────────
+     The website and the app share one Supabase project, so an account created
+     here signs straight into POZi Go, and deleting here removes it from both.
+     Deletion goes through the same delete-account function the app uses — it
+     needs the service role key, which must never live in a browser.          */
+  var SUPABASE_URL = 'https://eaagnkwtflsxiclpcaok.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE';
+  var DELETE_ENDPOINT = '/.netlify/functions/delete-account';
+
+  var sb = (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+      })
+    : null;
+
+  var currentUser = null;
+  var currentPlan = 'free';
+  var authMode = 'signin';
+
+  // Same ladder as the app, so the two never disagree about what a plan includes.
+  var PLAN_INFO = {
+    free:     { name:'Free',       sessions:'3 a day', messages:'5 each', projects:'3',         photos:'1 analysis a day' },
+    consumer: { name:'DIY',        sessions:'5 a day', messages:'10 each', projects:'15',       photos:'10 analyses a day' },
+    pro:      { name:'Contractor', sessions:'7 a day', messages:'15 each', projects:'Unlimited', photos:'Unlimited' }
+  };
+
+  function closeAcctMenu(){
+    var m = $('acctMenu'), t = $('acctToggle');
+    if (!m) return;
+    m.classList.remove('open'); t.classList.remove('open');
+    t.setAttribute('aria-expanded','false'); m.setAttribute('aria-hidden','true');
+  }
+  function toggleAcctMenu(){
+    var m = $('acctMenu'), t = $('acctToggle');
+    var open = m.classList.toggle('open');
+    t.classList.toggle('open', open);
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
+    m.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+
+  function setAuthMode(mode){
+    authMode = mode;
+    var creating = mode === 'signup';
+    $('authPw2').classList.toggle('hidden', !creating);
+    $('authDoSignUp').classList.toggle('hidden', !creating);
+    $('authBackSignIn').classList.toggle('hidden', !creating);
+    $('authSignIn').classList.toggle('hidden', creating);
+    $('authGoSignUp').classList.toggle('hidden', creating);
+    $('authPw').setAttribute('autocomplete', creating ? 'new-password' : 'current-password');
+    $('authPw').placeholder = creating ? 'Create a password' : 'Password';
+    $('authTitle').textContent = creating ? 'Create your POZi account' : 'Sign in to POZi';
+    $('authSub').textContent = creating
+      ? "You'll confirm your email, then sign in. The same account works in the app."
+      : 'One account works on the website and in the POZi Go app.';
+    $('authHint').textContent = '';
+  }
+
+  function checkPwMatch(){
+    if (authMode !== 'signup') return;
+    var a = $('authPw').value, b = $('authPw2').value, hint = $('authHint');
+    if (!b){ hint.textContent = ''; return; }
+    var ok = a === b;
+    hint.textContent = ok ? '✓ Passwords match' : "Passwords don't match yet";
+    hint.style.color = ok ? 'var(--green)' : 'var(--muted)';
+  }
+
+  async function loadPlan(){
+    currentPlan = 'free';
+    if (!sb || !currentUser) return;
+    try {
+      var r = await sb.from('buildr_profiles').select('plan').eq('id', currentUser.id).maybeSingle();
+      var p = r && r.data ? String(r.data.plan || '').toLowerCase() : '';
+      if (p === 'pro') currentPlan = 'pro';
+      else if (p === 'consumer' || p === 'paid') currentPlan = 'consumer';
+    } catch(e){ /* stays free — never block the UI on a plan lookup */ }
+  }
+
+  function paintAccount(){
+    var signedIn = !!currentUser;
+    // Show WHO is signed in, not just that someone is. A green dot alone left
+    // people opening the menu to find out, and made an app-to-web handoff look
+    // like it had silently signed them out.
+    var email = signedIn ? String(currentUser.email || '') : '';
+    $('acctLabel').textContent = signedIn ? (email || 'Account') : 'Sign in';
+    $('acctToggle').setAttribute('title', signedIn ? 'Signed in as ' + email : 'Sign in to POZi');
+    $('acctDot').style.background = signedIn ? 'var(--green)' : '#5c5f75';
+    $('acctDot').style.boxShadow = signedIn ? '0 0 10px rgba(0,255,136,.5)' : 'none';
+
+    var emailEl = $('acctEmail');
+    emailEl.textContent = signedIn ? 'Signed in as ' + email : '';
+    emailEl.classList.toggle('hidden', !signedIn);
+
+    $('acctAuth').classList.toggle('hidden', signedIn);
+    $('acctSignOut').classList.toggle('hidden', !signedIn);
+    $('acctDelete').classList.toggle('hidden', !signedIn);
+    $('acctPlanTag').textContent = signedIn ? (PLAN_INFO[currentPlan] || PLAN_INFO.free).name : 'Guest';
+
+    // The project affordance under the chat says different things to a guest and a member,
+    // so nobody taps it expecting something it cannot do.
+    // Signed in, this is a real action — name a project before you start. Signed out it is
+    // just a fact worth knowing, so it becomes a line of text rather than a third account
+    // button competing with "Create Free Account" in the hero and the one in the menu.
+    // Guests get one line explaining why saving needs an account. Signed in, nothing is
+    // needed here — the first message names a project automatically, exactly like the app.
+    var guestNote = $('chatGuestNote');
+    if (guestNote) guestNote.classList.toggle('hidden', signedIn);
+
+    // Current plan strip. Hidden for guests — they have the hero's Create Free Account —
+    // and hidden for Contractor, who has nothing left to buy.
+    var strip = $('planStrip');
+    if (strip){
+      var info = PLAN_INFO[currentPlan] || PLAN_INFO.free;
+      var canUpgrade = signedIn && currentPlan !== 'pro';
+      strip.classList.toggle('hidden', !signedIn);
+      $('planStripName').textContent = 'Your plan: ' + info.name;
+      $('planStripSub').textContent = info.sessions + ' sessions, ' + info.messages +
+        ' messages, ' + info.projects + ' projects, ' + info.photos + '.';
+      var cta = $('planStripCta');
+      cta.textContent = canUpgrade ? (currentPlan === 'consumer' ? 'Upgrade to Contractor' : 'Upgrade') : 'See plans';
+
+      // Count of saved projects, straight to the Projects tab. Hidden at zero.
+      if (signedIn && sb){
+        sb.from('buildr_projects').select('id', { count:'exact', head:true }).then(function(r){
+          var n = (r && r.count) || 0;
+          var chip = $('planStripProjects');
+          if (!chip) return;
+          $('planStripProjectsN').textContent = n;
+          chip.classList.toggle('hidden', n === 0);
+        }).catch(function(){});
+      } else {
+        var chip0 = $('planStripProjects');
+        if (chip0) chip0.classList.add('hidden');
+      }
+    }
+    syncNavCta();
+    paintPricing();
+  }
+
+  function openPlanModal(){
+    closeAcctMenu();
+    var info = PLAN_INFO[currentPlan] || PLAN_INFO.free;
+    if (!currentUser){
+      $('planTitle').textContent = 'You are browsing as a guest';
+      $('planSub').textContent = 'Create a free account to save projects and keep your plans.';
+      $('planPill').textContent = 'Guest';
+      $('planLines').innerHTML =
+        '<div class="plan-line"><span>Foreman sessions</span><b>1 a day</b></div>' +
+        '<div class="plan-line"><span>Messages per session</span><b>5</b></div>' +
+        '<div class="plan-line"><span>Saved projects</span><b>None</b></div>';
+      $('planUpgrade').textContent = 'Create a Free Account';
+    } else {
+      $('planTitle').textContent = 'Your POZi plan';
+      $('planSub').textContent = 'Plans apply everywhere you use POZi — website and app.';
+      $('planPill').textContent = info.name;
+      $('planLines').innerHTML =
+        '<div class="plan-line"><span>Signed in as</span><b>' + escapeHtml(currentUser.email) + '</b></div>' +
+        '<div class="plan-line"><span>Foreman sessions</span><b>' + info.sessions + '</b></div>' +
+        '<div class="plan-line"><span>Messages per session</span><b>' + info.messages + '</b></div>' +
+        '<div class="plan-line"><span>Saved projects</span><b>' + info.projects + '</b></div>' +
+        '<div class="plan-line"><span>Photo analysis</span><b>' + info.photos + '</b></div>';
+      $('planUpgrade').textContent = currentPlan === 'pro' ? 'See All Plans' : 'Upgrade';
+    }
+    openModal('planModal');
+  }
+
+  async function doSignIn(){
+    var hint = $('authHint');
+    var email = $('authEmail').value.trim(), pw = $('authPw').value;
+    if (!email || !pw){ hint.style.color='var(--danger)'; hint.textContent='Enter your email and password.'; return; }
+    if (!sb){ hint.textContent='Accounts are unavailable right now.'; return; }
+    var btn = $('authSignIn'); btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      var out = await sb.auth.signInWithPassword({ email:email, password:pw });
+      if (out.error) throw out.error;
+      currentUser = out.data.user || null;
+      await loadPlan(); paintAccount();
+      var stale = $('chatStream').querySelector('.upgrade-card');
+      if (stale) stale.remove();   // the cap no longer applies
+      hint.style.color='var(--green)'; hint.textContent='Signed in.';
+      setTimeout(function(){ closeModal('authModal'); }, 700);
+    } catch(e){
+      hint.style.color='var(--danger)'; hint.textContent = e.message || 'Could not sign in.';
+    } finally { btn.disabled = false; btn.textContent = 'Sign In'; }
+  }
+
+  async function doSignUp(){
+    var hint = $('authHint');
+    var email = $('authEmail').value.trim(), pw = $('authPw').value, pw2 = $('authPw2').value;
+    hint.style.color = 'var(--danger)';
+    if (!email){ hint.textContent='Enter your email address.'; return; }
+    if (!pw){ hint.textContent='Choose a password.'; return; }
+    if (pw.length < 6){ hint.textContent='Password must be at least 6 characters.'; return; }
+    if (pw !== pw2){ hint.textContent="Passwords don't match. Check both fields."; return; }
+    if (!sb){ hint.textContent='Accounts are unavailable right now.'; return; }
+
+    var btn = $('authDoSignUp'); btn.disabled = true; btn.textContent = 'Creating…';
+    try {
+      var out = await sb.auth.signUp({
+        email: email, password: pw,
+        options:{ emailRedirectTo: 'https://pozi.live/confirm.html' }
+      });
+      if (out.error) throw out.error;
+      currentUser = out.data.session ? out.data.user : null;
+      await loadPlan(); paintAccount();
+      setAuthMode('signin');
+      $('authPw').value = ''; $('authPw2').value = '';
+      hint.style.color = 'var(--green)';
+      hint.textContent = out.data.session
+        ? 'Account created and signed in.'
+        : 'Account created. Check your email to confirm, then sign in.';
+      // Resume the plan they picked before signing up.
+      if (pendingCheckout && out.data.session){
+        var want = pendingCheckout; pendingCheckout = null;
+        setTimeout(function(){ closeModal('authModal'); startCheckout(want); }, 900);
+      } else if (pendingCheckout){
+        var lbl2 = pendingCheckout === 'pro' ? 'Contractor' : 'DIY';
+        hint.textContent += ' Once confirmed, sign in and start ' + lbl2 + '.';
+      } else if (out.data.session){
+        setTimeout(function(){ closeModal('authModal'); goToForeman(); }, 900);
+      }
+      pendingPlan = null;
+    } catch(e){
+      hint.style.color='var(--danger)'; hint.textContent = e.message || 'Could not create the account.';
+    } finally { btn.disabled = false; btn.textContent = 'Create My Account'; }
+  }
+
+  async function doSignOut(){
+    closeAcctMenu();
+    if (sb) { try { await sb.auth.signOut(); } catch(e){} }
+    currentUser = null; currentPlan = 'free';
+    paintAccount();
+  }
+
+  async function doDelete(){
+    var st = $('delStatus2'), btn = $('delGo');
+    if (!sb || !currentUser){ st.textContent = "You're not signed in."; return; }
+    btn.disabled = true; btn.textContent = 'Deleting…';
+    st.style.color = 'var(--muted)';
+    st.textContent = 'Removing your projects, photos, and account…';
+    try {
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+      if (!token) throw new Error('Your session has expired. Sign in again.');
+
+      var res = await fetch(DELETE_ENDPOINT, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', Authorization:'Bearer ' + token },
+        body: JSON.stringify({ confirm:'DELETE' })
+      });
+      var data = await res.json().catch(function(){ return {}; });
+      if (!res.ok || data.ok === false) throw new Error(data.error || 'Account deletion failed.');
+
+      try { await sb.auth.signOut(); } catch(e){}
+      currentUser = null; currentPlan = 'free';
+      paintAccount();
+      closeModal('delModal');
+      alert('Your account and all of its data have been permanently deleted.');
+    } catch(e){
+      st.style.color = 'var(--danger)';
+      st.textContent = e.message || 'Account deletion failed. Contact info@pozi.live.';
+    } finally { btn.disabled = false; btn.textContent = 'Yes, Delete Everything'; }
+  }
+
+  // A plan button pressed while signed out stashes the intent, so after the
+  // account is created we can pick the flow back up instead of dropping it.
+  var pendingPlan = null;
+
+  function startSignup(){
+    closeAcctMenu();
+    setAuthMode('signup');
+    openModal('authModal');
+  }
+
+  function tryForeman(){
+    showPage('home');
+    setTimeout(function(){
+      var el = $('foreman');
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      var input = $('chatInput');
+      if (input) input.focus({ preventScroll:true });
+    }, 160);
+  }
+
+  // Billing lives in the app for now, so a plan choice routes through account
+  // creation first and then tells the person exactly where to finish.
+  function choosePlan(plan){
+    pendingPlan = plan;
+    var label = plan === 'pro' ? 'Contractor' : 'DIY';
+    if (!currentUser){
+      startSignup();
+      $('authSub').textContent = 'Create your account first, then continue to checkout for ' + label + '.';
+      return;
+    }
+    if (currentPlan === plan){
+      openPlanModal();
+      return;
+    }
+    openModal('goModal');
+    var st = $('goStatus');
+    if (st) st.textContent = "You're signed in as " + currentUser.email + ". Open POZi Go and choose " + label + " to activate it.";
+  }
+
+  function syncNavCta(){
+    var btn = $('navCta');
+    if (!btn) return;
+    btn.textContent = currentUser ? 'Get POZi Go' : 'Create Account';
+    btn.classList.toggle('is-member', !!currentUser);
+  }
+
+  async function initAuth(){
+    if (!sb) return;
+    try {
+      var out = await sb.auth.getSession();
+      currentUser = out.data.session ? out.data.session.user : null;
+      await loadPlan(); paintAccount();
+      sb.auth.onAuthStateChange(async function(_e, session){
+        currentUser = session ? session.user : null;
+        await loadPlan(); paintAccount();
+        if (document.getElementById('page-projects').classList.contains('active')) loadProjects();
+      });
+    } catch(e){}
+  }
+
+  /* ── Projects ──────────────────────────────────────────────────────────
+     Reads and writes the same Supabase tables as the app, so a project
+     started on a phone can be continued at a desk. Every query is scoped to
+     the signed-in user; a client-supplied id is never trusted.              */
+  var activeProject = null;
+
+  function planLimitProjects(){
+    return currentPlan === 'pro' ? Infinity : (currentPlan === 'consumer' ? 15 : 3);
+  }
+
+  // Counts for every project in one pass — the same approach the app uses.
+  //
+  // The naive version asks each of the five tables per project, so the grid
+  // costs 5 x N requests and gets slower the more jobs you have. This asks each
+  // table once for the whole set and tallies client-side, so it is always five
+  // requests whether there are 3 projects or 300. Every one of these tables is
+  // keyed by project_id, which is why a single .in() filter works across all.
+  //
+  // The row cap stops one enormous project from making this heavier than what it
+  // replaces. Hitting it would undercount a display number, never break anything.
+  var PROJECT_COUNT_ROW_CAP = 5000;
+
+  async function projectCountsBulk(projectIds){
+    var out = {};
+    var ids = (projectIds || []).filter(Boolean);
+    ids.forEach(function(id){ out[id] = { notes:0, lists:0, photos:0, searches:0 }; });
+    if (!sb || !ids.length) return out;
+
+    var TABLES = [
+      ['buildr_project_notes',      'notes'],
+      ['buildr_project_item_lists', 'lists'],
+      ['buildr_project_photos',     'photos'],
+      ['buildr_project_searches',   'searches']
+    ];
+
+    var results = await Promise.all(TABLES.map(function(pair){
+      return sb.from(pair[0]).select('project_id').in('project_id', ids).limit(PROJECT_COUNT_ROW_CAP)
+        .then(function(r){ return (r && r.data) || []; })
+        // One failing table shows 0 for that column instead of blanking the grid.
+        .catch(function(){ return []; });
+    }));
+
+    results.forEach(function(rows, i){
+      var key = TABLES[i][1];
+      rows.forEach(function(row){
+        var id = row && row.project_id;
+        if (id && out[id]) out[id][key] += 1;
+      });
+    });
+
+    return out;
+  }
+
+  // Same labelling the app uses on its project list, so a project reads the same
+  // in both places. The old version here always formatted month + day, which
+  // meant a project from last July was indistinguishable from this July.
+  function projectDateLabel(iso){
+    if (!iso) return '';
+    var then = new Date(iso);
+    if (isNaN(then.getTime())) return '';
+
+    function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+    var days = Math.round((startOfDay(new Date()) - startOfDay(then)) / 86400000);
+
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return days + ' days ago';
+
+    var sameYear = then.getFullYear() === new Date().getFullYear();
+    return then.toLocaleDateString(undefined, sameYear
+      ? { month:'short', day:'numeric' }
+      : { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  /* ── Creating and deleting projects ────────────────────────────────────
+     The website could read projects and add to them, but never make one. A web
+     subscriber — the more valuable kind, since Apple takes no cut — had to open
+     the phone app just to start a job. These close that gap and mirror the app's
+     flow exactly, including what a guest is told.                            */
+
+  var pendingAfterProject = null;   // run once the project exists
+  var pendingCancelResolve = null;  // lets a waiting caller continue if naming is cancelled
+
+  function requireAccountForProjects(){
+    if (currentUser) return true;
+    // Not a dead end: the conversation stays open, they just cannot keep it yet.
+    setAuthMode('signup');
+    openModal('authModal');
+    var sub = $('authSub');
+    if (sub) sub.textContent = 'Projects are saved to your account. Create a free one to name this project and keep its notes and plan — or keep talking to Foreman as a guest.';
+    return false;
+  }
+
+  function openNameProject(next){
+    if (!requireAccountForProjects()){ if (pendingCancelResolve) pendingCancelResolve(null); return; }
+    pendingAfterProject = next || null;
+    if ($('nameProjInput')) $('nameProjInput').value = '';
+    if ($('nameProjStatus')) $('nameProjStatus').textContent = '';
+    openModal('nameProjModal');
+    setTimeout(function(){ if ($('nameProjInput')) $('nameProjInput').focus(); }, 80);
+  }
+
+  async function createProjectFromModal(){
+    var name = String(($('nameProjInput') && $('nameProjInput').value) || '').trim();
+    var status = $('nameProjStatus');
+    if (!name){ if (status) status.textContent = 'Give the project a name first.'; return; }
+    if (!sb || !currentUser){ if (status) status.textContent = 'Sign in first.'; return; }
+
+    var btn = $('nameProjSave');
+    if (btn){ btn.disabled = true; btn.textContent = 'Creating…'; }
+    if (status) status.textContent = '';
+
+    try {
+      var r = await sb.from('buildr_projects')
+        .insert({ name: name, user_id: currentUser.id })
+        .select()
+        .single();
+      if (r.error || !r.data) throw new Error(r.error ? r.error.message : 'Could not create the project.');
+
+      closeModal('nameProjModal');
+      activeProject = r.data.id;
+      var next = pendingAfterProject;
+      pendingAfterProject = null;
+      pendingCancelResolve = null;   // resolved by next() below; never fire it twice
+      await loadProjects();
+      if (typeof next === 'function') await next(r.data.id);
+      else await openProject(r.data.id);
+    } catch(err){
+      if (status) status.textContent = err.message || 'Could not create the project.';
+    } finally {
+      if (btn){ btn.disabled = false; btn.textContent = 'Create Project'; }
+    }
+  }
+
+  // Deletion removes the project and everything hanging off it. Ordered children-first so
+  // a foreign key never blocks the delete and nothing is left orphaned — the same order
+  // delete-account.js uses.
+  async function deleteActiveProject(){
+    if (!sb || !currentUser || !activeProject) return;
+    var name = ($('projHeading') && $('projHeading').textContent) || 'this project';
+    if (!window.confirm('Delete "' + name + '"? Its conversation, Build Notes, item list, and photos are removed. This cannot be undone.')) return;
+
+    var btn = $('projDelete');
+    if (btn){ btn.disabled = true; btn.textContent = 'Deleting…'; }
+    try {
+      var lists = await sb.from('buildr_project_item_lists').select('id').eq('project_id', activeProject);
+      var ids = ((lists && lists.data) || []).map(function(l){ return l.id; });
+      if (ids.length) await sb.from('buildr_project_item_list_items').delete().in('item_list_id', ids);
+      await sb.from('buildr_project_item_lists').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_messages').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_notes').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_photos').delete().eq('project_id', activeProject);
+      await sb.from('buildr_project_searches').delete().eq('project_id', activeProject);
+      await sb.from('buildr_projects').delete().eq('id', activeProject);
+
+      activeProject = null;
+      showProjectList();
+      await loadProjects();
+    } catch(err){
+      window.alert('Could not delete the project. ' + (err.message || 'Try again in a moment.'));
+    } finally {
+      if (btn){ btn.disabled = false; btn.textContent = 'Delete Project'; }
+    }
+  }
+
+  // Back to the grid. loadProjects() already repaints it; this also resets the header
+  // buttons so Delete never lingers over a list view.
+  function showProjectList(){
+    activeProject = null;
+    if ($('projDetail')) $('projDetail').classList.add('hidden');
+    if ($('projList')) $('projList').classList.remove('hidden');
+    if ($('projBack')) $('projBack').style.display = 'none';
+    if ($('projDelete')) $('projDelete').style.display = 'none';
+    if ($('projNew')) $('projNew').style.display = '';
+    if ($('projHeading')) $('projHeading').textContent = 'Your jobs';
+  }
+
+  /* ── Photos ────────────────────────────────────────────────────────────
+     The web can't sensibly take a picture — that's what the phone is for — but it
+     can upload one already on the machine, which is the case the app can't serve.
+     Both paths write the same storage layout and the same buildr_project_photos
+     row the app uses, so a photo uploaded here opens in the app and vice versa.  */
+
+  var VISION_ENDPOINT = '/.netlify/functions/buildr-vision';
+  var photoMode = 'save';   // 'save' or 'analyze'
+  var photoBusy = false;
+
+  function dataUrlParts(dataUrl){
+    var m = String(dataUrl || '').match(/^data:([^;]+);base64,(.*)$/);
+    if (!m) return { mediaType:'image/jpeg', data:String(dataUrl || '') };
+    return { mediaType:m[1] || 'image/jpeg', data:m[2] || '' };
+  }
+
+  // Same 1600px / 0.7 quality the app uses. A raw phone photo is several megabytes and
+  // would blow past the function's payload ceiling before it ever reached the model.
+  function resizeImageDataUrl(dataUrl, maxDim, quality){
+    return new Promise(function(resolve){
+      try {
+        var img = new Image();
+        img.onload = function(){
+          var w = img.naturalWidth || img.width || 0, h = img.naturalHeight || img.height || 0;
+          if (!w || !h) return resolve(dataUrl);
+          var scale = Math.min(1, (maxDim || 1600) / Math.max(w, h));
+          var cw = Math.max(1, Math.round(w*scale)), ch = Math.max(1, Math.round(h*scale));
+          var c = document.createElement('canvas'); c.width = cw; c.height = ch;
+          c.getContext('2d').drawImage(img, 0, 0, cw, ch);
+          resolve(c.toDataURL('image/jpeg', quality || 0.7));
+        };
+        img.onerror = function(){ resolve(dataUrl); };
+        img.src = dataUrl;
+      } catch(e){ resolve(dataUrl); }
+    });
+  }
+
+  function dataUrlToBlob(dataUrl){
+    var parts = dataUrlParts(dataUrl);
+    var bin = atob(parts.data), len = bin.length, arr = new Uint8Array(len);
+    for (var i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: parts.mediaType });
+  }
+
+  function readFileAsDataUrl(file){
+    return new Promise(function(resolve, reject){
+      var r = new FileReader();
+      r.onload = function(){ resolve(r.result); };
+      r.onerror = function(){ reject(new Error('Could not read that file.')); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function renderProjectPhotos(){
+    var box = $('projPhotos');
+    if (!box || !sb || !currentUser || !activeProject) return;
+    try {
+      var r = await sb.from('buildr_project_photos')
+        .select('id,storage_path,created_at')
+        .eq('project_id', activeProject)
+        .order('created_at', { ascending:false });
+      var rows = (r && r.data) || [];
+      if (!rows.length){
+        box.innerHTML = '<div class="empty-sm">No photos yet. Upload one from this device, or take one in the POZi Go app.</div>';
+        return;
+      }
+      var paths = rows.map(function(x){ return x.storage_path; }).filter(Boolean);
+      // The bucket is private, so every thumbnail needs a signed URL.
+      var signed = await sb.storage.from('project-photos').createSignedUrls(paths, 3600);
+      var urls = (signed && signed.data) || [];
+      box.innerHTML = '<div class="photo-grid">' + urls.map(function(u){
+        if (!u || !u.signedUrl) return '';
+        return '<img class="photo-thumb" src="' + escapeHtml(u.signedUrl) + '" alt="Project photo" loading="lazy">';
+      }).join('') + '</div>';
+    } catch(e){
+      box.innerHTML = '<div class="empty-sm">Could not load photos.</div>';
+    }
+  }
+
+  async function handlePhotoFile(file){
+    if (photoBusy || !file) return;
+    var status = $('photoStatus');
+    if (!sb || !currentUser){ requireAccountForProjects(); return; }
+    if (!activeProject){ if (status){ status.textContent = 'Open a project first.'; status.className = 'chat-status err'; } return; }
+    if (!/^image\//.test(file.type)){ if (status){ status.textContent = 'That file is not an image.'; status.className = 'chat-status err'; } return; }
+
+    photoBusy = true;
+    status.className = 'chat-status';
+    status.textContent = 'Preparing the photo…';
+
+    try {
+      var raw = await readFileAsDataUrl(file);
+      var compact = await resizeImageDataUrl(raw, 1600, 0.7);
+
+      // Store it first. Even if analysis fails, the photo is safely in the project.
+      status.textContent = 'Uploading…';
+      var blob = dataUrlToBlob(compact);
+      var path = currentUser.id + '/' + activeProject + '/web_' + Date.now() + '_' +
+                 Math.random().toString(36).slice(2,8) + '.jpg';
+      var up = await sb.storage.from('project-photos').upload(path, blob, { contentType:'image/jpeg', upsert:false });
+      if (up.error) throw new Error('Upload failed. ' + up.error.message);
+
+      var row = await sb.from('buildr_project_photos')
+        .insert({ project_id: activeProject, user_id: currentUser.id, category: 'during', storage_path: path });
+      if (row.error) console.warn('photo row insert failed:', row.error);
+
+      await renderProjectPhotos();
+
+      if (photoMode !== 'analyze'){
+        status.textContent = 'Photo added to this project.';
+        status.className = 'chat-status ok';
+        return;
+      }
+
+      status.textContent = 'Foreman is looking at it…';
+      var parts = dataUrlParts(compact);
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+
+      var res = await fetch(VISION_ENDPOINT, {
+        method:'POST',
+        headers: token
+          ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
+          : { 'Content-Type':'application/json' },
+        // Field names mirror the app's call exactly — buildr-vision accepts both spellings.
+        body: JSON.stringify({
+          prompt: 'Look at this photo and tell me what you see that matters for this project.',
+          image_data: parts.data, imageData: parts.data,
+          image_media_type: parts.mediaType, media_type: parts.mediaType,
+          image_name: 'project-photo.jpg',
+          project_id: activeProject,
+          session_id: 'proj_' + activeProject
+        })
+      });
+      var out = await res.json().catch(function(){ return null; });
+      if (!res.ok || !out) throw new Error((out && out.error) || 'Foreman could not read that photo.');
+
+      var reply = out.reply || out.text || out.analysis || '';
+      if (!reply) throw new Error('Foreman returned nothing for that photo.');
+
+      // The analysis belongs in the project conversation, so the plan can use it later.
+      await sb.from('buildr_project_messages').insert([
+        { project_id: activeProject, user_id: currentUser.id, role:'user', content:'[Photo uploaded]' },
+        { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: reply }
+      ]);
+      await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
+
+      status.textContent = 'Foreman analyzed the photo — see the conversation.';
+      status.className = 'chat-status ok';
+      await openProject(activeProject);
+    } catch(err){
+      status.textContent = err.message || 'Something went wrong with that photo.';
+      status.className = 'chat-status err';
+    } finally {
+      photoBusy = false;
+      if ($('photoFile')) $('photoFile').value = '';   // let the same file be picked again
+    }
+  }
+
+  async function loadProjects(){
+    $('projSignedOut').classList.toggle('hidden', !!currentUser);
+    $('projList').classList.toggle('hidden', !currentUser);
+    $('projDetail').classList.add('hidden');
+    $('projBack').style.display = 'none';
+    if ($('projDelete')) $('projDelete').style.display = 'none';
+    if ($('projNew')) $('projNew').style.display = '';
+    $('projHeading').textContent = 'Your jobs';
+    activeProject = null;
+    if (!currentUser || !sb) return;
+
+    try {
+      var r = await sb.from('buildr_projects')
+        .select('id,name,title,created_at,updated_at')
+        .order('updated_at', { ascending:false })
+        .limit(60);
+      var rows = (r && r.data) || [];
+      var grid = $('projGrid');
+      $('projEmpty').classList.toggle('hidden', rows.length > 0);
+
+      var counts = await projectCountsBulk(rows.map(function(p){ return p.id; }));
+
+      grid.innerHTML = rows.map(function(p){
+        var when = p.updated_at || p.created_at;
+        var ago = projectDateLabel(when);
+        var exact = when ? new Date(when).toLocaleString() : '';
+        var c = counts[p.id] || { lists:0, notes:0, photos:0, searches:0 };
+        return '<button class="proj-card" data-proj="' + escapeHtml(p.id) + '"' +
+          (exact ? ' title="Last worked on ' + escapeHtml(exact) + '"' : '') + '>' +
+          '<div class="proj-name">' + escapeHtml(p.name || p.title || 'Untitled project') + '</div>' +
+          '<div class="proj-meta">' + (ago ? 'Last worked on ' + escapeHtml(ago) : 'No activity yet') + '</div>' +
+          '<div class="proj-counts">' + c.lists + ' item lists · ' + c.notes + ' notes · ' +
+            c.photos + ' photos · ' + c.searches + ' searches</div>' +
+          '<div class="proj-open">Open →</div></button>';
+      }).join('');
+    } catch(e){
+      $('projGrid').innerHTML = '<div class="empty"><p>Could not load your projects. Try again in a moment.</p></div>';
+    }
+  }
+
+  async function openProject(id){
+    if (!sb || !currentUser) return;
+    activeProject = id;
+    $('projList').classList.add('hidden');
+    $('projDetail').classList.remove('hidden');
+    $('projBack').style.display = '';
+    if ($('projDelete')) $('projDelete').style.display = '';
+    if ($('projNew')) $('projNew').style.display = 'none';
+    if ($('photoStatus')){ $('photoStatus').textContent = ''; $('photoStatus').className = 'chat-status'; }
+    renderProjectPhotos();
+    $('projChat').innerHTML = '<div class="msg bot thinking">Loading…</div>';
+    $('projNotes').textContent = '';
+    $('projItems').textContent = '';
+
+    try {
+      var meta = await sb.from('buildr_projects').select('name,title').eq('id', id).maybeSingle();
+      $('projHeading').textContent = (meta.data && (meta.data.name || meta.data.title)) || 'Project';
+
+      var msgs = await sb.from('buildr_project_messages')
+        .select('role,content,body,created_at').eq('project_id', id)
+        .order('created_at', { ascending:true }).limit(80);
+      var mrows = (msgs && msgs.data) || [];
+      $('projMsgCount').textContent = mrows.length ? mrows.length + ' messages' : '';
+      $('projChat').innerHTML = mrows.length
+        ? mrows.map(function(m){
+            var txt = m.content || m.body || '';
+            var role = String(m.role || '').toLowerCase() === 'user' ? 'user' : 'bot';
+            return '<div class="msg ' + role + '">' +
+              (role === 'user' ? escapeHtml(txt) : renderForemanHtml(txt)) + '</div>';
+          }).join('')
+        : '<div class="msg bot">No conversation saved for this project yet. Add to it below.</div>';
+      $('projChat').scrollTop = $('projChat').scrollHeight;
+
+      var notes = await sb.from('buildr_project_notes')
+        .select('title,body,content,created_at').eq('project_id', id)
+        .order('created_at', { ascending:false }).limit(20);
+      var nrows = (notes && notes.data) || [];
+      $('projNoteCount').textContent = nrows.length ? nrows.length + ' notes' : '';
+      $('projNotes').innerHTML = nrows.length
+        ? nrows.map(function(n){
+            var head = n.title ? '<div class="nh">' + escapeHtml(n.title) + '</div>' : '';
+            return '<div class="note-block">' + head + renderForemanHtml(n.body || n.content || '') + '</div>';
+          }).join('')
+        : 'No Build Notes yet. Ask Foreman to build the plan and they will appear here.';
+
+      var lists = await sb.from('buildr_project_item_lists').select('id').eq('project_id', id).limit(5);
+      var listIds = ((lists && lists.data) || []).map(function(x){ return x.id; });
+      if (listIds.length){
+        var items = await sb.from('buildr_project_item_list_items')
+          .select('name,title,query').in('item_list_id', listIds).limit(60);
+        var irows = (items && items.data) || [];
+        $('projItems').innerHTML = irows.length
+          ? irows.map(function(it){
+              var label = it.name || it.title || it.query || '';
+              return '<span class="item-chip" data-search="' + escapeHtml(label) + '">' + escapeHtml(label) + '</span>';
+            }).join('')
+          : 'No item list yet.';
+      } else {
+        $('projItems').textContent = 'No item list yet.';
+      }
+    } catch(e){
+      $('projChat').innerHTML = '<div class="msg bot">Could not load this project.</div>';
+    }
+  }
+
+  // Continuing a project posts through the same streaming endpoint, then saves
+  // both sides so the app sees the same conversation.
+  var projBusy = false;
+  async function sendToProject(){
+    if (projBusy || !activeProject || !currentUser) return;
+    var input = $('projInput');
+    var text = (input.value || '').trim();
+    if (!text) return;
+    if (!requireDisclaimer(sendToProject)) return;
+
+    projBusy = true;
+    var btn = $('projSend');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    var chat = $('projChat');
+    var u = document.createElement('div');
+    u.className = 'msg user'; u.textContent = text;
+    chat.appendChild(u);
+    input.value = ''; input.style.height = '';
+
+    var pending = document.createElement('div');
+    pending.className = 'msg bot thinking';
+    pending.textContent = 'Working it out…';
+    chat.appendChild(pending);
+    chat.scrollTop = chat.scrollHeight;
+
+    var full = '';
+    try {
+      var prior = Array.prototype.slice.call(chat.querySelectorAll('.msg')).slice(-13, -2)
+        .map(function(el){
+          return { role: el.classList.contains('user') ? 'user' : 'assistant', content: el.textContent };
+        })
+        .filter(function(m){ return m.content; });
+      prior.push({ role:'user', content: text });
+      while (prior.length && prior[0].role !== 'user') prior.shift();
+
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+
+      var res = await fetch(FOREMAN_ENDPOINT, {
+        method:'POST',
+        headers: token
+          ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
+          : { 'Content-Type':'application/json' },
+        body: JSON.stringify({ messages: prior, session_id: 'proj_' + activeProject })
+      });
+      if (!res.ok || !res.body){
+        var ed = await res.json().catch(function(){ return {}; });
+        throw new Error(ed.error || 'Foreman is unavailable right now.');
+      }
+
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
+      pending.classList.remove('thinking'); pending.textContent = '';
+      while (true){
+        var c = await reader.read();
+        if (c.done) break;
+        buf += dec.decode(c.value, { stream:true });
+        var parts = buf.split('\n\n'); buf = parts.pop() || '';
+        for (var p = 0; p < parts.length; p++){
+          var ls = parts[p].split('\n');
+          for (var l = 0; l < ls.length; l++){
+            if (ls[l].indexOf('data:') !== 0) continue;
+            var raw = ls[l].slice(5).trim();
+            if (!raw || raw === '[DONE]') continue;
+            var evt; try { evt = JSON.parse(raw); } catch(e){ continue; }
+            if (evt.type === 'text' && evt.v){
+              full += evt.v;
+              pending.innerHTML = renderForemanHtml(full);
+              chat.scrollTop = chat.scrollHeight;
+            } else if (evt.type === 'error'){
+              throw new Error(evt.error || 'Foreman hit an error.');
+            }
+          }
+        }
+      }
+
+      // Persist both turns so the app shows the same history.
+      try {
+        await sb.from('buildr_project_messages').insert([
+          { project_id: activeProject, user_id: currentUser.id, role:'user', content: text },
+          { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
+        ]);
+        await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
+      } catch(e){ /* the reply is already on screen; a save failure must not lose it */ }
+
+      $('projStatus').textContent = 'Saved to this project.';
+      $('projStatus').className = 'chat-status ok';
+    } catch(err){
+      pending.classList.remove('thinking');
+      pending.innerHTML = renderForemanHtml('I could not respond just then. Try again in a moment.');
+      $('projStatus').textContent = err.message || 'Something went wrong.';
+      $('projStatus').className = 'chat-status err';
+    } finally {
+      projBusy = false;
+      btn.disabled = false; btn.textContent = 'Send';
+    }
+  }
+
+  /* ── Build the Plan ────────────────────────────────────────────────────
+     The website displayed Build Notes and an item list, and the pricing page
+     sold them, but nothing here could ever produce one — only the app could.
+     A web-only subscriber paid for a deliverable the site had no way to make.
+
+     Same endpoint, same mode:'plan', same schema the app writes, so a plan
+     built here is indistinguishable from one built on the phone.             */
+
+  // Ported verbatim from the app so both surfaces cut the deliverable the same
+  // way. If these ever drift, the two clients will disagree about what counts as
+  // a note and what counts as an item.
+  function extractBuildNotes(text){
+    var src = String(text || '');
+    var m = src.match(/build\s*notes\s*:?/i);
+    if (!m) return '';
+    var region = src.slice(m.index + m[0].length);
+    var stop = region.search(/po[sz]i\s*item\s*list|your item list is ready/i);
+    if (stop >= 0) region = region.slice(0, stop);
+    return region.replace(/\*\*/g, '').replace(/^\s*-{3,}\s*$/gm, '').trim();
+  }
+
+  function extractItemList(text){
+    var src = String(text || '');
+    var m = src.match(/po[sz]i\s*item\s*list\s*:?/i);
+    var region = m ? src.slice(m.index + m[0].length) : src;
+    var out = [];
+    var lines = region.split('\n');
+    for (var i = 0; i < lines.length; i++){
+      var raw = lines[i];
+      var isBullet = /^\s*([-*•]|\d+[.)])\s+/.test(raw);
+      var line = raw.replace(/\*\*/g, '').replace(/^\s*([-*•]|\d+[.)])\s*/, '').trim();
+      if (!line) continue;
+      if (/your item list is ready/i.test(line) || /source my items/i.test(line)) break;
+      if (/^po[sz]i\s*item\s*list/i.test(line)) continue;
+      if (!m && !isBullet) continue;
+      out.push(line);
+      if (out.length >= 40) break;
+    }
+    return out;
+  }
+
+  var planBusy = false;
+  // Set by the app handoff below; read by startCheckout. Declared here so it exists before
+  // either of them runs, whatever order the file is read in.
+  var GATE_DISMISS_KEY = 'pozi_gate_dismissed';
+
+  async function buildProjectPlan(){
+    if (planBusy || !sb || !currentUser || !activeProject) return;
+
+    var status = $('projPlanStatus');
+    var btn = $('projBuildPlan');
+
+    // Read the conversation off the rendered chat, the same source the continue
+    // box uses, so what Foreman plans from is exactly what the user can see.
+    var turns = Array.prototype.slice.call($('projChat').querySelectorAll('.msg'))
+      .filter(function(el){ return !el.classList.contains('thinking'); })
+      .map(function(el){
+        return { role: el.classList.contains('user') ? 'user' : 'assistant', content: el.textContent.trim() };
+      })
+      .filter(function(m){ return m.content; });
+    while (turns.length && turns[0].role !== 'user') turns.shift();
+
+    if (!turns.length){
+      status.textContent = 'Add to the conversation first — there is nothing to plan from yet.';
+      status.className = 'chat-status err';
+      return;
+    }
+
+    // The trigger turn goes last so it is the final thing the model reads, and it
+    // keeps this a single-shot deliverable request rather than another chat reply.
+    turns.push({ role:'user', content:'Build the plan for what we settled on above.' });
+
+    planBusy = true;
+    btn.disabled = true; btn.textContent = 'Working out your quantities…';
+    status.textContent = 'Reading the whole conversation…';
+    status.className = 'chat-status';
+
+    var full = '';
+    try {
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+
+      var res = await fetch(FOREMAN_ENDPOINT, {
+        method:'POST',
+        headers: token
+          ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
+          : { 'Content-Type':'application/json' },
+        body: JSON.stringify({ mode:'plan', messages: turns, session_id: 'proj_' + activeProject })
+      });
+      if (!res.ok || !res.body){
+        var ed = await res.json().catch(function(){ return {}; });
+        throw new Error(ed.error || 'The plan could not be built right now.');
+      }
+
+      // Stream it into the notes panel so a long deliverable shows progress
+      // instead of a spinner.
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
+      $('projNotes').innerHTML = '';
+      while (true){
+        var c = await reader.read();
+        if (c.done) break;
+        buf += dec.decode(c.value, { stream:true });
+        var parts = buf.split('\n\n'); buf = parts.pop() || '';
+        for (var p = 0; p < parts.length; p++){
+          var ls = parts[p].split('\n');
+          for (var l = 0; l < ls.length; l++){
+            if (ls[l].indexOf('data:') !== 0) continue;
+            var raw = ls[l].slice(5).trim();
+            if (!raw || raw === '[DONE]') continue;
+            var evt; try { evt = JSON.parse(raw); } catch(e){ continue; }
+            if (evt.type === 'text' && evt.v){
+              full += evt.v;
+              $('projNotes').innerHTML = renderForemanHtml(extractBuildNotes(full) || full);
+            } else if (evt.type === 'error'){
+              throw new Error(evt.error || 'Foreman hit an error.');
+            }
+          }
+        }
+      }
+
+      if (!full.trim()) throw new Error('The plan came back empty. Try again.');
+
+      var notes = extractBuildNotes(full);
+      var items = extractItemList(full);
+
+      // Written with the SAME columns the app uses — title/body/metadata on notes,
+      // raw_text on the list, item_name/position on the items. A row saved here has
+      // to open correctly on the phone.
+      if (notes){
+        var ni = await sb.from('buildr_project_notes').insert({
+          project_id: activeProject, user_id: currentUser.id,
+          title: 'Build Notes', body: notes, metadata: {}
+        });
+        if (ni.error) console.warn('save notes failed:', ni.error);
+      }
+
+      if (items.length){
+        var li = await sb.from('buildr_project_item_lists').insert({
+          project_id: activeProject, user_id: currentUser.id,
+          title: 'POZi List', raw_text: items.join('\n')
+        }).select().single();
+        if (li.error || !li.data){
+          console.warn('save item list failed:', li.error);
+        } else {
+          var ii = await sb.from('buildr_project_item_list_items').insert(items.map(function(it, i){
+            return { item_list_id: li.data.id, project_id: activeProject,
+                     item_name: it, position: i + 1, user_id: currentUser.id };
+          }));
+          if (ii.error) console.warn('save item list items failed:', ii.error);
+        }
+      }
+
+      // The plan is part of the conversation record, so the app shows it too.
+      try {
+        await sb.from('buildr_project_messages').insert([
+          { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
+        ]);
+        await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
+      } catch(e){ /* already on screen and saved as notes — never lose it over this */ }
+
+      status.textContent = items.length
+        ? 'Build Notes saved · ' + items.length + ' items ready to source.'
+        : 'Build Notes saved.';
+      status.className = 'chat-status ok';
+
+      // Re-open so notes, item list, and counts all come back from the database
+      // rather than from what we happen to be holding in memory.
+      await openProject(activeProject);
+    } catch(err){
+      status.textContent = err.message || 'The plan could not be built.';
+      status.className = 'chat-status err';
+      if (!full.trim()) await openProject(activeProject);
+    } finally {
+      planBusy = false;
+      btn.disabled = false; btn.textContent = 'Build the Plan';
+    }
+  }
+
+  /* ── Search ────────────────────────────────────────────────────────────
+     Same two functions the app uses: pozi-search returns quick links fast,
+     pozi-product-search runs a start/poll task that trails behind with real
+     product cards and prices.                                              */
+  var ORGANIC_ENDPOINT = '/.netlify/functions/pozi-search';
+  var PRODUCT_ENDPOINT = '/.netlify/functions/pozi-product-search';
+  var searchRun = 0;
+
+  /* ── Location ──────────────────────────────────────────────────────────
+     Ported from the app. A bare ZIP in the keyword ("PVC gates near 95949")
+     is only a hint Google may ignore, and it makes the organic query heavy
+     enough to hit the 9s upstream cap. Resolving the ZIP to coordinates once
+     and sending location_coordinate targets properly and keeps the keyword
+     short. The website was missing this entirely — it only ever did the
+     keyword trick, which is why ZIP searches behaved worse here than in the
+     app.                                                                   */
+  var siteZip = '', siteCoord = '', sitePlace = '';
+
+  function persistLocation(){
+    try {
+      if (siteZip) localStorage.setItem('pozi_zip', siteZip); else localStorage.removeItem('pozi_zip');
+      if (siteCoord) localStorage.setItem('pozi_coord', siteCoord); else localStorage.removeItem('pozi_coord');
+      if (sitePlace) localStorage.setItem('pozi_place', sitePlace); else localStorage.removeItem('pozi_place');
+    } catch(e){}
+  }
+
+  function locLabel(){ return sitePlace || (siteZip ? 'ZIP ' + siteZip : ''); }
+
+  function restoreLocation(){
+    try {
+      siteCoord = localStorage.getItem('pozi_coord') || '';
+      sitePlace = localStorage.getItem('pozi_place') || '';
+      siteZip = localStorage.getItem('pozi_zip') || '';
+    } catch(e){}
+    if (siteZip && $('sZip') && !$('sZip').value) $('sZip').value = siteZip;
+  }
+
+  // Forward-geocode a typed ZIP. An unresolved ZIP still searches, just nationally.
+  function setLocationFromZip(zip){
+    siteZip = String(zip || '').trim();
+    if ($('sZip')) $('sZip').value = siteZip;
+    persistLocation();
+    return fetch('https://nominatim.openstreetmap.org/search?postalcode=' +
+                 encodeURIComponent(siteZip) + '&country=US&format=json&addressdetails=1&limit=1')
+      .then(function(r){ return r.json(); })
+      .then(function(list){
+        var hit = Array.isArray(list) && list[0];
+        if (!hit) return false;
+        siteCoord = Number(hit.lat).toFixed(4) + ',' + Number(hit.lon).toFixed(4);
+        var a = hit.address || {};
+        var city = a.city || a.town || a.village || a.county || '';
+        sitePlace = [city, a.state].filter(Boolean).join(', ');
+        persistLocation();
+        return true;
+      })
+      .catch(function(){ return false; });
+  }
+
+  // We already have exact coords here; reverse-geocode only for the label.
+  function setLocationFromCoords(lat, lng){
+    siteCoord = Number(lat).toFixed(4) + ',' + Number(lng).toFixed(4);
+    persistLocation();
+    return fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var a = (data && data.address) || {};
+        var city = a.city || a.town || a.village || a.hamlet || a.county || '';
+        sitePlace = [city, a.state].filter(Boolean).join(', ');
+        if (a.postcode){ siteZip = a.postcode; if ($('sZip')) $('sZip').value = siteZip; }
+        persistLocation();
+        return true;
+      })
+      .catch(function(){ persistLocation(); return true; });
+  }
+
+  // Gate: returns true if we can search now, otherwise opens the modal and
+  // re-fires the pending search once the person answers. Skipping is remembered
+  // for the session so it never nags twice.
+  var pendingAfterLocation = null;
+
+  function requireLocation(next){
+    if (siteZip || siteCoord) return true;
+    var skipped = false;
+    try { skipped = sessionStorage.getItem('pozi_loc_skipped') === '1'; } catch(e){}
+    if (skipped) return true;
+    pendingAfterLocation = next || null;
+    if ($('locModalStatus')) $('locModalStatus').textContent = "Fastest option — we'll pull your ZIP automatically.";
+    if ($('locModalZip')) $('locModalZip').value = '';
+    openModal('locModal');
+    return false;
+  }
+
+  function resolveLocationGate(){
+    closeModal('locModal');
+    var next = pendingAfterLocation;
+    pendingAfterLocation = null;
+    if (typeof next === 'function') next();
+  }
+
+  function wireLocationModal(){
+    var detect = $('locModalDetect'), save = $('locModalSave'), skip = $('locModalSkip'), status = $('locModalStatus');
+
+    if (detect) detect.addEventListener('click', function(){
+      if (!navigator.geolocation){ if (status) status.textContent = "Location isn't available — enter a ZIP below."; return; }
+      if (status) status.textContent = 'Detecting your location…';
+      navigator.geolocation.getCurrentPosition(
+        function(pos){ setLocationFromCoords(pos.coords.latitude, pos.coords.longitude).then(resolveLocationGate); },
+        function(err){
+          if (status) status.textContent = (err && err.code === 1)
+            ? 'Location access denied — enter a ZIP below.'
+            : "Couldn't detect location — enter a ZIP below.";
+        },
+        { enableHighAccuracy:true, timeout:10000, maximumAge:60000 }
+      );
+    });
+
+    if (save) save.addEventListener('click', function(){
+      var zip = String(($('locModalZip') && $('locModalZip').value) || '').trim();
+      if (zip.length < 3){ if (status) status.textContent = 'Enter a valid ZIP code.'; return; }
+      if (status) status.textContent = 'Looking up ' + zip + '…';
+      setLocationFromZip(zip).then(resolveLocationGate);
+    });
+
+    if (skip) skip.addEventListener('click', function(){
+      try { sessionStorage.setItem('pozi_loc_skipped', '1'); } catch(e){}
+      resolveLocationGate();
+    });
+  }
+
+  function resultCard(r){
+    var url = r.url || '#';
+    return '<a class="res-card" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
+      '<div class="res-top"><span>' + escapeHtml(r.source === 'product' ? 'Product' : 'Result') + '</span>' +
+      '<em>' + escapeHtml(r.store || r.domain || '') + '</em></div>' +
+      '<strong>' + escapeHtml(r.title || r.name || '') + '</strong>' +
+      (r.description ? '<p>' + escapeHtml(String(r.description).slice(0,150)) + '</p>' : '') +
+      (r.price ? '<div class="res-price">' + escapeHtml(r.price) + '</div>' : '') +
+      '</a>';
+  }
+
+  function normalizeRows(data, kind){
+    var arr = data.results || data.items || data.products || data.organic ||
+      (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0] && data.tasks[0].result[0].items) || [];
+    if (!Array.isArray(arr)) arr = [];
+    return arr.map(function(r){
+      return {
+        title: r.title || r.name || r.product_name || 'POZi result',
+        url: r.url || r.link || r.product_url || r.merchant_url || '',
+        store: r.store || r.store_name || r.seller || r.merchant || r.domain || r.source || '',
+        domain: r.domain || '',
+        description: r.description || r.snippet || r.breadcrumb || '',
+        price: typeof r.price === 'string' ? r.price : (r.price && r.price.displayed) || '',
+        source: kind
+      };
+    }).filter(function(r){ return r.title && r.url; }).slice(0, 16);
+  }
+
+  async function poziFetch(endpoint, payload){
+    var res = await fetch(endpoint, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    var data = await res.json().catch(function(){ return {}; });
+    if (!res.ok || data.ok === false) throw new Error(data.error || 'Search failed.');
+    return data;
+  }
+
+  async function runSearch(prefill){
+    var q = prefill || ($('sQuery').value || '').trim();
+    if (prefill) $('sQuery').value = prefill;
+    if (!q){ $('sStatus').textContent = 'Type a product or material first.'; return; }
+
+    // A ZIP typed straight into the search bar counts as setting a location, so
+    // resolve it to coordinates before searching rather than only passing text.
+    var typedZip = ($('sZip').value || '').trim();
+    if (typedZip && typedZip !== siteZip){
+      $('sStatus').textContent = 'Looking up ' + typedZip + '…';
+      await setLocationFromZip(typedZip);
+    }
+
+    // Ask once, then re-run this exact search with the answer.
+    if (!requireLocation(function(){ runSearch(q); })) return;
+
+    var zip = siteZip;
+    var run = ++searchRun;
+    var grid = $('sResults');
+    $('sStatus').textContent = 'Searching…';
+    $('sStatus').className = 'chat-status';
+    grid.innerHTML = '<div class="res-note">Searching for “' + escapeHtml(q) + '”…</div>';
+
+    // Keep the keyword lean when we have coordinates — the geo-targeting is
+    // doing the work, and a shorter query is far less likely to hit the 9s cap.
+    var payload = {
+      query: (siteCoord || !zip) ? (q + ' buy materials stores prices') : (q + ' near ' + zip),
+      location: 'United States', language: 'English', depth: 10
+    };
+    if (siteCoord) payload.location_coordinate = siteCoord + ',20';   // 20km radius
+
+    // The two searches are INDEPENDENT. Organic is capped at 9s upstream and a
+    // ZIP-scoped query ("... near 95949") is heavy enough to hit that cap, so it
+    // fails far more often than the product call does.
+    //
+    // Before, organic was awaited directly inside the try, so its timeout jumped
+    // to the catch, wiped the grid, and threw away a product search that was
+    // already succeeding — a ZIP search showed "could not finish" while the
+    // identical search without a ZIP showed products. Neither call may now
+    // decide the outcome alone: each resolves to rows or an empty array, and the
+    // error only shows when BOTH come back with nothing.
+    var organicPromise = (async function(){
+      try {
+        var organic = await poziFetch(ORGANIC_ENDPOINT, payload);
+        return { rows: normalizeRows(organic, 'organic'), error: '' };
+      } catch(e){
+        return { rows: [], error: e && e.message ? e.message : 'Quick links failed.' };
+      }
+    })();
+
+    var productPromise = (async function(){
+      try {
+        var startData = await poziFetch(PRODUCT_ENDPOINT, Object.assign({}, payload, { mode:'start' }));
+        if (!startData.task_id) return { rows: [], error: '' };
+        var deadline = Date.now() + 60000;
+        while (Date.now() < deadline){
+          if (run !== searchRun) return { rows: [], error: '' };
+          await new Promise(function(r){ setTimeout(r, 2500); });
+          if (run !== searchRun) return { rows: [], error: '' };
+          var poll = await poziFetch(PRODUCT_ENDPOINT, { mode:'poll', task_id: startData.task_id });
+          if (poll && poll.pending) continue;
+          return { rows: normalizeRows(poll, 'product'), error: '' };
+        }
+        return { rows: [], error: '' };
+      } catch(e){
+        return { rows: [], error: e && e.message ? e.message : 'Product search failed.' };
+      }
+    })();
+
+    // Show quick links the moment they arrive rather than waiting on products,
+    // but treat them as a first paint that products may replace.
+    var organicResult = await organicPromise;
+    if (run !== searchRun) return;
+    if (organicResult.rows.length){
+      grid.innerHTML = organicResult.rows.map(resultCard).join('') +
+        '<div class="res-note">Quick links are ready — product cards with prices loading…</div>';
+      $('sStatus').textContent = 'Found ' + organicResult.rows.length + ' places to check.';
+    } else {
+      grid.innerHTML = '<div class="res-note">Looking for product prices…</div>';
+      $('sStatus').textContent = 'Checking retailers…';
+    }
+
+    var productResult = await productPromise;
+    if (run !== searchRun) return;
+
+    if (productResult.rows.length){
+      grid.innerHTML = productResult.rows.map(resultCard).join('');
+      $('sStatus').textContent = 'Product results with prices' + (locLabel() ? ' near ' + locLabel() : '') + '.';
+      $('sStatus').className = 'chat-status ok';
+      return;
+    }
+
+    if (organicResult.rows.length){
+      grid.innerHTML = organicResult.rows.map(resultCard).join('');
+      $('sStatus').textContent = 'Found ' + organicResult.rows.length + ' places to check.';
+      $('sStatus').className = 'chat-status ok';
+      return;
+    }
+
+    // Both empty. Distinguish "nothing matched" from "the search broke", because
+    // the fix is different: reword the query versus try again.
+    var failed = organicResult.error || productResult.error;
+    if (failed){
+      grid.innerHTML = '<div class="res-note">Search could not finish. Try again in a moment' +
+        (zip ? ', or search without a ZIP code.' : '.') + '</div>';
+      $('sStatus').textContent = failed;
+      $('sStatus').className = 'chat-status err';
+    } else {
+      grid.innerHTML = '<div class="res-note">No matches for “' + escapeHtml(q) + '”. Try a broader term.</div>';
+      $('sStatus').textContent = '';
+      $('sStatus').className = 'chat-status';
+    }
+  }
+
+  /* ── Pricing actions ───────────────────────────────────────────────────
+     Four cards, four genuinely different paths — not four buttons that all
+     open the app.
+       Guest      → straight into a Foreman conversation (disclaimer gates it)
+       Free       → create an account, then land in Foreman
+       DIY / Pro  → account first if needed, then Stripe checkout
+     startCheckout is the single place Stripe gets wired in later.            */
+  var PLAN_PRICE = { consumer:'$9.99', pro:'$19.99' };
+  var pendingCheckout = null;
+
+  // Sends the person to Stripe's hosted checkout. The plan is never granted
+  // here — Stripe's webhook writes it server-side after payment clears, because
+  // a browser returning to a success URL proves nothing.
+  var checkoutBusy = false;
+
+  async function startCheckout(plan){
+    if (checkoutBusy) return;
+    var label = plan === 'pro' ? 'Contractor' : 'DIY';
+
+    if (!currentUser){ planPaidAction(plan); return; }
+
+    checkoutBusy = true;
+    var btn = $(plan === 'pro' ? 'btnPro' : 'btnDiy');
+    var btnText = btn ? btn.textContent : '';
+    if (btn){ btn.textContent = 'Starting checkout…'; btn.disabled = true; }
+
+    try {
+      var sess = await sb.auth.getSession();
+      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+      if (!token) throw new Error('Your session has expired. Sign in again.');
+
+      var res = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + token },
+        body: JSON.stringify({ plan: plan })
+      });
+      var out = await res.json();
+      if (!res.ok || !out.url) throw new Error(out.error || 'Checkout could not start.');
+
+      // Same tab, not a popup — iOS blocks popups opened after an await.
+      window.location.assign(out.url);
+    } catch (err){
+      if (btn){ btn.textContent = btnText; btn.disabled = false; }
+      openModal('goModal');
+      var st = $('goStatus');
+      if (st){
+        st.textContent = (err && err.message ? err.message : 'Checkout could not start.') +
+          ' Nothing was charged. Try again, or email info@pozi.live.';
+      }
+    } finally {
+      checkoutBusy = false;
+    }
+  }
+
+  // Coming back from Stripe. The webhook may land a moment after the redirect,
+  // so the plan is re-read rather than assumed, and the URL is cleaned up so a
+  // refresh doesn't replay the message.
+  async function handleCheckoutReturn(){
+    var params = new URLSearchParams(window.location.search);
+    var state = params.get('checkout');
+    if (!state) return;
+
+    history.replaceState({}, '', window.location.pathname);
+
+    if (state === 'cancelled'){
+      openModal('goModal');
+      var sc = $('goStatus');
+      if (sc) sc.textContent = 'Checkout cancelled — nothing was charged. Your plan is unchanged.';
+      return;
+    }
+    if (state !== 'success') return;
+
+    openModal('goModal');
+    var st = $('goStatus');
+    if (st) st.textContent = 'Payment received. Activating your plan…';
+
+    // Poll briefly: the webhook usually beats the redirect, but not always.
+    for (var i = 0; i < 5; i++){
+      await new Promise(function(r){ setTimeout(r, 1200); });
+      await loadPlan();
+      if (currentPlan === 'consumer' || currentPlan === 'pro'){
+        paintAccount();
+        paintPricing();
+        syncNavCta();
+        if (st){
+          st.textContent = 'You\'re on ' + (currentPlan === 'pro' ? 'Contractor' : 'DIY') +
+            '. Your higher limits are active in the app and here.';
+        }
+        return;
+      }
+    }
+    if (st){
+      st.textContent = 'Payment received. Your plan is taking a moment to activate — ' +
+        'refresh in a minute, and email info@pozi.live if it still looks wrong.';
+    }
+  }
+
+  function goToForeman(){
+    showPage('home');
+    setTimeout(function(){
+      var el = $('foreman');
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      var input = $('chatInput');
+      if (input) input.focus({ preventScroll:true });
+    }, 180);
+  }
+
+  // Guest: no account, no friction — go straight to the conversation.
+  function planGuestAction(){ goToForeman(); }
+
+  // Free account: sign up, then drop them into Foreman rather than a dead end.
+  function planFreeAction(){
+    if (currentUser){ goToForeman(); return; }
+    pendingCheckout = null;
+    startSignup();
+    $('authSub').textContent = 'Create your free account, then start planning with Foreman.';
+  }
+
+  // Paid: an account has to exist before money changes hands.
+  function planPaidAction(plan){
+    if (!currentUser){
+      pendingCheckout = plan;
+      startSignup();
+      var label = plan === 'pro' ? 'Contractor' : 'DIY';
+      $('authSub').textContent = 'Create your account first — then you can start ' + label +
+        ' (' + PLAN_PRICE[plan] + '/mo).';
+      return;
+    }
+    if (currentPlan === plan){ openPlanModal(); return; }
+    startCheckout(plan);
+  }
+
+  // Marks whichever card the person is actually on and softens its button.
+  function paintPricing(){
+    var map = { planGuest:!currentUser, planFree:currentUser && currentPlan === 'free',
+                planDiy:currentPlan === 'consumer', planPro:currentPlan === 'pro' };
+    Object.keys(map).forEach(function(id){
+      var card = $(id);
+      if (!card) return;
+      var isCurrent = !!map[id] && (id !== 'planGuest' || !currentUser);
+      card.classList.toggle('is-current', isCurrent);
+      var tag = card.querySelector('.plan-current-tag');
+      if (isCurrent && !tag && id !== 'planGuest'){
+        tag = document.createElement('div');
+        tag.className = 'plan-current-tag';
+        tag.textContent = 'Your plan';
+        card.appendChild(tag);
+      } else if (!isCurrent && tag){ tag.remove(); }
+    });
+
+    if (currentUser){
+      $('btnFree').textContent = currentPlan === 'free' ? 'Start Planning' : 'Create Free Account';
+      $('btnDiy').textContent  = currentPlan === 'consumer' ? 'Your Current Plan' : 'Get DIY';
+      $('btnPro').textContent  = currentPlan === 'pro' ? 'Your Current Plan' : 'Get Contractor';
+      $('btnDiy').disabled = currentPlan === 'consumer';
+      $('btnPro').disabled = currentPlan === 'pro';
+    } else {
+      $('btnFree').textContent = 'Create Free Account';
+      $('btnDiy').textContent = 'Get DIY';
+      $('btnPro').textContent = 'Get Contractor';
+      $('btnDiy').disabled = false;
+      $('btnPro').disabled = false;
+    }
+  }
+
+  /* ── Phone gateway ─────────────────────────────────────────────────────
+     Swap APP_STORE_URL for the real App Store listing once POZi Go is live;
+     it is the only place the install link is defined. */
+  var APP_STORE_URL = 'https://pozi.live/install';
+
+  // User-agent only, deliberately. A width test would catch an iPad in split
+  // view or a small laptop window, and those should get the real site.
+  function isPhone(){
+    var ua = navigator.userAgent || '';
+    if (/iPad/i.test(ua)) return false;
+    // iPadOS 13+ reports as Macintosh, so treat touch-capable "Macs" as tablets.
+    if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) return false;
+    return /iPhone|iPod/i.test(ua) || (/Android/i.test(ua) && /Mobile/i.test(ua));
+  }
+
+  function showPhoneGate(){
+    if (!isPhone()) return;
+    try { if (sessionStorage.getItem(GATE_DISMISS_KEY) === '1') return; } catch(e){}
+    var gate = $('phoneGate');
+    if (!gate) return;
+    gate.classList.add('show');
+    gate.setAttribute('aria-hidden','false');
+    document.body.classList.add('gated');
+  }
+
+  function dismissPhoneGate(){
+    var gate = $('phoneGate');
+    if (!gate) return;
+    gate.classList.remove('show');
+    gate.setAttribute('aria-hidden','true');
+    document.body.classList.remove('gated');
+    try { sessionStorage.setItem(GATE_DISMISS_KEY, '1'); } catch(e){}
+  }
+
+  /* ── Page routing ─────────────────────────────────────────────────────── */
+  function showPage(name){
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    var pg = $('page-' + name);
+    if (pg) pg.classList.add('active');
+    if (name === 'projects') loadProjects();
+    document.querySelectorAll('.nl,.m-nl').forEach(function(n){
+      n.classList.toggle('active', n.dataset.page === name);
+    });
+    closeMobile();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // Deep links. The POZi Go app sends people to pozi.live/#pricing when they tap
+  // Upgrade, so a hash has to actually select a page — without this the link
+  // silently lands on the homepage and the upgrade path looks broken.
+  var PAGES = ['home','projects','search','how','pricing'];
+
+  function routeFromHash(){
+    var name = String(window.location.hash || '').replace(/^#/, '').trim().toLowerCase();
+    if (PAGES.indexOf(name) === -1) return false;
+    showPage(name);
+    return true;
+  }
+
+  /* ── Mobile menu ──────────────────────────────────────────────────────── */
+  function closeMobile(){
+    var m = $('mobileMenu'), h = $('hamburger');
+    if (m) m.classList.remove('open');
+    if (h) h.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function toggleMobile(){
+    var m = $('mobileMenu'), h = $('hamburger');
+    var open = m.classList.toggle('open');
+    h.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  /* ── Modals ───────────────────────────────────────────────────────────── */
+  function openModal(id){
+    var m = $(id);
+    if (!m) return;
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeMobile();
+  }
+  function closeModal(id){
+    // Releasing here covers every route out of the naming sheet — backdrop, ×, Cancel and
+    // Escape — so a chat waiting on a project can never hang.
+    if (id === 'nameProjModal' && pendingCancelResolve){
+      var release = pendingCancelResolve; pendingCancelResolve = null; release(null);
+    }
+    var m = $(id);
+    if (!m) return;
+    m.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeAllModals(){
+    document.querySelectorAll('.modal.open').forEach(function(m){ m.classList.remove('open'); });
+    document.body.style.overflow = '';
+  }
+
+  /* ── POZi Foreman: streaming chat ─────────────────────────────────────────
+     Same endpoint the app uses. The filename keeps its original `buildr` name
+     because renaming it would break the live function and the database; every
+     visitor-facing label says Foreman.
+     Tier limits are enforced server-side, so there are no client-side counters
+     to disagree with the real ones.                                          */
+  var FOREMAN_ENDPOINT = '/.netlify/functions/buildr-chat-stream';
+  var SESSION_KEY = 'pozi_web_session_id';
+
+  var sessionId = '';
+  try { sessionId = localStorage.getItem(SESSION_KEY) || ''; } catch(e){}
+  if (!sessionId){
+    sessionId = 'web_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,9);
+    try { localStorage.setItem(SESSION_KEY, sessionId); } catch(e){}
+  }
+
+  var history = [];
+  var busy = false;
+
+  /* Project hierarchy, ported from the app.
+     The home chat used to be anonymous and disposable: no Authorization header, so the
+     server counted a paying subscriber as a guest, and nothing was ever written to
+     buildr_project_messages, so the conversation died with the tab. Signed in, every
+     conversation now gets a named project up front and autosaves each turn — the same
+     contract the app has. Guests are unchanged: they chat, nothing is saved, because a
+     project needs a user id to belong to. */
+  var homeProjectId = null;   // the project THIS conversation belongs to
+  var homeSavedCount = 0;     // turns already written, so re-saving never duplicates
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // Mirrors the app's Build Notes renderer so a plan reads the same in both places.
+  function renderForemanHtml(src){
+    var lines = String(src || '').split(/\r?\n/);
+    var html = '', inList = false;
+
+    function inline(t){
+      return escapeHtml(t)
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\b(\d+(?:\.\d+)?(?:\s*[×x]\s*\d+(?:\.\d+)?)?)\s*(inches|inch|feet|foot|in\.|ft\.)\b/gi,
+                 '<span class="nq">$1 $2</span>')
+        .replace(/\b(\d+)\s+(pieces|boards|steps|cuts|risers|treads)\b/gi, '<span class="nq">$1 $2</span>');
+    }
+    function closeList(){ if (inList){ html += '</ul>'; inList = false; } }
+
+    for (var i = 0; i < lines.length; i++){
+      var line = lines[i].trim();
+      if (!line){ closeList(); continue; }
+
+      var h = line.match(/^(#{1,6})\s+(.*)$/);
+      if (h){ closeList(); html += '<div class="nh">' + inline(h[2]) + '</div>'; continue; }
+
+      var b = line.match(/^[-*•]\s+(.*)$/);
+      if (b){
+        if (!inList){ html += '<ul>'; inList = true; }
+        html += '<li>' + inline(b[1]) + '</li>';
+        continue;
+      }
+      // Short line with no trailing punctuation reads as a section heading.
+      if (line.length < 42 && !/[.:,;!?]$/.test(line)){
+        closeList(); html += '<div class="nh">' + inline(line) + '</div>'; continue;
+      }
+      closeList();
+      html += '<div>' + inline(line) + '</div>';
+    }
+    closeList();
+    return html;
+  }
+
+  function addMsg(text, role){
+    var stream = $('chatStream');
+    var div = document.createElement('div');
+    div.className = 'msg ' + role;
+    if (role === 'user') div.textContent = text;
+    else div.innerHTML = renderForemanHtml(text);
+    stream.appendChild(div);
+    stream.scrollTop = stream.scrollHeight;
+    return div;
+  }
+
+  // Shown once, in the conversation, when a tier limit stops the reply.
+  function showUpgradePrompt(){
+    var stream = $('chatStream');
+    if (stream.querySelector('.upgrade-card')) return;
+
+    var card = document.createElement('div');
+    card.className = 'upgrade-card';
+    card.innerHTML = currentUser
+      ? '<h4>You have used today\'s sessions</h4>' +
+        '<p>Your plan resets tomorrow. Upgrading raises the daily limit and message count right away.</p>' +
+        '<div class="upgrade-actions">' +
+          '<button class="btn btn-p" data-upgrade>See Plans</button>' +
+        '</div>'
+      : '<h4>Keep this conversation going</h4>' +
+        '<p>A free account gives you 3 sessions a day with 5 messages each, saves your projects, ' +
+        'and keeps everything you have planned so far.</p>' +
+        '<div class="upgrade-actions">' +
+          '<button class="btn btn-p" data-upgrade-signup>Create Free Account</button>' +
+          '<button class="btn btn-s" data-upgrade>See Plans</button>' +
+        '</div>';
+
+    stream.appendChild(card);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  function setStatus(text, kind){
+    var el = $('chatStatus');
+    el.textContent = text || '';
+    el.className = 'chat-status' + (kind ? ' ' + kind : '');
+  }
+
+  // Real message turns, never a flattened transcript. A transcript reads to the
+  // model as a script to continue, so it writes the user's next line too.
+  // Writes only the turns not yet stored. Mirrors savedMessageCount in the app: a
+  // conversation can be saved, continued, and saved again without storing anything twice.
+  async function saveHomeConversation(){
+    if (!sb || !currentUser || !homeProjectId) return;
+    var rows = history.slice(homeSavedCount).map(function(m){
+      return { project_id: homeProjectId, user_id: currentUser.id,
+               role: (m.role === 'assistant' ? 'assistant' : 'user'), content: m.text };
+    }).filter(function(r){ return r.content; });
+    if (!rows.length) return;
+    var r = await sb.from('buildr_project_messages').insert(rows);
+    if (r.error){ console.warn('home chat save failed:', r.error); return; }
+    homeSavedCount = history.length;
+    try {
+      await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', homeProjectId);
+    } catch(e){}
+  }
+
+  // Foreman signals readiness with a fixed line. Surface Build the Plan at that moment
+  // instead of making someone go find the Projects tab.
+  function maybeShowHomePlanCta(){
+    var row = $('homePlanRow');
+    if (!row) return;
+    var last = history.length ? history[history.length - 1] : null;
+    var ready = last && last.role === 'assistant' && /tap Build the Plan/i.test(last.text || '');
+    row.classList.toggle('hidden', !(ready && homeProjectId));
+  }
+
+  // Bring the most recent project's conversation back on load, so closing the tab does not
+  // lose the job. Capped for the same reason the app caps it: the server rejects an
+  // oversized prompt, and an unbounded restore would eventually break every message.
+  async function restoreHomeConversation(){
+    if (!sb || !currentUser || history.length) return;
+    try {
+      var pr = await sb.from('buildr_projects').select('id,name').order('updated_at', { ascending:false }).limit(1);
+      var proj = pr && pr.data && pr.data[0];
+      if (!proj) return;
+      var mr = await sb.from('buildr_project_messages')
+        .select('role,content').eq('project_id', proj.id)
+        .order('created_at', { ascending:false }).limit(40);
+      var rows = ((mr && mr.data) || []).slice().reverse();
+      if (!rows.length) return;
+
+      history = rows.map(function(m){
+        return { role: (m.role === 'assistant' ? 'assistant' : 'user'), text: m.content };
+      });
+      homeProjectId = proj.id;
+      homeSavedCount = history.length;   // these came FROM the database
+
+      var box = $('chatStream');
+      if (box){
+        box.innerHTML = '';
+        history.forEach(function(m){ addMsg(m.text, m.role === 'assistant' ? 'bot' : 'user'); });
+      }
+      maybeShowHomePlanCta();
+      setStatus('Picked up where you left off on “' + (proj.name || 'your project') + '”.', 'ok');
+    } catch(e){ /* a failed restore just starts fresh */ }
+  }
+
+  function buildTurns(next){
+    var turns = history.slice(-16).map(function(m){
+      return { role: m.role === 'user' ? 'user' : 'assistant', content: m.text };
+    });
+    turns.push({ role:'user', content: next });
+    while (turns.length && turns[0].role !== 'user') turns.shift();
+    return turns;
+  }
+
+  async function askForeman(){
+    if (busy) return;
+    var input = $('chatInput');
+    var text = (input.value || '').trim();
+    if (!text){ setStatus('Type a project or a question first.', 'err'); input.focus(); return; }
+
+    // First message only — re-fires this same send once accepted.
+    if (!requireDisclaimer(askForeman)) return;
+
+    // Signed in with no project yet: name and create one before the first message, so the
+    // conversation has somewhere to live from the very start. Cancelling leaves the typed
+    // text alone rather than swallowing it.
+    if (currentUser && !homeProjectId){
+      var made = await new Promise(function(resolve){
+        openNameProject(function(pid){ resolve(pid); });
+        pendingCancelResolve = resolve;
+      });
+      pendingCancelResolve = null;
+      if (!made) return;
+      homeProjectId = made;
+      homeSavedCount = 0;
+      showPage('home');
+      setTimeout(function(){ var el = $('foreman'); if (el) el.scrollIntoView({behavior:'smooth',block:'start'}); }, 120);
+    }
+
+    busy = true;
+    var btn = $('chatSend');
+    btn.disabled = true;
+    btn.textContent = 'Thinking…';
+    setStatus('');
+
+    addMsg(text, 'user');
+    history.push({ role:'user', text:text });
+    input.value = '';
+    input.style.height = '';
+
+    var turnsForServer = buildTurns(text);
+    var pending = addMsg('Working it out…', 'bot thinking');
+    var full = '';
+
+    try {
+      // Send the session token when there is one. Without it the server treats a paying
+      // subscriber as a guest and caps them at one session of five messages.
+      var authHeaders = { 'Content-Type':'application/json' };
+      if (sb && currentUser){
+        var sess = await sb.auth.getSession();
+        var tok = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+        if (tok) authHeaders.Authorization = 'Bearer ' + tok;
+      }
+
+      var res = await fetch(FOREMAN_ENDPOINT, {
+        method:'POST',
+        headers: authHeaders,
+        body: JSON.stringify({
+          messages: turnsForServer,
+          session_id: homeProjectId ? ('proj_' + homeProjectId) : sessionId
+        })
+      });
+
+      if (!res.ok || !res.body){
+        var errData = await res.json().catch(function(){ return {}; });
+        throw new Error(errData.error || 'Foreman is unavailable right now.');
+      }
+
+      // Server-sent events: read deltas as they arrive and paint them live.
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      pending.classList.remove('thinking');
+      pending.textContent = '';
+
+      while (true){
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buf += decoder.decode(chunk.value, { stream:true });
+
+        var parts = buf.split('\n\n');
+        buf = parts.pop() || '';
+
+        for (var p = 0; p < parts.length; p++){
+          var lines = parts[p].split('\n');
+          for (var l = 0; l < lines.length; l++){
+            if (lines[l].indexOf('data:') !== 0) continue;
+            var raw = lines[l].slice(5).trim();
+            if (!raw || raw === '[DONE]') continue;
+            var evt;
+            try { evt = JSON.parse(raw); } catch(e){ continue; }
+
+            if (evt.type === 'text' && evt.v){
+              full += evt.v;
+              pending.innerHTML = renderForemanHtml(full);
+              $('chatStream').scrollTop = $('chatStream').scrollHeight;
+            } else if (evt.type === 'error'){
+              throw new Error(evt.error || 'Foreman hit an error.');
+            } else if (evt.type === 'done'){
+              var u = evt.usage || {};
+              var chip = $('usageChip');
+              if (chip && u.limit && typeof u.remaining === 'number'){
+                chip.textContent = u.remaining + ' of ' + u.limit + ' sessions left today';
+              }
+            }
+          }
+        }
+      }
+
+      if (!full){
+        pending.innerHTML = renderForemanHtml('I did not get a response that time. Try again in a moment.');
+        setStatus('No response received.', 'err');
+      } else {
+        history.push({ role:'assistant', text:full });
+        // Autosave: only the turns not yet stored, so saving repeatedly never duplicates.
+        await saveHomeConversation();
+        maybeShowHomePlanCta();
+        setStatus('Add another detail to keep going.', 'ok');
+      }
+
+    } catch(err){
+      pending.classList.remove('thinking');
+      var msg = String(err.message || '');
+      var isLimit = /limit|session/i.test(msg);
+
+      if (isLimit){
+        // The server enforces the cap; here we just make the next step obvious
+        // instead of leaving someone stuck at a wall with no button.
+        pending.innerHTML = renderForemanHtml(msg);
+        showUpgradePrompt();
+        setStatus('', '');
+      } else {
+        pending.innerHTML = renderForemanHtml('I could not respond just then. Give it a moment and try again.');
+        setStatus(msg || 'Something went wrong.', 'err');
+      }
+    } finally {
+      busy = false;
+      btn.disabled = false;
+      btn.textContent = 'Ask Foreman';
+    }
+  }
+
+  /* ── Contact form (mailto) ────────────────────────────────────────────── */
+  function sendContact(){
+    var name = $('cfName').value.trim();
+    var email = $('cfEmail').value.trim();
+    var st = $('cfStatus');
+    if (!name || !email){
+      st.style.color = 'var(--danger)';
+      st.textContent = 'Add your name and email so we can reply.';
+      return;
+    }
+    var kind = $('cfKind').value;
+    var msg = $('cfMsg').value.trim();
+    var body = 'Name: ' + name + '\nEmail: ' + email + '\nAbout: ' + kind + '\n\n' + msg;
+    window.location.href = 'mailto:info@pozi.live?subject=' +
+      encodeURIComponent('POZi — ' + kind) + '&body=' + encodeURIComponent(body);
+    st.style.color = 'var(--green)';
+    st.textContent = 'Opening your email app…';
+  }
+
+  /* ── Wire everything ──────────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function(){
+
+    // One delegated handler covers page links, modal openers, and closers.
+    document.addEventListener('click', function(e){
+      var t = e.target.closest('[data-page],[data-modal],[data-close]');
+      if (!t) return;
+      if (t.dataset.page){ showPage(t.dataset.page); return; }
+      if (t.dataset.modal){ openModal(t.dataset.modal); return; }
+      if (t.dataset.close){ closeModal(t.dataset.close); }
+    });
+
+    // Click the dimmed backdrop to dismiss.
+    document.querySelectorAll('.modal').forEach(function(m){
+      m.addEventListener('click', function(e){ if (e.target === m) closeModal(m.id); });
+    });
+
+    var h = $('hamburger');
+    if (h) h.addEventListener('click', toggleMobile);
+
+    var send = $('chatSend');
+    if (send) send.addEventListener('click', askForeman);
+
+    var input = $('chatInput');
+    if (input){
+      // Enter sends; Shift+Enter makes a new line.
+      input.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); askForeman(); }
+      });
+      // Grow with the text instead of scrolling a one-line box.
+      input.addEventListener('input', function(){
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+      });
+    }
+
+    document.querySelectorAll('.preset').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = $('chatInput');
+        i.value = btn.dataset.preset || '';
+        i.focus();
+        i.dispatchEvent(new Event('input'));
+      });
+    });
+
+    var cf = $('cfSend');
+    if (cf) cf.addEventListener('click', sendContact);
+
+    var goOpen = $('goOpen');
+    if (goOpen) goOpen.addEventListener('click', function(){
+      window.open(APP_STORE_URL, '_blank', 'noopener');
+    });
+
+    var goCopy = $('goCopy');
+    if (goCopy) goCopy.addEventListener('click', async function(){
+      var st = $('goStatus');
+      try {
+        await navigator.clipboard.writeText(APP_STORE_URL);
+        st.textContent = 'Link copied — paste it into a text to yourself.';
+      } catch(e){
+        st.textContent = APP_STORE_URL;
+      }
+    });
+
+    // Projects
+    $('projBack').addEventListener('click', function(){ showProjectList(); loadProjects(); });
+    $('projNew').addEventListener('click', function(){ openNameProject(); });
+    $('projDelete').addEventListener('click', deleteActiveProject);
+    $('nameProjSave').addEventListener('click', createProjectFromModal);
+    $('nameProjInput').addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); createProjectFromModal(); }
+    });
+    $('projGrid').addEventListener('click', function(e){
+      var card = e.target.closest('[data-proj]');
+      if (card) openProject(card.getAttribute('data-proj'));
+    });
+    $('projSend').addEventListener('click', sendToProject);
+    $('projBuildPlan').addEventListener('click', buildProjectPlan);
+    $('planStripCta').addEventListener('click', function(){ showPage('pricing'); });
+    $('planStripProjects').addEventListener('click', function(){ showPage('projects'); loadProjects(); });
+    $('homeBuildPlan').addEventListener('click', async function(){
+      if (!homeProjectId) return;
+      activeProject = homeProjectId;
+      showPage('projects');
+      await openProject(homeProjectId);
+      setTimeout(function(){ var b = $('projBuildPlan'); if (b) b.click(); }, 250);
+    });
+    $('photoUpload').addEventListener('click', function(){ photoMode = 'save'; $('photoFile').click(); });
+    $('photoAnalyze').addEventListener('click', function(){ photoMode = 'analyze'; $('photoFile').click(); });
+    $('photoFile').addEventListener('change', function(e){
+      var f = e.target.files && e.target.files[0];
+      if (f) handlePhotoFile(f);
+    });
+    $('projInput').addEventListener('keydown', function(e){
+      if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendToProject(); }
+    });
+    $('projInput').addEventListener('input', function(){
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+    });
+    // An item chip jumps straight into Search with that term.
+    $('projItems').addEventListener('click', function(e){
+      var chip = e.target.closest('[data-search]');
+      if (!chip) return;
+      showPage('search');
+      setTimeout(function(){ runSearch(chip.getAttribute('data-search')); }, 120);
+    });
+    $('projSource').addEventListener('click', function(){
+      var first = $('projItems').querySelector('[data-search]');
+      showPage('search');
+      if (first) setTimeout(function(){ runSearch(first.getAttribute('data-search')); }, 120);
+    });
+
+    // Upgrade prompt inside the chat
+    $('chatStream').addEventListener('click', function(e){
+      if (e.target.closest('[data-upgrade-signup]')){ startSignup(); return; }
+      if (e.target.closest('[data-upgrade]')) showPage('pricing');
+    });
+
+    // Pricing — four cards, four different paths
+    $('btnGuest').addEventListener('click', planGuestAction);
+    $('btnFree').addEventListener('click', planFreeAction);
+    $('btnDiy').addEventListener('click', function(){ planPaidAction('consumer'); });
+    $('btnPro').addEventListener('click', function(){ planPaidAction('pro'); });
+    paintPricing();
+
+    // Search
+    $('sGo').addEventListener('click', function(){ runSearch(); });
+    $('sQuery').addEventListener('keydown', function(e){ if (e.key === 'Enter') runSearch(); });
+    $('sZip').addEventListener('keydown', function(e){ if (e.key === 'Enter') runSearch(); });
+
+    // Disclaimer
+    $('discBody').addEventListener('scroll', function(){
+      if (!$('discActions').classList.contains('hidden')) checkDiscScroll();
+    });
+    $('discAccept').addEventListener('click', acceptDisclaimer);
+    $('discDecline').addEventListener('click', declineDisclaimer);
+    $('discClose').addEventListener('click', function(){ closeModal('legalModal'); });
+
+    // Any link to the disclaimer opens the read-only view, not the gate.
+    document.querySelectorAll('[data-modal="legalModal"]').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.stopImmediatePropagation();
+        openDisclaimer(hasAcceptedDisclaimer() ? 'read' : 'gate');
+      }, true);
+    });
+
+    // Signup / plan / try-Foreman actions, wherever they appear on the page.
+    document.addEventListener('click', function(e){
+      var t = e.target.closest('[data-signup],[data-plan],[data-try-foreman]');
+      if (!t) return;
+      if (t.hasAttribute('data-signup')) { startSignup(); return; }
+      if (t.hasAttribute('data-try-foreman')) { tryForeman(); return; }
+      if (t.hasAttribute('data-plan')) { choosePlan(t.getAttribute('data-plan')); }
+    });
+
+    // Account
+    $('acctToggle').addEventListener('click', function(e){ e.stopPropagation(); toggleAcctMenu(); });
+    $('acctAuth').addEventListener('click', function(){ closeAcctMenu(); setAuthMode('signin'); openModal('authModal'); });
+    $('acctPlan').addEventListener('click', openPlanModal);
+    $('acctSignOut').addEventListener('click', doSignOut);
+    $('acctDelete').addEventListener('click', function(){
+      closeAcctMenu();
+      $('delStep1').classList.remove('hidden');
+      $('delStep2').classList.add('hidden');
+      $('delStatus').textContent = ''; $('delStatus2').textContent = '';
+      openModal('delModal');
+    });
+    document.addEventListener('click', function(e){
+      if (!e.target.closest('.acct-wrap')) closeAcctMenu();
+    });
+
+    $('mAcctAuth').addEventListener('click', function(){ closeMobile(); setAuthMode('signin'); openModal('authModal'); });
+    $('mAcctPlan').addEventListener('click', function(){ closeMobile(); openPlanModal(); });
+
+    $('authSignIn').addEventListener('click', doSignIn);
+    $('authGoSignUp').addEventListener('click', function(){ setAuthMode('signup'); });
+    $('authBackSignIn').addEventListener('click', function(){ setAuthMode('signin'); });
+    $('authDoSignUp').addEventListener('click', doSignUp);
+    $('authPw').addEventListener('input', checkPwMatch);
+    $('authPw2').addEventListener('input', checkPwMatch);
+
+    $('planUpgrade').addEventListener('click', function(){
+      closeModal('planModal');
+      if (!currentUser){ setAuthMode('signup'); openModal('authModal'); }
+      else showPage('pricing');
+    });
+
+    $('delNext').addEventListener('click', function(){
+      $('delStep1').classList.add('hidden'); $('delStep2').classList.remove('hidden');
+    });
+    $('delBack').addEventListener('click', function(){
+      $('delStep2').classList.add('hidden'); $('delStep1').classList.remove('hidden');
+    });
+    $('delGo').addEventListener('click', doDelete);
+
+    syncNavCta();
+    restoreLocation();
+    wireLocationModal();
+    routeFromHash();
+    window.addEventListener('hashchange', routeFromHash);
+    // Auth first — handleCheckoutReturn needs a session before it can read the
+    // plan Stripe just granted.
+    // The handoff has to run before auth: it carries its own token and should not wait
+    // for a session that does not exist on this origin.
+    initAuth().then(function(){ handleCheckoutReturn(); restoreHomeConversation(); });
+
+    var gateInstall = $('gateInstall');
+    if (gateInstall) gateInstall.setAttribute('href', APP_STORE_URL);
+
+    var gateStay = $('gateStay');
+    if (gateStay) gateStay.addEventListener('click', dismissPhoneGate);
+
+    showPhoneGate();
+
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape'){ closeAllModals(); closeMobile(); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
