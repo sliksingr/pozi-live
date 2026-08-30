@@ -291,6 +291,7 @@ h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18
 .proj-chip:active{transform:scale(.96)}
 .proj-chip-n{font-size:11px;color:#fff}
 .plan-strip-name{font-family:var(--fh);font-weight:800;font-size:15px;color:#7dffbf}
+.plan-strip-who{font-size:12px;color:#cfd3e6;margin-top:4px;word-break:break-all}
 .plan-strip-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
 .chat-guest-note{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
 .chat-save-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
@@ -1618,6 +1619,14 @@ body.gated>*:not(.phone-gate){display:none!important}
   var authMode = 'signin';
 
   // Same ladder as the app, so the two never disagree about what a plan includes.
+  // Mirrors FOREMAN_TEST_UNLIMITED_EMAILS in buildr-chat-stream.mjs. These accounts bypass
+  // tier checks server-side, so reading buildr_profiles.plan for them reports "Free" and
+  // means nothing. Keep this list in step with the server's.
+  var TEST_UNLIMITED_EMAILS = ['info@pozi.live'];
+  function isTestUnlimited(){
+    return !!currentUser && TEST_UNLIMITED_EMAILS.indexOf(String(currentUser.email || '').toLowerCase()) !== -1;
+  }
+
   var PLAN_INFO = {
     free:     { name:'Free',       sessions:'3 a day', messages:'5 each', projects:'3',         photos:'1 analysis a day' },
     consumer: { name:'DIY',        sessions:'5 a day', messages:'10 each', projects:'15',       photos:'10 analyses a day' },
@@ -1710,13 +1719,19 @@ body.gated>*:not(.phone-gate){display:none!important}
     var strip = $('planStrip');
     if (strip){
       var info = PLAN_INFO[currentPlan] || PLAN_INFO.free;
-      var canUpgrade = signedIn && currentPlan !== 'pro';
+      var unlimited = isTestUnlimited();
+      var canUpgrade = signedIn && !unlimited && currentPlan !== 'pro';
       strip.classList.toggle('hidden', !signedIn);
-      $('planStripName').textContent = 'Your plan: ' + info.name;
-      $('planStripSub').textContent = info.sessions + ' sessions, ' + info.messages +
-        ' messages, ' + info.projects + ' projects, ' + info.photos + '.';
+      $('planStripName').textContent = unlimited ? 'Test access — unlimited' : ('Your plan: ' + info.name);
+      // Who is signed in, said plainly. "Free" with no name reads like being signed out.
+      $('planStripWho').textContent = signedIn ? ('Signed in as ' + (currentUser.email || '')) : '';
+      $('planStripSub').textContent = unlimited
+        ? 'Sessions and messages are uncapped on this account.'
+        : (info.sessions + ' sessions, ' + info.messages + ' messages, ' +
+           info.projects + ' projects, ' + info.photos + '.');
       var cta = $('planStripCta');
       cta.textContent = canUpgrade ? (currentPlan === 'consumer' ? 'Upgrade to Contractor' : 'Upgrade') : 'See plans';
+      cta.classList.toggle('hidden', unlimited);
 
       // Count of saved projects, straight to the Projects tab. Hidden at zero.
       if (signedIn && sb){
@@ -2188,6 +2203,13 @@ body.gated>*:not(.phone-gate){display:none!important}
     photoBusy = true;
     status.className = 'chat-status';
     status.textContent = 'Preparing the photo…';
+
+    // Flush the conversation FIRST. Analyzing writes its own rows and then re-opens the
+    // project, and anything still only in memory at that point would either be destroyed or
+    // land out of order behind the photo. Saving up front keeps the transcript sequential.
+    if (homeProjectId === activeProject && history.length > homeSavedCount){
+      try { await saveHomeConversation(); } catch(e){}
+    }
 
     try {
       var raw = await readFileAsDataUrl(file);
@@ -3370,14 +3392,28 @@ body.gated>*:not(.phone-gate){display:none!important}
   async function loadProjectConversationWeb(pid){
     if (!sb || !currentUser || !pid) return false;
     try {
+      // Anything unsaved goes to the database BEFORE we read it back. Without this, loading
+      // returns fewer rows than are on screen and the difference is destroyed — which is
+      // exactly what happened when analyzing a photo re-opened the project mid-conversation.
+      if (homeProjectId === pid && history.length > homeSavedCount){
+        await saveHomeConversation();
+      }
+
       var mr = await sb.from('buildr_project_messages')
         .select('role,content').eq('project_id', pid)
         .order('created_at', { ascending:false }).limit(40);
       var rows = ((mr && mr.data) || []).slice().reverse();
 
-      history = rows.map(function(m){
+      var loaded = rows.map(function(m){
         return { role: (m.role === 'assistant' ? 'assistant' : 'user'), text: m.content };
       }).filter(function(m){ return m.text; });
+
+      // A load must never SHRINK the conversation in front of someone. If the database has
+      // less than memory for this same project, memory is the truth — keep it and leave the
+      // screen alone.
+      if (homeProjectId === pid && loaded.length < history.length) return true;
+
+      history = loaded;
 
       homeProjectId = pid;
       homeSavedCount = history.length;   // these came FROM the database
