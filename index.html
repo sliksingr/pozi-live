@@ -109,10 +109,17 @@ nav{
 .logo-word .go{font-size:12px;margin-left:1px;opacity:.75}
 .lead-lede{color:#fff;font-weight:800}
 .nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap;line-height:1.5}
-/* Website build badge. Mirrors the app's brand-ver. The number here MUST match the
-   filename of the delivered file. If the badge does not show the build you just uploaded,
-   you are testing a cached or older deploy and any conclusion is about the wrong code. */
-.site-ver{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);border-radius:5px;padding:1px 5px;white-space:nowrap;vertical-align:middle}
+/* Website build badge. Sits BESIDE the logo block, not inside the tagline stack, so it
+   cannot push the mark or the wordmark down. The number here MUST match the delivered
+   filename. If the badge does not show the build you just uploaded, you are looking at a
+   cached or older deploy and any conclusion is about the wrong code. */
+.site-ver{
+  align-self:center;flex:0 0 auto;
+  font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  color:var(--green);background:rgba(0,255,136,.12);
+  border:1px solid rgba(0,255,136,.4);border-radius:5px;
+  padding:1px 5px;white-space:nowrap;line-height:1.6;
+}
 /* The original POZi tagline, kept as its own green line under the verbs. */
 .nav-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
 .nav-links{display:flex;gap:2px}
@@ -743,8 +750,9 @@ body.gated>*:not(.phone-gate){display:none!important}
     <img src="logo-dark.png" alt="POZi">
     <div>
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
-      <div class="nav-tag"><span class="aiop">All in one place.</span><span class="site-ver" id="siteVer">w3</span></div>
+      <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
+    <span class="site-ver" id="siteVer">v4</span>
   </div>
 
   <div class="nav-links">
@@ -1286,9 +1294,6 @@ body.gated>*:not(.phone-gate){display:none!important}
       </div>
     </div>
     <div class="footer-links">
-      <button class="footer-link" data-page="home">Home</button>
-      <button class="footer-link" data-page="how">How It Works</button>
-      <button class="footer-link" data-page="pricing">Pricing</button>
       <button class="footer-link" data-modal="contactModal">Contact</button>
       <button class="footer-link" data-modal="legalModal">Disclaimer</button>
     </div>
@@ -1413,23 +1418,38 @@ body.gated>*:not(.phone-gate){display:none!important}
       <p class="sheet-sub">Questions, feedback, a bug, or a store that wants to appear in POZi searches — this reaches us directly.</p>
     </div>
     <div class="sheet-body">
-      <div class="field-row">
-        <div><label class="field-label" for="cfName">Name</label><input id="cfName" class="field" type="text" placeholder="Your name" autocomplete="name"></div>
-        <div><label class="field-label" for="cfEmail">Email</label><input id="cfEmail" class="field" type="email" placeholder="you@example.com" autocomplete="email"></div>
-      </div>
-      <div>
-        <label class="field-label" for="cfKind">What's this about?</label>
-        <select id="cfKind" class="field" style="cursor:pointer">
-          <option value="Question">A question about POZi</option>
-          <option value="Feedback">Feedback or a bug report</option>
-          <option value="Retailer">I run a store or supply business</option>
-          <option value="Other">Something else</option>
-        </select>
-      </div>
-      <div><label class="field-label" for="cfMsg">Message</label><textarea id="cfMsg" class="field" rows="4" placeholder="What's on your mind?" style="resize:vertical"></textarea></div>
-      <button class="btn btn-p" id="cfSend" style="width:100%">Send</button>
+      <!-- A REAL submission, not a mailto handoff. Netlify detects this form at deploy
+           time from the markup below and captures submissions server-side, so nothing
+           depends on the visitor having a mail app configured. The fields need `name`
+           attributes — Netlify keys off name, not id. The honeypot is a decoy input that
+           a human never sees and a bot fills in.
+           REQUIRES: Netlify → Site configuration → Forms → form detection enabled. -->
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field"
+            id="contactForm" onsubmit="return false">
+        <input type="hidden" name="form-name" value="contact">
+        <p style="display:none"><label>Leave this empty: <input name="bot-field"></label></p>
+
+        <div class="field-row">
+          <div><label class="field-label" for="cfName">Name</label><input id="cfName" name="name" class="field" type="text" placeholder="Your name" autocomplete="name"></div>
+          <div><label class="field-label" for="cfEmail">Email</label><input id="cfEmail" name="email" class="field" type="email" placeholder="you@example.com" autocomplete="email"></div>
+        </div>
+        <div style="margin-top:13px">
+          <label class="field-label" for="cfKind">What's this about?</label>
+          <select id="cfKind" name="about" class="field" style="cursor:pointer">
+            <option value="Question">A question about POZi</option>
+            <option value="Feedback">Feedback or a bug report</option>
+            <option value="Retailer">I run a store or supply business</option>
+            <option value="Other">Something else</option>
+          </select>
+        </div>
+        <div style="margin-top:13px"><label class="field-label" for="cfMsg">Message</label><textarea id="cfMsg" name="message" class="field" rows="4" placeholder="What's on your mind?" style="resize:vertical"></textarea></div>
+        <button type="button" class="btn btn-p" id="cfSend" style="width:100%;margin-top:13px">Send</button>
+      </form>
       <div class="form-status" id="cfStatus"></div>
-      <p style="text-align:center;font-size:12px;color:#6a6d85">Or email <a href="mailto:info@pozi.live" style="color:var(--green)">info@pozi.live</a></p>
+      <!-- No mailto in the markup: a plain mailto: href is the easiest address for a
+           scraper to harvest. If the submission fails, the fallback address is assembled
+           in script at that moment instead. -->
+      <p id="cfFallback" style="text-align:center;font-size:12px;color:#6a6d85;display:none"></p>
     </div>
   </div>
 </div>
@@ -3606,22 +3626,52 @@ body.gated>*:not(.phone-gate){display:none!important}
   }
 
   /* ── Contact form (mailto) ────────────────────────────────────────────── */
-  function sendContact(){
+  // Posts to Netlify Forms. The old version opened a mailto: link, which meant the message
+  // only arrived if the visitor had a mail app configured, and the sheet claimed it had
+  // "reached us directly" either way. This actually submits, and says so honestly when it
+  // does not.
+  async function sendContact(){
     var name = $('cfName').value.trim();
     var email = $('cfEmail').value.trim();
     var st = $('cfStatus');
+    var fb = $('cfFallback');
     if (!name || !email){
       st.style.color = 'var(--danger)';
       st.textContent = 'Add your name and email so we can reply.';
       return;
     }
-    var kind = $('cfKind').value;
-    var msg = $('cfMsg').value.trim();
-    var body = 'Name: ' + name + '\nEmail: ' + email + '\nAbout: ' + kind + '\n\n' + msg;
-    window.location.href = 'mailto:info@pozi.live?subject=' +
-      encodeURIComponent('POZi — ' + kind) + '&body=' + encodeURIComponent(body);
-    st.style.color = 'var(--green)';
-    st.textContent = 'Opening your email app…';
+    var btn = $('cfSend');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    st.style.color = 'var(--muted)';
+    st.textContent = 'Sending…';
+    if (fb) fb.style.display = 'none';
+
+    try {
+      var form = $('contactForm');
+      var body = new URLSearchParams(new FormData(form)).toString();
+      var res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body
+      });
+      if (!res.ok) throw new Error('Form endpoint returned ' + res.status);
+
+      st.style.color = 'var(--green)';
+      st.textContent = 'Thanks — that reached us. We reply to most messages within a day.';
+      $('cfName').value = ''; $('cfEmail').value = ''; $('cfMsg').value = '';
+    } catch(e){
+      console.warn('contact submit failed:', e);
+      st.style.color = 'var(--danger)';
+      st.textContent = 'That did not send. You can reach us directly instead:';
+      if (fb){
+        // Assembled here rather than sitting in the markup as a mailto: href.
+        var addr = ['info', 'pozi.live'].join('@');
+        fb.innerHTML = '<a href="mailto:' + addr + '" style="color:var(--green)">' + addr + '</a>';
+        fb.style.display = '';
+      }
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send';
+    }
   }
 
   /* ── Wire everything ──────────────────────────────────────────────────── */
