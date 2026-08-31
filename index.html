@@ -844,6 +844,7 @@ body.gated>*:not(.phone-gate){display:none!important}
               Projects <span class="proj-chip-n" id="planStripProjectsN">0</span>
             </button>
           </div>
+          <div class="plan-strip-who" id="planStripWho"></div>
           <div class="plan-strip-sub" id="planStripSub"></div>
         </div>
         <button class="btn btn-p" id="planStripCta">Upgrade</button>
@@ -1747,7 +1748,6 @@ body.gated>*:not(.phone-gate){display:none!important}
         if (chip0) chip0.classList.add('hidden');
       }
     }
-    syncNavCta();
     paintPricing();
   }
 
@@ -1915,13 +1915,6 @@ body.gated>*:not(.phone-gate){display:none!important}
     if (st) st.textContent = "You're signed in as " + currentUser.email + ". Open POZi Go and choose " + label + " to activate it.";
   }
 
-  function syncNavCta(){
-    var btn = $('navCta');
-    if (!btn) return;
-    btn.textContent = currentUser ? 'Get POZi Go' : 'Create Account';
-    btn.classList.toggle('is-member', !!currentUser);
-  }
-
   async function initAuth(){
     if (!sb) return;
     try {
@@ -2057,7 +2050,7 @@ body.gated>*:not(.phone-gate){display:none!important}
 
       closeModal('nameProjModal');
       activeProject = r.data.id;
-      bindHomeChatToProject(r.data.id);
+      await bindHomeChatToProject(r.data.id);
       var next = pendingAfterProject;
       pendingAfterProject = null;
       pendingCancelResolve = null;   // resolved by next() below; never fire it twice
@@ -2323,11 +2316,10 @@ body.gated>*:not(.phone-gate){display:none!important}
   async function openProject(id){
     if (!sb || !currentUser) return;
     activeProject = id;
-    // Bring that project's conversation into the home chat — unless a different project's
-    // chat is live and unsaved.
-    var liveElsewhere = homeProjectId && homeProjectId !== id && history.length > homeSavedCount;
-    if (liveElsewhere) bindHomeChatToProject(id);
-    else loadProjectConversationWeb(id);
+    // Always follow the project being opened. Any unsaved turns from the previous project
+    // are flushed to it first by bindHomeChatToProject.
+    if (homeProjectId && homeProjectId !== id) await bindHomeChatToProject(id);
+    await loadProjectConversationWeb(id);
     $('projList').classList.add('hidden');
     $('projDetail').classList.remove('hidden');
     $('projBack').style.display = '';
@@ -3042,7 +3034,6 @@ body.gated>*:not(.phone-gate){display:none!important}
       if (currentPlan === 'consumer' || currentPlan === 'pro'){
         paintAccount();
         paintPricing();
-        syncNavCta();
         if (st){
           st.textContent = 'You\'re on ' + (currentPlan === 'pro' ? 'Contractor' : 'DIY') +
             '. Your higher limits are active in the app and here.';
@@ -3249,11 +3240,28 @@ body.gated>*:not(.phone-gate){display:none!important}
      project needs a user id to belong to. */
   var homeProjectId = null;   // the project THIS conversation belongs to
 
-  // Same two-pointer trap the app had: activeProject is what the Projects tab is showing,
-  // homeProjectId is what the home chat writes into. Creating or opening a project set only
-  // the first, so going back to the home chat afterwards would ask you to name a SECOND
-  // project for work that already had one. Binding refuses when a different project's
-  // conversation is live, so nobody's in-progress chat is silently re-homed.
+  // Switching the home chat to a project.
+  //
+  // This used to REFUSE when a different project's conversation was live, to avoid
+  // hijacking someone's work. That was the wrong call: the chat stayed bound to whatever
+  // project it was on, so talking after creating a new one wrote every turn into the OLD
+  // project. The conversation was saved — just filed under the wrong job, which is why it
+  // turned up in the app under a different project.
+  //
+  // Opening or creating a project IS the intent. So flush the old conversation to where it
+  // belongs, then switch. Nothing is lost and nothing is misfiled.
+  async function bindHomeChatToProject(pid){
+    if (!pid || homeProjectId === pid) return;
+    if (homeProjectId && history.length > homeSavedCount){
+      try { await saveHomeConversation(); } catch(e){}
+    }
+    homeProjectId = pid;
+    homeSavedCount = 0;
+    history = [];              // the previous project's turns are saved and no longer current
+    var box = $('chatStream');
+    if (box) box.innerHTML = '';
+  }
+
   // Flush anything unsaved immediately. Autosave runs after every reply; this covers
   // closing the tab or switching away before that had a chance to finish.
   function flushHomeChatNow(){
@@ -3262,12 +3270,6 @@ body.gated>*:not(.phone-gate){display:none!important}
     saveHomeConversation().catch(function(){});
   }
 
-  function bindHomeChatToProject(pid){
-    if (!pid || homeProjectId === pid) return;
-    if (homeProjectId && homeProjectId !== pid && history.length) return;
-    homeProjectId = pid;
-    if (!history.length) homeSavedCount = 0;
-  }
   var homeSavedCount = 0;     // turns already written, so re-saving never duplicates
 
   function escapeHtml(s){
@@ -3812,7 +3814,6 @@ body.gated>*:not(.phone-gate){display:none!important}
     });
     $('delGo').addEventListener('click', doDelete);
 
-    syncNavCta();
     restoreLocation();
     wireLocationModal();
     routeFromHash();
