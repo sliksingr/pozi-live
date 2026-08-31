@@ -109,6 +109,10 @@ nav{
 .logo-word .go{font-size:12px;margin-left:1px;opacity:.75}
 .lead-lede{color:#fff;font-weight:800}
 .nav-tag{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:3px;white-space:nowrap;line-height:1.5}
+/* Website build badge. Mirrors the app's brand-ver. The number here MUST match the
+   filename of the delivered file. If the badge does not show the build you just uploaded,
+   you are testing a cached or older deploy and any conclusion is about the wrong code. */
+.site-ver{display:inline-block;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);border-radius:5px;padding:1px 5px;white-space:nowrap;vertical-align:middle}
 /* The original POZi tagline, kept as its own green line under the verbs. */
 .nav-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
 .nav-links{display:flex;gap:2px}
@@ -243,6 +247,24 @@ h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18
   scroll-behavior:smooth;
 }
 .msg{max-width:84%;padding:13px 15px;border-radius:16px;font-size:15px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+
+/* projChat carried these inline, where no media query could reach them. */
+#projChat{min-height:240px;max-height:440px}
+
+/* PHONE CHAT PROPORTIONS
+   The app's conversation fills its sheet (flex:1, no cap). The website's was a fixed
+   420px window at every width — fine on an iPad column, but on a phone it squeezes the
+   conversation into a short scroller with narrow bubbles, so everything reads vertical.
+   On a phone give it viewport height and let bubbles use more of the line. */
+@media(max-width:620px){
+  .chat-stream, #projChat{
+    min-height:56vh;
+    max-height:66vh;
+    padding:12px;
+    gap:10px;
+  }
+  .msg{max-width:92%;padding:11px 13px;font-size:15px;line-height:1.5}
+}
 .msg.user{align-self:flex-end;background:#4ade80;color:#06120b;border-bottom-right-radius:5px}
 .msg.bot{align-self:flex-start;background:#1a1a2e;color:#e3e3ef;border:1px solid #30304c;border-bottom-left-radius:5px}
 .msg.thinking{opacity:.7;font-style:italic}
@@ -721,7 +743,7 @@ body.gated>*:not(.phone-gate){display:none!important}
     <img src="logo-dark.png" alt="POZi">
     <div>
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
-      <div class="nav-tag"><span class="aiop">All in one place.</span></div>
+      <div class="nav-tag"><span class="aiop">All in one place.</span><span class="site-ver" id="siteVer">w3</span></div>
     </div>
   </div>
 
@@ -959,7 +981,7 @@ body.gated>*:not(.phone-gate){display:none!important}
         <div class="detail-col">
           <div class="panel">
             <div class="panel-h"><span>Foreman</span><span id="projMsgCount"></span></div>
-            <div class="chat-stream" id="projChat" style="min-height:240px;max-height:440px"></div>
+            <div class="chat-stream" id="projChat" aria-live="polite"></div>
             <label class="chat-input-label" for="projInput">Your message</label>
             <div class="chat-input-row">
               <textarea id="projInput" class="chat-input" rows="1" placeholder="Add to this project…"></textarea>
@@ -2255,10 +2277,19 @@ body.gated>*:not(.phone-gate){display:none!important}
       if (!reply) throw new Error('Foreman returned nothing for that photo.');
 
       // The analysis belongs in the project conversation, so the plan can use it later.
-      await sb.from('buildr_project_messages').insert([
+      var pins = await sb.from('buildr_project_messages').insert([
         { project_id: activeProject, user_id: currentUser.id, role:'user', content:'[Photo uploaded]' },
         { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: reply }
       ]);
+      if (pins.error) console.warn('photo turn save failed:', pins.error);
+      // These rows went straight to the database, so mirror them into the one in-memory
+      // conversation as already-saved. Otherwise the next prompt is built without the photo
+      // analysis in context, and the count of saved turns is short by two.
+      else if (homeProjectId === activeProject){
+        history.push({ role:'user', text:'[Photo uploaded]' });
+        history.push({ role:'assistant', text: reply });
+        homeSavedCount = history.length;
+      }
       await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
 
       status.textContent = 'Foreman analyzed the photo — see the conversation.';
@@ -2313,12 +2344,29 @@ body.gated>*:not(.phone-gate){display:none!important}
     }
   }
 
+  // Paint the shared history into the project chat. This is a RENDER of the one conversation
+  // state, not a second read — openProject used to run its own query into its own markup,
+  // which meant the two surfaces could disagree about what the conversation was.
+  function renderProjectChat(){
+    var box = $('projChat');
+    if (!box) return;
+    box.innerHTML = history.length
+      ? history.map(function(m){
+          var role = m.role === 'assistant' ? 'bot' : 'user';
+          return '<div class="msg ' + role + '">' +
+            (role === 'user' ? escapeHtml(m.text) : renderForemanHtml(m.text)) + '</div>';
+        }).join('')
+      : '<div class="msg bot">No conversation saved for this project yet. Add to it below.</div>';
+    if ($('projMsgCount')) $('projMsgCount').textContent = history.length ? history.length + ' messages' : '';
+    box.scrollTop = box.scrollHeight;
+  }
+
   async function openProject(id){
     if (!sb || !currentUser) return;
     activeProject = id;
     // Always follow the project being opened. Any unsaved turns from the previous project
     // are flushed to it first by bindHomeChatToProject.
-    if (homeProjectId && homeProjectId !== id) await bindHomeChatToProject(id);
+    if (homeProjectId !== id) await bindHomeChatToProject(id);
     await loadProjectConversationWeb(id);
     $('projList').classList.add('hidden');
     $('projDetail').classList.remove('hidden');
@@ -2335,20 +2383,9 @@ body.gated>*:not(.phone-gate){display:none!important}
       var meta = await sb.from('buildr_projects').select('name,title').eq('id', id).maybeSingle();
       $('projHeading').textContent = (meta.data && (meta.data.name || meta.data.title)) || 'Project';
 
-      var msgs = await sb.from('buildr_project_messages')
-        .select('role,content,body,created_at').eq('project_id', id)
-        .order('created_at', { ascending:true }).limit(80);
-      var mrows = (msgs && msgs.data) || [];
-      $('projMsgCount').textContent = mrows.length ? mrows.length + ' messages' : '';
-      $('projChat').innerHTML = mrows.length
-        ? mrows.map(function(m){
-            var txt = m.content || m.body || '';
-            var role = String(m.role || '').toLowerCase() === 'user' ? 'user' : 'bot';
-            return '<div class="msg ' + role + '">' +
-              (role === 'user' ? escapeHtml(txt) : renderForemanHtml(txt)) + '</div>';
-          }).join('')
-        : '<div class="msg bot">No conversation saved for this project yet. Add to it below.</div>';
-      $('projChat').scrollTop = $('projChat').scrollHeight;
+      // The conversation was already loaded into `history` by loadProjectConversationWeb.
+      // Reading it a second time here is how the two surfaces drifted apart.
+      renderProjectChat();
 
       var notes = await sb.from('buildr_project_notes')
         .select('title,body,content,created_at').eq('project_id', id)
@@ -2385,6 +2422,11 @@ body.gated>*:not(.phone-gate){display:none!important}
   // Continuing a project posts through the same streaming endpoint, then saves
   // both sides so the app sees the same conversation.
   var projBusy = false;
+  // Continuing a project uses the SAME engine as the home chat: same history array, same
+  // homeSavedCount, same saveHomeConversation. It used to be a second implementation that
+  // rebuilt context by scraping rendered .msg elements out of the DOM and tracked nothing
+  // about what had been saved. Two engines writing one table is what put turns under the
+  // wrong job. There is now one path; only the container it paints into differs.
   async function sendToProject(){
     if (projBusy || !activeProject || !currentUser) return;
     var input = $('projInput');
@@ -2392,91 +2434,130 @@ body.gated>*:not(.phone-gate){display:none!important}
     if (!text) return;
     if (!requireDisclaimer(sendToProject)) return;
 
+    // Opening the project already bound the conversation. This is a guard, not a rebind:
+    // if they somehow diverged, the turn must not be written against a stale id.
+    if (homeProjectId !== activeProject) await bindHomeChatToProject(activeProject);
+
     projBusy = true;
     var btn = $('projSend');
-    btn.disabled = true; btn.textContent = 'Sending…';
+    btn.disabled = true; btn.textContent = 'Sending\u2026';
 
-    var chat = $('projChat');
-    var u = document.createElement('div');
-    u.className = 'msg user'; u.textContent = text;
-    chat.appendChild(u);
-    input.value = ''; input.style.height = '';
-
-    var pending = document.createElement('div');
-    pending.className = 'msg bot thinking';
-    pending.textContent = 'Working it out…';
-    chat.appendChild(pending);
-    chat.scrollTop = chat.scrollHeight;
-
-    var full = '';
+    var prevSurface = chatSurface;
+    chatSurface = 'project';
     try {
-      var prior = Array.prototype.slice.call(chat.querySelectorAll('.msg')).slice(-13, -2)
-        .map(function(el){
-          return { role: el.classList.contains('user') ? 'user' : 'assistant', content: el.textContent };
-        })
-        .filter(function(m){ return m.content; });
-      prior.push({ role:'user', content: text });
-      while (prior.length && prior[0].role !== 'user') prior.shift();
+      await runForemanTurn(text, function(){ input.value = ''; input.style.height = ''; });
+    } finally {
+      chatSurface = prevSurface;
+      projBusy = false;
+      btn.disabled = false; btn.textContent = 'Send';
+    }
+  }
 
-      var sess = await sb.auth.getSession();
-      var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+  // THE conversation engine. Both surfaces call this and nothing else writes turns.
+  // Pushes the user turn, streams the reply, appends it, saves, and reports honestly
+  // whether the save landed.
+  async function runForemanTurn(text, onSent){
+    addMsg(text, 'user');
+    history.push({ role:'user', text:text });
+    if (typeof onSent === 'function') onSent();
+
+    var turnsForServer = buildTurns(text);
+    var pending = addMsg('Working it out\u2026', 'bot thinking');
+    var full = '';
+
+    try {
+      var authHeaders = { 'Content-Type':'application/json' };
+      if (sb && currentUser){
+        var sess = await sb.auth.getSession();
+        var tok = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+        if (tok) authHeaders.Authorization = 'Bearer ' + tok;
+      }
 
       var res = await fetch(FOREMAN_ENDPOINT, {
         method:'POST',
-        headers: token
-          ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
-          : { 'Content-Type':'application/json' },
-        body: JSON.stringify({ messages: prior, session_id: 'proj_' + activeProject })
+        headers: authHeaders,
+        body: JSON.stringify({
+          messages: turnsForServer,
+          session_id: homeProjectId ? ('proj_' + homeProjectId) : sessionId
+        })
       });
+
       if (!res.ok || !res.body){
-        var ed = await res.json().catch(function(){ return {}; });
-        throw new Error(ed.error || 'Foreman is unavailable right now.');
+        var errData = await res.json().catch(function(){ return {}; });
+        throw new Error(errData.error || 'Foreman is unavailable right now.');
       }
 
-      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
-      pending.classList.remove('thinking'); pending.textContent = '';
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = '';
+      pending.classList.remove('thinking');
+      pending.textContent = '';
+
       while (true){
-        var c = await reader.read();
-        if (c.done) break;
-        buf += dec.decode(c.value, { stream:true });
-        var parts = buf.split('\n\n'); buf = parts.pop() || '';
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buf += decoder.decode(chunk.value, { stream:true });
+        var parts = buf.split('\n\n');
+        buf = parts.pop() || '';
         for (var p = 0; p < parts.length; p++){
           var ls = parts[p].split('\n');
           for (var l = 0; l < ls.length; l++){
             if (ls[l].indexOf('data:') !== 0) continue;
             var raw = ls[l].slice(5).trim();
             if (!raw || raw === '[DONE]') continue;
-            var evt; try { evt = JSON.parse(raw); } catch(e){ continue; }
+            var evt;
+            try { evt = JSON.parse(raw); } catch(e){ continue; }
             if (evt.type === 'text' && evt.v){
               full += evt.v;
               pending.innerHTML = renderForemanHtml(full);
-              chat.scrollTop = chat.scrollHeight;
+              var sEl = streamEl();
+              if (sEl) sEl.scrollTop = sEl.scrollHeight;
             } else if (evt.type === 'error'){
               throw new Error(evt.error || 'Foreman hit an error.');
+            } else if (evt.type === 'done'){
+              var u = evt.usage || {};
+              var chip = $('usageChip');
+              if (chip && u.limit && typeof u.remaining === 'number'){
+                chip.textContent = u.remaining + ' of ' + u.limit + ' sessions left today';
+              }
             }
           }
         }
       }
 
-      // Persist both turns so the app shows the same history.
-      try {
-        await sb.from('buildr_project_messages').insert([
-          { project_id: activeProject, user_id: currentUser.id, role:'user', content: text },
-          { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
-        ]);
-        await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
-      } catch(e){ /* the reply is already on screen; a save failure must not lose it */ }
+      if (!full){
+        // The empty user turn must not stay in history, or it is saved as a turn Foreman
+        // never answered and every later prompt carries it.
+        history.pop();
+        pending.innerHTML = renderForemanHtml('I did not get a response that time. Try again in a moment.');
+        setStatus('No response received.', 'err');
+        return false;
+      }
 
-      $('projStatus').textContent = 'Saved to this project.';
-      $('projStatus').className = 'chat-status ok';
+      history.push({ role:'assistant', text:full });
+      var ok = await saveHomeConversation();
+      if (!ok && homeProjectId){
+        setStatus('Not saved: ' + (lastSaveError || 'the database refused the write.'), 'err');
+      } else {
+        setStatus(homeProjectId ? 'Saved to this project.' : 'Add another detail to keep going.', 'ok');
+      }
+      maybeShowHomePlanCta();
+      if (typeof renderProjectPlanCta === "function"){ try { renderProjectPlanCta(); } catch(e){} }
+      return true;
+
     } catch(err){
+      history.pop();
       pending.classList.remove('thinking');
-      pending.innerHTML = renderForemanHtml('I could not respond just then. Try again in a moment.');
-      $('projStatus').textContent = err.message || 'Something went wrong.';
-      $('projStatus').className = 'chat-status err';
-    } finally {
-      projBusy = false;
-      btn.disabled = false; btn.textContent = 'Send';
+      var msg = String(err.message || '');
+      if (/limit|session/i.test(msg)){
+        pending.innerHTML = renderForemanHtml(msg);
+        if (chatSurface === 'home') showUpgradePrompt();
+        setStatus('', '');
+      } else {
+        pending.innerHTML = renderForemanHtml('I could not respond just then. Give it a moment and try again.');
+        setStatus(msg || 'Something went wrong.', 'err');
+      }
+      return false;
     }
   }
 
@@ -2646,10 +2727,15 @@ body.gated>*:not(.phone-gate){display:none!important}
       }
 
       // The plan is part of the conversation record, so the app shows it too.
+      var lins = await sb.from('buildr_project_messages').insert([
+        { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
+      ]);
+      if (lins.error) console.warn('plan turn save failed:', lins.error);
+      else if (homeProjectId === activeProject){
+        history.push({ role:'assistant', text: full });
+        homeSavedCount = history.length;
+      }
       try {
-        await sb.from('buildr_project_messages').insert([
-          { project_id: activeProject, user_id: currentUser.id, role:'assistant', content: full }
-        ]);
         await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', activeProject);
       } catch(e){ /* already on screen and saved as notes — never lose it over this */ }
 
@@ -3258,8 +3344,10 @@ body.gated>*:not(.phone-gate){display:none!important}
     homeProjectId = pid;
     homeSavedCount = 0;
     history = [];              // the previous project's turns are saved and no longer current
-    var box = $('chatStream');
-    if (box) box.innerHTML = '';
+    ['chatStream','projChat'].forEach(function(id){
+      var box = $(id);
+      if (box) box.innerHTML = '';
+    });
   }
 
   // Flush anything unsaved immediately. Autosave runs after every reply; this covers
@@ -3316,8 +3404,18 @@ body.gated>*:not(.phone-gate){display:none!important}
     return html;
   }
 
+  // WHICH SURFACE IS LIVE.
+  // The home chat and the project chat are the SAME conversation engine painting into
+  // different containers. Everything below reads this instead of hardcoding an element,
+  // so there is one history, one saved-count, and one write path — the way the app has
+  // always worked. Two independent engines against one table is what misfiled turns.
+  var chatSurface = 'home';   // 'home' | 'project'
+  function streamEl(){ return $(chatSurface === 'project' ? 'projChat' : 'chatStream'); }
+  function statusEl(){ return $(chatSurface === 'project' ? 'projStatus' : 'chatStatus'); }
+
   function addMsg(text, role){
-    var stream = $('chatStream');
+    var stream = streamEl();
+    if (!stream) return document.createElement('div');
     var div = document.createElement('div');
     div.className = 'msg ' + role;
     if (role === 'user') div.textContent = text;
@@ -3353,7 +3451,8 @@ body.gated>*:not(.phone-gate){display:none!important}
   }
 
   function setStatus(text, kind){
-    var el = $('chatStatus');
+    var el = statusEl();
+    if (!el) return;
     el.textContent = text || '';
     el.className = 'chat-status' + (kind ? ' ' + kind : '');
   }
@@ -3362,20 +3461,30 @@ body.gated>*:not(.phone-gate){display:none!important}
   // model as a script to continue, so it writes the user's next line too.
   // Writes only the turns not yet stored. Mirrors savedMessageCount in the app: a
   // conversation can be saved, continued, and saved again without storing anything twice.
+  // Returns true when everything unsaved reached the database, false when the write was
+  // refused. Callers must report a false — a save that silently fails looks exactly like
+  // one that worked until the project is reopened and the turns are not there.
   async function saveHomeConversation(){
-    if (!sb || !currentUser || !homeProjectId) return;
+    if (!sb || !currentUser || !homeProjectId) return false;
     var rows = history.slice(homeSavedCount).map(function(m){
       return { project_id: homeProjectId, user_id: currentUser.id,
                role: (m.role === 'assistant' ? 'assistant' : 'user'), content: m.text };
     }).filter(function(r){ return r.content; });
-    if (!rows.length) return;
+    if (!rows.length) return true;
     var r = await sb.from('buildr_project_messages').insert(rows);
-    if (r.error){ console.warn('home chat save failed:', r.error); return; }
+    if (r.error){
+      console.warn('conversation save failed:', r.error);
+      lastSaveError = r.error.message || 'the database refused the write.';
+      return false;
+    }
+    lastSaveError = '';
     homeSavedCount = history.length;
     try {
       await sb.from('buildr_projects').update({ updated_at: new Date().toISOString() }).eq('id', homeProjectId);
     } catch(e){}
+    return true;
   }
+  var lastSaveError = '';
 
   // Foreman signals readiness with a fixed line. Surface Build the Plan at that moment
   // instead of making someone go find the Projects tab.
@@ -3479,111 +3588,16 @@ body.gated>*:not(.phone-gate){display:none!important}
     }
 
     busy = true;
+    chatSurface = 'home';
     var btn = $('chatSend');
     btn.disabled = true;
-    btn.textContent = 'Thinking…';
+    btn.textContent = 'Thinking\u2026';
     setStatus('');
 
-    addMsg(text, 'user');
-    history.push({ role:'user', text:text });
-    input.value = '';
-    input.style.height = '';
-
-    var turnsForServer = buildTurns(text);
-    var pending = addMsg('Working it out…', 'bot thinking');
-    var full = '';
-
+    // Same engine the project chat uses. This function used to carry its own copy of the
+    // streaming loop and its own save call; keeping two copies is how they drifted.
     try {
-      // Send the session token when there is one. Without it the server treats a paying
-      // subscriber as a guest and caps them at one session of five messages.
-      var authHeaders = { 'Content-Type':'application/json' };
-      if (sb && currentUser){
-        var sess = await sb.auth.getSession();
-        var tok = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
-        if (tok) authHeaders.Authorization = 'Bearer ' + tok;
-      }
-
-      var res = await fetch(FOREMAN_ENDPOINT, {
-        method:'POST',
-        headers: authHeaders,
-        body: JSON.stringify({
-          messages: turnsForServer,
-          session_id: homeProjectId ? ('proj_' + homeProjectId) : sessionId
-        })
-      });
-
-      if (!res.ok || !res.body){
-        var errData = await res.json().catch(function(){ return {}; });
-        throw new Error(errData.error || 'Foreman is unavailable right now.');
-      }
-
-      // Server-sent events: read deltas as they arrive and paint them live.
-      var reader = res.body.getReader();
-      var decoder = new TextDecoder();
-      var buf = '';
-      pending.classList.remove('thinking');
-      pending.textContent = '';
-
-      while (true){
-        var chunk = await reader.read();
-        if (chunk.done) break;
-        buf += decoder.decode(chunk.value, { stream:true });
-
-        var parts = buf.split('\n\n');
-        buf = parts.pop() || '';
-
-        for (var p = 0; p < parts.length; p++){
-          var lines = parts[p].split('\n');
-          for (var l = 0; l < lines.length; l++){
-            if (lines[l].indexOf('data:') !== 0) continue;
-            var raw = lines[l].slice(5).trim();
-            if (!raw || raw === '[DONE]') continue;
-            var evt;
-            try { evt = JSON.parse(raw); } catch(e){ continue; }
-
-            if (evt.type === 'text' && evt.v){
-              full += evt.v;
-              pending.innerHTML = renderForemanHtml(full);
-              $('chatStream').scrollTop = $('chatStream').scrollHeight;
-            } else if (evt.type === 'error'){
-              throw new Error(evt.error || 'Foreman hit an error.');
-            } else if (evt.type === 'done'){
-              var u = evt.usage || {};
-              var chip = $('usageChip');
-              if (chip && u.limit && typeof u.remaining === 'number'){
-                chip.textContent = u.remaining + ' of ' + u.limit + ' sessions left today';
-              }
-            }
-          }
-        }
-      }
-
-      if (!full){
-        pending.innerHTML = renderForemanHtml('I did not get a response that time. Try again in a moment.');
-        setStatus('No response received.', 'err');
-      } else {
-        history.push({ role:'assistant', text:full });
-        // Autosave: only the turns not yet stored, so saving repeatedly never duplicates.
-        await saveHomeConversation();
-        maybeShowHomePlanCta();
-        setStatus('Add another detail to keep going.', 'ok');
-      }
-
-    } catch(err){
-      pending.classList.remove('thinking');
-      var msg = String(err.message || '');
-      var isLimit = /limit|session/i.test(msg);
-
-      if (isLimit){
-        // The server enforces the cap; here we just make the next step obvious
-        // instead of leaving someone stuck at a wall with no button.
-        pending.innerHTML = renderForemanHtml(msg);
-        showUpgradePrompt();
-        setStatus('', '');
-      } else {
-        pending.innerHTML = renderForemanHtml('I could not respond just then. Give it a moment and try again.');
-        setStatus(msg || 'Something went wrong.', 'err');
-      }
+      await runForemanTurn(text, function(){ input.value = ''; input.style.height = ''; });
     } finally {
       busy = false;
       btn.disabled = false;
