@@ -310,6 +310,22 @@ h3{font-family:var(--fb);font-weight:800;letter-spacing:-.015em;line-height:1.18
 .empty-sm{color:var(--muted);font-size:13px;line-height:1.5}
 .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
 .photo-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--border);cursor:pointer}
+
+/* Photo lightbox — same layout and gesture surface as the app's viewer. */
+.photo-viewer{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pv-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:1;touch-action:none}
+.photo-viewer img{max-width:96%;max-height:88%;object-fit:contain;border-radius:8px;will-change:transform;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none}
+.pv-count{position:absolute;top:24px;left:50%;transform:translateX(-50%);z-index:3;color:#fff;opacity:.7;font-size:13px;letter-spacing:.04em;pointer-events:none}
+.pv-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:64px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:28px;line-height:1;border-radius:12px;cursor:pointer}
+.pv-prev{left:10px}
+.pv-next{right:10px}
+#photoViewerModal .sheet-close{position:absolute;top:16px;right:16px}
+
+/* Share */
+.btn-mini{font-family:var(--fh);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--green);background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.35);border-radius:8px;padding:5px 11px;cursor:pointer}
+.btn-mini:hover{background:rgba(0,255,136,.18)}
+.share-opt{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--text);margin-bottom:9px;cursor:pointer}
+.share-link{word-break:break-all;font-size:13px;color:var(--green);background:rgba(255,255,255,.045);border:1px solid var(--border);border-radius:12px;padding:13px 15px;line-height:1.5}
 .plan-strip{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
   margin-top:14px;padding:13px 16px;border-radius:14px;border:1px solid rgba(0,255,136,.22);
   background:rgba(0,255,136,.05)}
@@ -677,6 +693,11 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
   width:100%;min-height:54px;background:rgba(255,255,255,.045);border:1px solid var(--border);
   border-radius:15px;padding:15px 17px;color:var(--text);font-size:15px;outline:none;transition:border-color .18s;
 }
+/* Placeholders must clearly sit BEHIND real input. At the previous weight a placeholder
+   could pass for text the user had already typed, which is how an empty search box looked
+   full. */
+.search-field::placeholder{color:#5d6076;opacity:1}
+.search-hint{margin-top:9px;font-size:12.5px;color:#6a6d85;line-height:1.6}
 .search-field:focus{border-color:rgba(0,255,136,.32)}
 .search-field::placeholder{color:#7f829e}
 .search-btn{
@@ -752,7 +773,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v4</span>
+    <span class="site-ver" id="siteVer">v6</span>
   </div>
 
   <div class="nav-links">
@@ -1013,7 +1034,7 @@ body.gated>*:not(.phone-gate){display:none!important}
             <button class="btn btn-s" id="projSource" style="width:100%;margin-top:14px">Source These Materials</button>
           </div>
           <div class="panel">
-            <div class="panel-h"><span>Photos</span></div>
+            <div class="panel-h"><span>Photos</span><button class="btn-mini hidden" id="projShare" type="button">Share</button></div>
             <div class="panel-body" id="projPhotos"></div>
             <!-- accept="image/*" with NO capture attribute is deliberate: on a phone or
                  iPad, Safari's own picker then offers Take Photo, Photo Library and Choose
@@ -1051,10 +1072,14 @@ body.gated>*:not(.phone-gate){display:none!important}
 
     <div class="panel">
       <div class="search-row">
-        <input id="sQuery" class="search-field" type="search" placeholder="pressure treated 2x12, deck screws, irrigation valve..." autocomplete="off">
+        <!-- The placeholder is an INSTRUCTION, not a sample value. Listing example
+             products here read as text already typed into the field, so the box looked
+             filled and Search appeared to do nothing. Examples moved to the hint below. -->
+        <input id="sQuery" class="search-field" type="search" placeholder="Type a product or material to search" autocomplete="off">
         <input id="sZip" class="search-field" type="text" inputmode="numeric" maxlength="10" placeholder="ZIP code" autocomplete="postal-code">
         <button id="sGo" class="search-btn" type="button">Search</button>
       </div>
+      <div class="search-hint">For example: pressure treated 2x12 &middot; deck screws &middot; irrigation valve</div>
       <div id="sStatus" class="chat-status" style="margin-top:12px">Set a ZIP to get results from stores near you.</div>
     </div>
 
@@ -1300,6 +1325,52 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="footer-copy">© 2026 POZi</div>
   </div>
 </footer>
+
+<!-- ═══ PHOTO LIGHTBOX ═══
+     Mirrors the app's viewer: arrows, swipe, pinch/double-tap zoom, drag to pan, Esc.
+     touch-action:none on the stage stops Safari hijacking the gestures. -->
+<div class="modal" id="photoViewerModal">
+  <div class="photo-viewer">
+    <button class="sheet-close" data-close="photoViewerModal" style="z-index:3">×</button>
+    <div id="photoViewerCount" class="pv-count"></div>
+    <button id="pvPrev" class="pv-nav pv-prev" type="button" aria-label="Previous photo">‹</button>
+    <div id="photoViewerStage" class="pv-stage"><img id="photoViewerImg" alt="Project photo"></div>
+    <button id="pvNext" class="pv-nav pv-next" type="button" aria-label="Next photo">›</button>
+  </div>
+</div>
+
+<!-- ═══ CLIENT SHARE (Contractor) ═══
+     Same tokens and same buildr_project_shares rows as the app, so a link made on either
+     surface opens the same share.html page. -->
+<div class="modal" id="shareModal">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="sheet-close" data-close="shareModal">×</button>
+      <div class="sheet-kicker">Client link</div>
+      <div class="sheet-title">Share with your client.</div>
+      <p class="sheet-sub">A link they can open on any phone — no app, no account.</p>
+    </div>
+    <div class="sheet-body">
+      <div id="shareSetup">
+        <p class="sheet-sub" style="margin-bottom:12px">They'll see the project photos. Build Notes are optional.</p>
+        <label class="share-opt"><input type="checkbox" id="shareIncludeNotes" checked> Include Build Notes</label>
+        <label class="share-opt"><input type="checkbox" id="shareExpires" checked> Stop working after 30 days</label>
+        <p class="sheet-sub" style="margin-top:12px;font-size:12.5px">Foreman conversations stay private — only photos you uploaded are shared.</p>
+        <div id="shareStatus" class="chat-status" style="margin-top:10px"></div>
+        <button class="btn btn-p" id="shareCreate" type="button" style="width:100%;margin-top:14px">Create Link</button>
+      </div>
+      <div id="shareResult" class="hidden">
+        <p class="sheet-sub" style="margin-bottom:8px">Your link is ready:</p>
+        <div id="shareLink" class="share-link"></div>
+        <div id="shareCopied" class="chat-status" style="margin-top:8px"></div>
+        <div class="field-row" style="margin-top:14px">
+          <button class="btn btn-s" id="shareRevoke" type="button">Turn Off Link</button>
+          <button class="btn btn-p" id="shareCopy" type="button">Copy Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ PHONE GATEWAY ═══ -->
 <div class="phone-gate" id="phoneGate" aria-hidden="true">
@@ -2219,9 +2290,11 @@ body.gated>*:not(.phone-gate){display:none!important}
       // The bucket is private, so every thumbnail needs a signed URL.
       var signed = await sb.storage.from('project-photos').createSignedUrls(paths, 3600);
       var urls = (signed && signed.data) || [];
-      box.innerHTML = '<div class="photo-grid">' + urls.map(function(u){
-        if (!u || !u.signedUrl) return '';
-        return '<img class="photo-thumb" src="' + escapeHtml(u.signedUrl) + '" alt="Project photo" loading="lazy">';
+      // Kept so the lightbox can page through the whole set from any thumbnail.
+      viewerPhotos = urls.map(function(u){ return u && u.signedUrl; }).filter(Boolean);
+      box.innerHTML = '<div class="photo-grid">' + viewerPhotos.map(function(src, i){
+        return '<img class="photo-thumb" src="' + escapeHtml(src) + '" alt="Project photo" ' +
+               'loading="lazy" data-photo-index="' + i + '">';
       }).join('') + '</div>';
     } catch(e){
       box.innerHTML = '<div class="empty-sm">Could not load photos.</div>';
@@ -2406,6 +2479,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       // The conversation was already loaded into `history` by loadProjectConversationWeb.
       // Reading it a second time here is how the two surfaces drifted apart.
       renderProjectChat();
+      syncShareBtn();
 
       var notes = await sb.from('buildr_project_notes')
         .select('title,body,content,created_at').eq('project_id', id)
@@ -3295,6 +3369,203 @@ body.gated>*:not(.phone-gate){display:none!important}
   }
 
   /* ── Modals ───────────────────────────────────────────────────────────── */
+  /* ── Photo lightbox ────────────────────────────────────────────────────
+     Ported from the app so both surfaces behave identically: tap a thumbnail to
+     open, arrows or swipe to move, pinch or double-tap to zoom, drag to pan when
+     zoomed, Esc or × to close. Thumbnails previously had cursor:pointer and no
+     handler, so a tap did nothing and the only way to see a photo full size was
+     the browser's own press-and-hold menu. */
+  var viewerPhotos = [], viewerIndex = 0;
+  var pvScale = 1, pvX = 0, pvY = 0;
+  var pvPinchStartDist = 0, pvPinchStartScale = 1;
+  var pvDragging = false, pvStartX = 0, pvStartY = 0, pvOrigX = 0, pvOrigY = 0, pvLastTap = 0;
+  var pvReady = false;
+
+  function pvApply(){
+    var img = $('photoViewerImg');
+    if (img) img.style.transform = 'translate(' + pvX + 'px,' + pvY + 'px) scale(' + pvScale + ')';
+  }
+  function pvResetZoom(){ pvScale = 1; pvX = 0; pvY = 0; pvApply(); }
+  function pvDist(t){ return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+
+  function showPhotoAt(i){
+    if (!viewerPhotos.length) return;
+    viewerIndex = (i + viewerPhotos.length) % viewerPhotos.length;
+    var img = $('photoViewerImg');
+    if (img) img.src = viewerPhotos[viewerIndex];
+    var multi = viewerPhotos.length > 1;
+    $('photoViewerCount').textContent = multi ? (viewerIndex + 1) + ' of ' + viewerPhotos.length : '';
+    $('pvPrev').classList.toggle('hidden', !multi);
+    $('pvNext').classList.toggle('hidden', !multi);
+    pvResetZoom();
+  }
+
+  function initPhotoViewer(){
+    if (pvReady) return;
+    var stage = $('photoViewerStage');
+    if (!stage) return;
+    pvReady = true;
+
+    stage.addEventListener('touchstart', function(e){
+      if (e.touches.length === 2){
+        pvPinchStartDist = pvDist(e.touches); pvPinchStartScale = pvScale; pvDragging = false; return;
+      }
+      if (e.touches.length === 1){
+        var now = Date.now();
+        if (now - pvLastTap < 300){           // double tap toggles zoom
+          pvScale = pvScale > 1 ? 1 : 2.5;
+          if (pvScale === 1){ pvX = 0; pvY = 0; }
+          pvApply(); pvLastTap = 0; pvDragging = false; return;
+        }
+        pvLastTap = now; pvDragging = true;
+        pvStartX = e.touches[0].clientX; pvStartY = e.touches[0].clientY;
+        pvOrigX = pvX; pvOrigY = pvY;
+      }
+    }, { passive:true });
+
+    stage.addEventListener('touchmove', function(e){
+      if (e.touches.length === 2 && pvPinchStartDist > 0){
+        pvScale = Math.min(4, Math.max(1, pvPinchStartScale * (pvDist(e.touches) / pvPinchStartDist)));
+        if (pvScale === 1){ pvX = 0; pvY = 0; }
+        pvApply(); e.preventDefault(); return;
+      }
+      if (pvDragging && e.touches.length === 1 && pvScale > 1){
+        pvX = pvOrigX + (e.touches[0].clientX - pvStartX);
+        pvY = pvOrigY + (e.touches[0].clientY - pvStartY);
+        pvApply(); e.preventDefault();
+      }
+    }, { passive:false });
+
+    stage.addEventListener('touchend', function(e){
+      // Only swipe between photos when not zoomed — otherwise that drag was a pan.
+      if (pvScale <= 1 && pvDragging && e.changedTouches.length){
+        var dx = e.changedTouches[0].clientX - pvStartX;
+        var dy = e.changedTouches[0].clientY - pvStartY;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) showPhotoAt(viewerIndex + (dx < 0 ? 1 : -1));
+      }
+      pvDragging = false; pvPinchStartDist = 0;
+    }, { passive:true });
+
+    $('pvPrev').onclick = function(){ showPhotoAt(viewerIndex - 1); };
+    $('pvNext').onclick = function(){ showPhotoAt(viewerIndex + 1); };
+
+    document.addEventListener('keydown', function(e){
+      if (!$('photoViewerModal').classList.contains('open')) return;
+      if (e.key === 'ArrowRight') showPhotoAt(viewerIndex + 1);
+      if (e.key === 'ArrowLeft')  showPhotoAt(viewerIndex - 1);
+      if (e.key === 'Escape')     closeModal('photoViewerModal');
+    });
+  }
+
+  function openPhotoViewer(index){
+    if (!viewerPhotos.length) return;
+    initPhotoViewer();
+    showPhotoAt(index);
+    openModal('photoViewerModal');
+  }
+
+  /* ── Client sharing (Contractor) ───────────────────────────────────────
+     Same token scheme and same buildr_project_shares rows as the app, so a link
+     created on either surface opens the same share.html page. share-project.js
+     validates the token server-side and mints short-lived signed URLs, because
+     the photo bucket is private and the page cannot hold a key. */
+  var POZI_SHARE_PAGE = 'https://pozi.live/share.html';
+  var _shareToken = null;
+
+  function canShare(){ return currentPlan === "pro" || isTestUnlimited(); }
+
+  // 32 hex chars from the browser's CSPRNG. The token is the only thing between a
+  // stranger and the photos, so it must not be guessable.
+  function makeShareToken(){
+    var b = new Uint8Array(16);
+    crypto.getRandomValues(b);
+    return Array.prototype.map.call(b, function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+  }
+
+  function syncShareBtn(){
+    var btn = $('projShare');
+    if (!btn) return;
+    btn.classList.toggle('hidden', !(currentUser && activeProject && canShare()));
+  }
+
+  async function openShareSheet(){
+    if (!currentUser || !activeProject) return;
+    _shareToken = null;
+    $('shareStatus').textContent = '';
+    $('shareCopied').textContent = '';
+    $('shareResult').classList.add('hidden');
+    $('shareSetup').classList.remove('hidden');
+    openModal('shareModal');
+    // Reuse a live link rather than piling up tokens for one project.
+    try {
+      var r = await sb.from('buildr_project_shares')
+        .select('token,revoked,expires_at').eq('project_id', activeProject)
+        .eq('revoked', false).order('created_at', { ascending:false }).limit(1);
+      var live = ((r && r.data) || [])[0];
+      if (live && (!live.expires_at || new Date(live.expires_at) > new Date())) showShareLink(live.token);
+    } catch(e){ console.warn('share lookup failed:', e); }
+  }
+
+  function showShareLink(token){
+    _shareToken = token;
+    $('shareLink').textContent = POZI_SHARE_PAGE + '?t=' + token;
+    $('shareSetup').classList.add('hidden');
+    $('shareResult').classList.remove('hidden');
+  }
+
+  async function createShareLink(){
+    var btn = $('shareCreate');
+    btn.disabled = true; btn.textContent = 'Creating…';
+    $('shareStatus').textContent = '';
+    try {
+      var token = makeShareToken();
+      var expires = $('shareExpires').checked
+        ? new Date(Date.now() + 30*24*60*60*1000).toISOString() : null;
+      var r = await sb.from('buildr_project_shares').insert({
+        token: token, project_id: activeProject, user_id: currentUser.id,
+        include_notes: $('shareIncludeNotes').checked, expires_at: expires
+      });
+      if (r.error) throw r.error;
+      showShareLink(token);
+    } catch(e){
+      $('shareStatus').textContent = e.message || 'Could not create the link. Try again.';
+      $('shareStatus').className = 'chat-status err';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create Link';
+    }
+  }
+
+  async function copyShareLink(){
+    try {
+      await navigator.clipboard.writeText($('shareLink').textContent);
+      $('shareCopied').textContent = 'Copied — paste it into a text or email.';
+      $('shareCopied').className = 'chat-status ok';
+    } catch(e){
+      $('shareCopied').textContent = 'Press and hold the link above to copy it.';
+      $('shareCopied').className = 'chat-status';
+    }
+  }
+
+  async function revokeShareLink(){
+    if (!_shareToken) return;
+    var btn = $('shareRevoke');
+    btn.disabled = true; btn.textContent = 'Turning off…';
+    try {
+      var r = await sb.from('buildr_project_shares').update({ revoked:true }).eq('token', _shareToken);
+      if (r.error) throw r.error;
+      _shareToken = null;
+      $('shareResult').classList.add('hidden');
+      $('shareSetup').classList.remove('hidden');
+      $('shareStatus').textContent = 'Link turned off. Anyone who had it will see nothing.';
+      $('shareStatus').className = 'chat-status';
+    } catch(e){
+      $('shareCopied').textContent = e.message || 'Could not turn off the link.';
+      $('shareCopied').className = 'chat-status err';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Turn Off Link';
+    }
+  }
+
   function openModal(id){
     var m = $(id);
     if (!m) return;
@@ -3789,6 +4060,17 @@ body.gated>*:not(.phone-gate){display:none!important}
       showPage('search');
       setTimeout(function(){ runSearch(chip.getAttribute('data-search')); }, 120);
     });
+    // A thumbnail opens the full-size viewer, positioned at the one that was tapped.
+    $('projPhotos').addEventListener('click', function(e){
+      var thumb = e.target.closest('[data-photo-index]');
+      if (!thumb) return;
+      openPhotoViewer(parseInt(thumb.getAttribute('data-photo-index'), 10) || 0);
+    });
+    $('projShare').addEventListener('click', openShareSheet);
+    $('shareCreate').addEventListener('click', createShareLink);
+    $('shareCopy').addEventListener('click', copyShareLink);
+    $('shareRevoke').addEventListener('click', revokeShareLink);
+
     $('projSource').addEventListener('click', function(){
       var first = $('projItems').querySelector('[data-search]');
       showPage('search');
