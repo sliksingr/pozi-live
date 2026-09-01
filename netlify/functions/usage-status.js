@@ -1,0 +1,291 @@
+// netlify/functions/usage-status.js
+// READ-ONLY Foreman usage status for the POZi Go account card and the website plan strip.
+//
+// This endpoint NEVER inserts rows, increments counters, calls Anthropic, or enforces a
+// request. It only reports what the server currently sees, so a client can show usage on open.
+// Enforcement + usage mutation live in buildr-chat-stream.mjs and buildr-vision.js.
+//
+// IMPORTANT: the limit constants below must stay identical to the ones in
+// buildr-chat-stream.mjs and buildr-vision.js. If they drift, a client reports one number
+// and the server enforces another. See LIMITS.md.
+//
+// NOTE ON NAMING: the assistant is "POZi Foreman" in everything a customer sees. The
+// filename, table names, and env vars intentionally keep their original `buildr` names.
+//
+// Required Netlify env vars:
+//   SUPABASE_URL
+//   SUPABASE_SERVICE_ROLE_KEY
+// Recommended:
+//   SUPABASE_ANON_KEY
+// Optional:
+//   BUILDR_PROFILE_TABLE
+//   BUILDR_PLAN_COLUMN
+//   BUILDR_PROFILE_ID_COLUMN     default: id
+
+const BUILDR_DAILY_LIMITS = Object.freeze({ guest: 1, free: 3, consumer: 5, pro: 6 });
+const BUILDR_MESSAGES_PER_SESSION = Object.freeze({ guest: 5, free: 5, consumer: 10, pro: 12 });
+// Build the Plan. Sonnet, up to 2,600 output tokens — roughly five times the cost of a
+// chat message and previously uncapped, so one person could rebuild a plan all day.
+const BUILDR_PLAN_DAILY_LIMITS = Object.freeze({ guest: 1, free: 2, consumer: 5, pro: 10 });
+const BUILDR_VISION_DAILY_LIMITS = Object.freeze({ guest: 0, free: 1, consumer: 10, pro: 20 });
+const BUILDR_TEST_UNLIMITED_EMAILS = new Set(["info@pozi.live"]);
+
+function normalizePlanTier(value, hasUser) {
+  const tier = String(value || "").toLowerCase().trim();
+  if (tier === "pro") return "pro";
+  if (["consumer", "consumer_paid", "paid"].includes(tier)) return "consumer";
+  if (["free", "free_account"].includes(tier)) return "free";
+  if (tier === "guest") return "guest";
+  return hasUser ? "free" : "guest";
+}
+
+// ── ROLLING 24-HOUR WINDOW ────────────────────────────────────────────────────
+// Usage is counted over the last 24 hours from this instant, not since midnight UTC.
+// The old todayStartISO() reset at 00:00 UTC — 5pm Pacific — so a contractor working an
+// evening job watched the limit reset mid-afternoon and again the next afternoon. A
+// rolling window also cannot be gamed by stacking usage on either side of a reset.
+function windowStartISO() {
+  return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+}
+
+function cleanIdentity(value) {
+  return String(value || "").trim().slice(0, 160).replace(/[^a-zA-Z0-9._:@-]/g, "_");
+}
+
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function isUnlimitedTestUser(email) {
+  return BUILDR_TEST_UNLIMITED_EMAILS.has(normalizeEmail(email));
+}
+
+function getClientIp(event) {
+  const headers = event?.headers || {};
+  const raw = headers["x-nf-client-connection-ip"] || headers["client-ip"] || headers["x-forwarded-for"] || "";
+  return String(raw).split(",")[0].trim();
+}
+
+function getBearerToken(event) {
+  const headers = event?.headers || {};
+  const header = headers.authorization || headers.Authorization || "";
+  const match = String(header).match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : "";
+}
+
+async function getVerifiedIdentity(token) {
+  if (!token) return null;
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const apiKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !apiKey) throw new Error("Missing SUPABASE_URL or a Supabase API key for token verification.");
+
+  try {
+    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      method: "GET",
+      headers: { apikey: apiKey, Authorization: `Bearer ${token}` }
+    });
+
+    if (!response.ok) return null;
+    const user = await response.json().catch(() => null);
+    if (!user?.id) return null;
+
+    return { user_id: String(user.id), user_email: normalizeEmail(user.email) };
+  } catch (error) {
+    console.warn("Supabase token verification failed:", error?.message || error);
+    return null;
+  }
+}
+
+async function getVerifiedTier(userId) {
+  if (!userId) return "guest";
+
+  const table = String(process.env.BUILDR_PROFILE_TABLE || "").trim();
+  const planColumn = String(process.env.BUILDR_PLAN_COLUMN || "").trim();
+  const idColumn = String(process.env.BUILDR_PROFILE_ID_COLUMN || "id").trim();
+
+  if (!table || !planColumn) return "free";
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) return "free";
+
+  try {
+    const url =
+      `${supabaseUrl}/rest/v1/${encodeURIComponent(table)}` +
+      `?${encodeURIComponent(idColumn)}=eq.${encodeURIComponent(userId)}` +
+      `&select=${encodeURIComponent(planColumn)}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` }
+    });
+
+    if (!response.ok) {
+      console.warn("Foreman tier lookup failed:", await response.text());
+      return "free";
+    }
+
+    const rows = await response.json().catch(() => []);
+    const plan = Array.isArray(rows) && rows[0] ? rows[0][planColumn] : null;
+    return normalizePlanTier(plan, true);
+  } catch (error) {
+    console.warn("Foreman tier lookup error:", error?.message || error);
+    return "free";
+  }
+}
+
+// Shared row counter for the rolling window. sourcePage selects which kind of usage:
+//   "pozi.live"   chat turns
+//   "pozi.plan"   Build the Plan calls
+//   "pozi.vision" photo analyses
+// Signed-in users are counted by verified user_id; guests by client IP.
+async function countRowsInWindow({ userId, event, sourcePage, selectColumn = "id" }) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
+
+  const user = cleanIdentity(userId);
+  const ip = cleanIdentity(getClientIp(event));
+  const since = encodeURIComponent(windowStartISO());
+  let url;
+
+  if (user) {
+    url = `${supabaseUrl}/rest/v1/buildr_chats?select=${encodeURIComponent(selectColumn)}` +
+      `&user_id=eq.${encodeURIComponent(user)}` +
+      `&source_page=eq.${encodeURIComponent(sourcePage)}` +
+      `&created_at=gte.${since}`;
+  } else {
+    const guestBase = ip ? `guest_ip_${ip}` : "guest_unknown_ip";
+    url = `${supabaseUrl}/rest/v1/buildr_chats?select=${encodeURIComponent(selectColumn)}` +
+      `&session_id=like.${encodeURIComponent(`${guestBase}__*`)}` +
+      `&source_page=eq.${encodeURIComponent(sourcePage)}` +
+      `&created_at=gte.${since}`;
+  }
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` }
+  });
+
+  if (!response.ok) throw new Error((await response.text()) || "Unable to read Foreman usage.");
+  const rows = await response.json().catch(() => []);
+  return Array.isArray(rows) ? rows : [];
+}
+
+async function countBuildrSessionsInWindow({ userId, event }) {
+  const rows = await countRowsInWindow({ userId, event, sourcePage: "pozi.live", selectColumn: "session_id" });
+  const sessionSet = new Set();
+  for (const row of rows) {
+    const id = cleanIdentity(row?.session_id);
+    if (id) sessionSet.add(id);
+  }
+  return sessionSet.size;
+}
+
+async function countPlansInWindow({ userId, event }) {
+  return (await countRowsInWindow({ userId, event, sourcePage: "pozi.plan" })).length;
+}
+
+async function countVisionUsesInWindow({ userId, event }) {
+  return (await countRowsInWindow({ userId, event, sourcePage: "pozi.vision" })).length;
+}
+
+function jsonResponse(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, x-pozi-session-id",
+      "Access-Control-Allow-Methods": "GET, OPTIONS"
+    },
+    body: JSON.stringify(body)
+  };
+}
+
+// The ?debug=1 tier diagnostic that used to live here was REMOVED on 2026-09-01.
+// It returned env var names, the constructed query URL, and raw database rows to anyone
+// with a valid session — useful while tiers were being wired up, and an information
+// disclosure once they worked. Read tier problems from the function logs instead.
+
+exports.handler = async (event) => {
+  if (event.httpMethod === "OPTIONS") return jsonResponse(200, { ok: true });
+  if (event.httpMethod !== "GET") return jsonResponse(405, { ok: false, error: "Method not allowed. Use GET." });
+
+  try {
+    const bearerToken = getBearerToken(event);
+
+    let verifiedIdentity = null;
+    try {
+      verifiedIdentity = bearerToken ? await getVerifiedIdentity(bearerToken) : null;
+    } catch (configError) {
+      console.error("usage-status identity config error:", configError);
+      return jsonResponse(500, { ok: false, error: configError?.message || "Server configuration error." });
+    }
+
+    if (bearerToken && !verifiedIdentity) {
+      return jsonResponse(401, {
+        ok: false,
+        error: "Your session has expired or is invalid. Please sign in again."
+      });
+    }
+
+    const userId = verifiedIdentity?.user_id || null;
+    const userEmail = verifiedIdentity?.user_email || "";
+
+    if (isUnlimitedTestUser(userEmail)) {
+      return jsonResponse(200, {
+        ok: true,
+        tier: "test_unlimited",
+        authenticated: true,
+        window: "rolling_24h",
+        limit: 999999,
+        used: 0,
+        remaining: 999999,
+        messages_per_session: 999999,
+        buildr: { daily_limit: 999999, sessions_used: 0, sessions_remaining: 999999, messages_per_session: 999999 },
+        plans: { daily_limit: 999999, used: 0, remaining: 999999 },
+        vision: { daily_limit: 999999, used: 0, remaining: 999999 }
+      });
+    }
+
+    const tier = userId ? await getVerifiedTier(userId) : "guest";
+    const limit = BUILDR_DAILY_LIMITS[tier] ?? BUILDR_DAILY_LIMITS.guest;
+    const messagesPerSession = BUILDR_MESSAGES_PER_SESSION[tier] ?? BUILDR_MESSAGES_PER_SESSION.guest;
+    const planLimit = BUILDR_PLAN_DAILY_LIMITS[tier] ?? BUILDR_PLAN_DAILY_LIMITS.guest;
+    const visionLimit = BUILDR_VISION_DAILY_LIMITS[tier] ?? BUILDR_VISION_DAILY_LIMITS.guest;
+
+    const used = await countBuildrSessionsInWindow({ userId, event });
+    const remaining = Math.max(limit - used, 0);
+
+    const plansUsed = await countPlansInWindow({ userId, event });
+    const plansRemaining = Math.max(planLimit - plansUsed, 0);
+
+    const visionUsed = await countVisionUsesInWindow({ userId, event });
+    const visionRemaining = Math.max(visionLimit - visionUsed, 0);
+
+    return jsonResponse(200, {
+      ok: true,
+      tier,
+      authenticated: Boolean(userId),
+      window: "rolling_24h",
+      limit,
+      used,
+      remaining,
+      messages_per_session: messagesPerSession,
+      buildr: {
+        daily_limit: limit,
+        sessions_used: used,
+        sessions_remaining: remaining,
+        messages_per_session: messagesPerSession
+      },
+      plans: { daily_limit: planLimit, used: plansUsed, remaining: plansRemaining },
+      vision: { daily_limit: visionLimit, used: visionUsed, remaining: visionRemaining }
+    });
+  } catch (error) {
+    console.error("usage-status error:", error);
+    return jsonResponse(500, { ok: false, error: error?.message || "Unknown server error." });
+  }
+};
