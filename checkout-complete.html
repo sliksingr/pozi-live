@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="robots" content="noindex, nofollow">
+<title>Payment received — POZi</title>
+<!--
+  WHERE THIS GOES: pozi-live repo root, alongside index.html and confirm.html.
+  Served at https://pozi.live/checkout-complete.html
+
+  WHY IT EXISTS
+  After paying, Stripe redirects somewhere. When checkout was started from the app,
+  that redirect happens inside SFSafariViewController — a browser window with its own
+  cookie jar. Landing on pozi.live there shows the website in a signed-out state, which
+  looks exactly like being logged out and dumped somewhere. The upgrade itself was fine
+  (the webhook does that, and the app re-reads the tier on resume), but the person has
+  no way to know that.
+
+  So this page does one job: confirm the payment landed and tell them how to get back.
+
+  DELIBERATELY has no Supabase client, no auth check, and no API calls. It runs in a
+  context with no session and must work anyway. It reports what Stripe told us via the
+  URL and nothing more — the plan is granted by the webhook, never by a browser redirect.
+
+  It CANNOT close itself. window.close() does nothing in SFSafariViewController, so the
+  instruction to tap Done is the honest answer rather than a broken button.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --green:#00ff88; --blue:#38bdf8; --bg:#0f0f1a; --panel:#151525;
+  --border:#2a2a45; --text:#ffffff; --muted:#a8a8c2; --danger:#ff5b87;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{
+  background:
+    radial-gradient(ellipse 55% 35% at 16% -8%, rgba(0,255,136,.10), transparent 64%),
+    radial-gradient(ellipse 55% 45% at 100% 100%, rgba(0,102,255,.13), transparent 62%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif;
+  display:flex;align-items:center;justify-content:center;
+  padding:22px;min-height:100vh;
+}
+.card{
+  width:100%;max-width:460px;text-align:center;
+  background:linear-gradient(180deg,rgba(21,21,37,.96),rgba(15,17,32,.97));
+  border:1px solid var(--border);border-radius:26px;
+  padding:34px 24px 28px;box-shadow:0 26px 74px rgba(0,0,0,.52);
+}
+.mark{width:70px;height:70px;object-fit:contain;margin:0 auto 18px;display:block;
+  filter:drop-shadow(0 0 12px rgba(140,120,255,.3))}
+.tick{
+  width:62px;height:62px;margin:0 auto 18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.42);
+  font-size:31px;color:var(--green);line-height:1;
+}
+.kicker{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:9px}
+h1{font-family:Syne,sans-serif;font-weight:800;font-size:clamp(26px,7vw,33px);line-height:1.04;letter-spacing:-.03em;margin-bottom:12px}
+p{color:var(--muted);font-size:15px;line-height:1.62;margin-bottom:14px}
+.plan-badge{
+  display:inline-block;margin-bottom:16px;padding:8px 15px;border-radius:999px;
+  background:rgba(0,255,136,.09);border:1px solid rgba(0,255,136,.34);
+  color:#8dffc8;font-weight:800;font-size:13px;letter-spacing:.02em;
+}
+.howto{
+  text-align:left;background:rgba(255,255,255,.035);border:1px solid var(--border);
+  border-radius:16px;padding:16px 18px;margin:18px 0 6px;
+}
+.howto-h{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:9px}
+.howto p{font-size:14px;line-height:1.6;margin:0}
+.btn{
+  display:block;width:100%;margin-top:14px;padding:15px;border-radius:14px;
+  border:0;background:linear-gradient(135deg,#00c96e,#00ff88);color:#04120d;
+  font-weight:800;font-size:16px;text-decoration:none;cursor:pointer;
+}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.16);color:#e8ecf5;font-weight:700}
+.fine{font-size:12.5px;color:#6a6d85;line-height:1.6;margin-top:18px}
+.fine a{color:var(--green);text-decoration:none}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="card">
+  <img class="mark" src="logo-dark.png" alt="POZi" onerror="this.style.display='none'">
+
+  <!-- SUCCESS -->
+  <div id="okBlock">
+    <div class="tick">&#10003;</div>
+    <div class="kicker">Payment received</div>
+    <h1>You&rsquo;re all set.</h1>
+    <div id="planBadge" class="plan-badge hidden"></div>
+    <p>Your subscription is active. Your new limits are already live on your account &mdash;
+       nothing else to do.</p>
+
+    <div class="howto">
+      <div class="howto-h">Getting back to POZi</div>
+      <p id="backHowto">Tap <strong>Done</strong> at the top of this window and you&rsquo;ll
+         land right back where you were. Your plan updates within a few seconds.</p>
+    </div>
+
+    <a id="siteBtn" class="btn ghost hidden" href="https://pozi.live/">Back to POZi</a>
+  </div>
+
+  <!-- CANCELLED -->
+  <div id="cancelBlock" class="hidden">
+    <div class="kicker" style="color:var(--muted)">Checkout cancelled</div>
+    <h1>Nothing was charged.</h1>
+    <p>You closed checkout before it finished, so your card was never billed and your
+       plan hasn&rsquo;t changed. You can upgrade any time.</p>
+
+    <div class="howto">
+      <div class="howto-h">Getting back to POZi</div>
+      <p>Tap <strong>Done</strong> at the top of this window to return to the app.</p>
+    </div>
+
+    <a id="siteBtnCancel" class="btn ghost hidden" href="https://pozi.live/">Back to POZi</a>
+  </div>
+
+  <p class="fine">
+    Questions about a charge? Use the Contact link at
+    <a href="https://pozi.live/">pozi.live</a> and it reaches us directly.
+  </p>
+</div>
+
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var state  = (params.get("checkout") || "success").toLowerCase();
+  var plan   = (params.get("plan") || "").toLowerCase();
+
+  if (state === "cancelled" || state === "canceled") {
+    document.getElementById("okBlock").classList.add("hidden");
+    document.getElementById("cancelBlock").classList.remove("hidden");
+  } else {
+    // Names the plan Stripe says was bought. This is a LABEL, not a grant — the tier
+    // itself comes from the webhook writing buildr_profiles.plan. A page that trusted
+    // a URL parameter to decide someone's tier would be trivially forgeable.
+    var label = plan === "pro" ? "POZi Contractor \u00b7 $19.99/mo"
+              : plan === "consumer" ? "POZi DIY \u00b7 $9.99/mo" : "";
+    if (label) {
+      var badge = document.getElementById("planBadge");
+      badge.textContent = label;
+      badge.classList.remove("hidden");
+    }
+  }
+
+  // The Done button only exists in the app's in-app browser. Someone who reaches this
+  // page in a normal browser tab has no Done to tap, so give them a real link instead.
+  // No reliable way to detect SFSafariViewController, so infer from the opener: a
+  // normal tab that navigated here from Stripe has history to go back through, while
+  // the in-app browser window does not behave like a tab.
+  var inAppLikely = !window.opener && window.top === window.self &&
+                    /iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (!inAppLikely) {
+    document.getElementById("backHowto").innerHTML =
+      "Head back to POZi and your new plan will be waiting. If you started this on your " +
+      "phone, close this tab and reopen the app.";
+    document.getElementById("siteBtn").classList.remove("hidden");
+    document.getElementById("siteBtnCancel").classList.remove("hidden");
+  }
+})();
+</script>
+</body>
+</html>
