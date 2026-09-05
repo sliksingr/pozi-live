@@ -511,7 +511,7 @@ footer{border-top:1px solid var(--border);background:#0a0a14;padding:34px 24px}
 .footer-tag{font-size:9px;letter-spacing:1.3px;text-transform:uppercase;color:#6a6d85;margin-top:3px;line-height:1.5}
 .footer-tag .aiop{display:block;color:var(--green);font-weight:700;letter-spacing:1.6px}
 .footer-links{display:flex;gap:18px;flex-wrap:wrap}
-.footer-link{font-size:12px;color:#8b8ea8;transition:color .18s}
+.footer-link{font-size:12px;color:#8b8ea8;transition:color .18s;text-decoration:none;background:none;border:0;cursor:pointer;font-family:inherit}
 .footer-link:hover{color:var(--green)}
 .footer-copy{font-size:11px;color:#5c5f75}
 
@@ -779,7 +779,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v11</span>
+    <span class="site-ver" id="siteVer">v12</span>
   </div>
 
   <div class="nav-links">
@@ -1327,6 +1327,9 @@ body.gated>*:not(.phone-gate){display:none!important}
     <div class="footer-links">
       <button class="footer-link" data-modal="contactModal">Contact</button>
       <button class="footer-link" data-modal="legalModal">Disclaimer</button>
+      <!-- A real page, not a modal: App Store Connect needs a URL it can open without
+           signing in, and reviewers look for it in the footer. -->
+      <a class="footer-link" href="/privacy.html">Privacy</a>
     </div>
     <div class="footer-copy">© 2026 POZi</div>
   </div>
