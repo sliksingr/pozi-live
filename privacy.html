@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f1a">
+<title>Privacy Policy — POZi</title>
+<meta name="description" content="What POZi collects, why, who it goes to, and how to delete it.">
+<!--
+  WHERE THIS GOES: pozi-live repo root, next to index.html and confirm.html.
+  Served at https://pozi.live/privacy.html
+
+  This is the URL App Store Connect asks for under App Privacy. It has to be reachable
+  without signing in, which is why it is a standalone page and not a modal inside the app.
+
+  WRITTEN TO MATCH WHAT THE CODE ACTUALLY DOES. Every claim below is checkable against
+  a real file: delete-account.js, buildr-chat-stream.mjs, buildr-vision.js, pozi-search.js,
+  create-checkout.js. If any of those change, this changes with them — a privacy policy
+  that describes something the software no longer does is worse than none at all.
+
+  NOT LEGAL ADVICE. This describes the system honestly and covers what Apple asks for.
+  Have a lawyer read it before you rely on it, particularly the sections on children and
+  on state privacy rights.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--green:#00ff88;--bg:#0f0f1a;--panel:#151525;--border:#2a2a45;--text:#fff;--muted:#a8a8c2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:radial-gradient(ellipse 55% 35% at 16% -8%,rgba(0,255,136,.08),transparent 64%),var(--bg);
+  color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  padding:26px 18px 60px;line-height:1.65;
+}
+.wrap{max-width:680px;margin:0 auto}
+.brandline{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.brandline span{color:var(--green)}
+.kicker{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:10px}
+h1{font-family:Syne,sans-serif;font-weight:800;font-size:clamp(28px,7vw,38px);line-height:1.05;letter-spacing:-.03em;margin-bottom:10px}
+.updated{color:#6a6d85;font-size:13px;margin-bottom:26px}
+h2{font-family:Syne,sans-serif;font-size:19px;font-weight:800;margin:30px 0 10px;letter-spacing:-.01em}
+p{color:#c6cadb;font-size:15px;margin-bottom:12px}
+ul{margin:0 0 14px 20px;color:#c6cadb;font-size:15px}
+li{margin-bottom:7px}
+strong{color:#fff}
+a{color:var(--green);text-decoration:none}
+.card{background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin:16px 0}
+.foot{margin-top:36px;padding-top:18px;border-top:1px solid var(--border);color:#6a6d85;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brandline">POZ<span>i</span></div>
+  <div class="kicker">Privacy</div>
+  <h1>What we collect, and what we don't.</h1>
+  <div class="updated">Last updated 2 September 2026</div>
+
+  <p>POZi is a project planning and sourcing tool. This page explains exactly what the app
+     and the website store, who else sees it, and how to get rid of it. It is written to
+     match what the software actually does.</p>
+
+  <h2>What we collect</h2>
+  <ul>
+    <li><strong>Your email address</strong>, when you create an account. Passwords are
+        handled by our authentication provider and we never see or store them.</li>
+    <li><strong>Your conversations with POZi Foreman</strong> — what you type and what
+        Foreman replies — along with your Build Notes and item lists.</li>
+    <li><strong>Photos you take or upload</strong> to a project, stored in a private
+        bucket that is not publicly readable.</li>
+    <li><strong>Your searches</strong>, and the ZIP code or approximate location you set,
+        so results come from stores near you.</li>
+    <li><strong>Basic technical information</strong> that any web service receives, such as
+        your IP address, which we also use to count usage for visitors who have no account.</li>
+  </ul>
+
+  <p>We do not collect contacts, your photo library, precise background location, browsing
+     history, or advertising identifiers. POZi carries no advertising and no third-party
+     analytics or tracking.</p>
+
+  <h2>Why we collect it</h2>
+  <p>To run the service, and only that. Your conversations are stored so your projects are
+     still there tomorrow and so Foreman can pick up where you left off. Photos are stored
+     so they stay attached to the job. Usage is counted so plan limits work.</p>
+  <p>We review conversations in aggregate to find where Foreman gives poor answers and to
+     improve it. We do not sell your data, and we do not share it for advertising.</p>
+
+  <h2>Who else sees it</h2>
+  <p>POZi is built on services that each handle one part of the job:</p>
+  <ul>
+    <li><strong>Anthropic</strong> — receives what you send Foreman, including photos you
+        ask it to analyse, in order to generate the reply.</li>
+    <li><strong>Supabase</strong> — stores your account, projects, conversations, and photos.</li>
+    <li><strong>Netlify</strong> — hosts the site and runs the server functions, and
+        receives anything you send through the contact form.</li>
+    <li><strong>DataForSEO</strong> — receives your search terms and location to return
+        product results.</li>
+    <li><strong>Stripe</strong> — handles payment if you subscribe. Your card details go
+        directly to Stripe and never reach POZi. We store only the identifiers Stripe gives
+        us so we know which account is subscribed.</li>
+  </ul>
+  <p>We may also disclose information if the law requires it.</p>
+
+  <h2>Photos</h2>
+  <p>Photos live in a private store and are only reachable through short-lived links
+     generated for your account. They are not public and are not indexed.</p>
+  <p>If you create a client share link, anyone holding that link can see the photos in that
+     project, and the Build Notes if you chose to include them. Your Foreman conversations
+     are never included in a share. You can turn a share link off at any time, which stops
+     it working immediately.</p>
+
+  <h2>Deleting your data</h2>
+  <p>You can delete your account from inside the app. Doing so permanently removes your
+     projects, Build Notes, item lists, photos, saved searches, conversation history, and
+     your account record. If you have a paid plan, deletion cancels the subscription in the
+     same step.</p>
+  <div class="card">
+    <p style="margin:0">Deletion is permanent. We cannot restore a deleted account, and
+       neither can you. If you want your Build Notes, save or screenshot them first.</p>
+  </div>
+  <p>Backups may retain copies for a short period before being overwritten in the normal
+     course of operating the service.</p>
+
+  <h2>How long we keep it</h2>
+  <p>We keep your projects and conversations while your account is open, so they are there
+     when you come back. Delete your account and they go. We are working toward
+     automatically removing older conversation records; when that is in place, this page
+     will say exactly how long.</p>
+
+  <h2>Children</h2>
+  <p>POZi is built for construction and home improvement work and is not directed to
+     children. We do not knowingly collect information from anyone under 13. If you believe
+     a child has created an account, contact us and we will remove it.</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li>Use POZi as a guest, without an account, for a limited number of messages.</li>
+    <li>Skip setting a location — search still works, just without local results.</li>
+    <li>Delete any individual project, or your whole account, at any time.</li>
+    <li>Ask us for a copy of what we hold about you, or ask us to delete it.</li>
+  </ul>
+  <p>Depending on where you live, you may have additional rights over your personal
+     information, including access, correction, and deletion. Contact us and we will honour
+     them.</p>
+
+  <h2>Security</h2>
+  <p>Accounts are protected by authentication tokens, and each account can only read its own
+     data. Keys that grant broader access are held on the server and never shipped in the
+     app or the website. No system is perfectly secure, and we will not pretend otherwise —
+     but we do not collect anything we do not need, which is the best protection there is.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes in a way that matters, we will update the date at the top and,
+     for significant changes, tell you in the app.</p>
+
+  <h2>Contact</h2>
+  <p>Use the Contact link at the bottom of <a href="https://pozi.live/">pozi.live</a> for
+     anything about this policy, including a request to access or delete your information.</p>
+
+  <div class="foot">
+    POZi &middot; Plan it. Price it. Build it. &middot; <a href="https://pozi.live/">pozi.live</a>
+  </div>
+
+</div>
+</body>
+</html>
