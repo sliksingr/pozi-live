@@ -800,7 +800,7 @@ body.gated>*:not(.phone-gate){display:none!important}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v15</span>
+    <span class="site-ver" id="siteVer">v17</span>
   </div>
 
   <div class="nav-links">
@@ -4192,8 +4192,8 @@ body.gated>*:not(.phone-gate){display:none!important}
     if (!requireDisclaimer(askForeman)) return;
 
     // Signed in with no project yet: name and create one before the first message, so the
-    // conversation has somewhere to live from the very start. Cancelling leaves the typed
-    // text alone rather than swallowing it.
+    // conversation has a home from the very start and is still there after closing the tab.
+    // Cancelling leaves the typed text alone rather than swallowing it.
     if (currentUser && !homeProjectId){
       var made = await new Promise(function(resolve){
         openNameProject(function(pid){ resolve(pid); });
@@ -4201,9 +4201,21 @@ body.gated>*:not(.phone-gate){display:none!important}
       });
       pendingCancelResolve = null;
       if (!made) return;
+
+      // ORDER MATTERS. bindHomeChatToProject() resets history and wipes the transcript DOM
+      // — that is correct when switching between existing projects, but if it runs AFTER
+      // the first message is on screen it erases the very question that started the
+      // conversation, which is what "it started over" was. Bind first, with the transcript
+      // still empty, and only then run the turn below.
+      if (homeProjectId !== made) await bindHomeChatToProject(made);
       homeProjectId = made;
       homeSavedCount = 0;
+      history = [];
+      var stream = $('chatStream');
+      if (stream) stream.innerHTML = '';
+
       showPage('home');
+      chatSurface = 'home';
       setTimeout(function(){ var el = $('foreman'); if (el) el.scrollIntoView({behavior:'smooth',block:'start'}); }, 120);
     }
 
