@@ -1131,6 +1131,16 @@ body.gated>*:not(.phone-gate){display:none!important}
 .logo-l{display:none}
 html[data-theme="light"] .logo-d{display:none}
 html[data-theme="light"] .logo-l{display:initial}
+
+/* Messages-left line. Quiet enough to ignore until it matters. Mirrors the app's .msg-left. */
+.msg-left{padding:0 2px 6px;text-align:center;font-size:11.5px;color:var(--dim);line-height:1.4}
+.msg-left.warn{color:var(--green)}
+
+/* Plan CTA count and tip. Mirrors the app's .cta-note / .cta-tip. */
+.cta-note-wrap{margin-top:8px}
+.cta-note{text-align:center;font-size:11.5px;color:var(--dim);line-height:1.4}
+.cta-tip{margin-top:5px;text-align:center;font-size:11px;color:var(--dim-2);line-height:1.45;
+  max-width:340px;margin-left:auto;margin-right:auto}
 </style>
 </head>
 <body>
@@ -1144,7 +1154,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v38</span>
+    <span class="site-ver" id="siteVer">v41</span>
   </div>
 
   <div class="nav-links">
@@ -1333,7 +1343,8 @@ html[data-theme="light"] .logo-l{display:initial}
       </div>
 
       <label class="chat-input-label" for="chatInput">Your message</label>
-      <div class="chat-input-row">
+      <div id="msgLeftNote" class="msg-left hidden"></div>
+        <div class="chat-input-row">
         <!-- Photo lives where Foreman asks for one. On the website photos belong to a
              project, so this goes to that project's gallery rather than opening a picker
              with nowhere to put the result. -->
@@ -2312,12 +2323,60 @@ html[data-theme="light"] .logo-l{display:initial}
       if (!u) return;
       var chip = $('usageChip');
       if (chip && u.limit && typeof u.remaining === 'number'){
-        chip.textContent = u.remaining + ' of ' + u.limit + ' sessions left';
+        chip.textContent = sessionSummaryWeb(u) || (u.remaining + ' of ' + u.limit + ' sessions left');
         var lc0 = $('foremanLaunchChip'); if (lc0) lc0.textContent = chip.textContent;
       }
+      paintMessagesLeftWeb(u);
+      paintPlanCtaNote(u);
       // A tier reported by the server outranks whatever the profile row said.
       if (u.tier === 'pro' || u.tier === 'consumer') currentPlan = u.tier;
     } catch(e){ /* the strip just keeps its previous text */ }
+  }
+
+  // MESSAGES LEFT IN THIS SESSION — the server returns usage.messages { limit, used,
+  // remaining } on every reply and the website used to discard it, so people hit the cap
+  // with no warning. Matches the app's MSG_LEFT_SHOW_AT and wording.
+  //
+  // Shown only for the last few: a counter running from message one makes the conversation
+  // feel metered, and knowing the number late is what prompts someone to put two questions
+  // into one message — cheaper than two separate replies for everyone.
+  // 10, not 5 — matches the app. At 72 messages a day for Contractor, five left is under
+  // 7% and too late to act on.
+  var MSG_LEFT_SHOW_AT = 10;
+
+  function paintMessagesLeftWeb(u){
+    var el = $('msgLeftNote');
+    if (!el) return;
+    var m = u && u.messages;
+    if (!m || typeof m.remaining !== 'number' || m.message_based === false){
+      el.classList.add('hidden'); return;
+    }
+    var left = Math.max(m.remaining, 0);
+    if (left > MSG_LEFT_SHOW_AT){ el.classList.add('hidden'); return; }
+    el.classList.remove('hidden');
+    el.classList.toggle('warn', left <= 2);
+    el.textContent = left === 0
+      ? 'That is the last message in this session \u2014 start a new one to keep going on this project.'
+      : left + ' message' + (left === 1 ? '' : 's') + ' left in this session';
+  }
+
+  // "3 sessions left today \u00b7 12 messages each \u00b7 about 43 messages left"
+  // Sessions were the most misunderstood part of the product: "3 sessions left" read as
+  // three conversations, so people assumed a long job was not allowed. It is — a whole
+  // day's sessions can go into one project. Matches the app's sessionSummary().
+  function sessionSummaryWeb(u){
+    if (!u || typeof u.remaining !== 'number') return '';
+    var s = Math.max(u.remaining, 0);
+    var m = u.messages;
+    var per = (m && typeof m.limit === 'number') ? m.limit : 0;
+    var nowLeft = (m && typeof m.remaining === 'number') ? Math.max(m.remaining, 0) : 0;
+    var line = s + ' session' + (s === 1 ? '' : 's') + ' left today';
+    if (per > 0){
+      line += ' \u00b7 ' + per + ' messages each';
+      var total = (s * per) + nowLeft;
+      if (total > 0) line += ' \u00b7 about ' + total + ' messages left';
+    }
+    return line;
   }
 
   function paintAccount(){
@@ -3383,9 +3442,11 @@ html[data-theme="light"] .logo-l{display:initial}
               var u = evt.usage || {};
               var chip = $('usageChip');
               if (chip && u.limit && typeof u.remaining === 'number'){
-                chip.textContent = u.remaining + ' of ' + u.limit + ' sessions left';
-        var lc0 = $('foremanLaunchChip'); if (lc0) lc0.textContent = chip.textContent;
+                chip.textContent = sessionSummaryWeb(u) || (u.remaining + ' of ' + u.limit + ' sessions left');
+                var lc0 = $('foremanLaunchChip'); if (lc0) lc0.textContent = chip.textContent;
               }
+              paintMessagesLeftWeb(u);
+              paintPlanCtaNote(u);
             }
           }
         }
@@ -3592,6 +3653,7 @@ html[data-theme="light"] .logo-l{display:initial}
           title: 'Build Notes', body: notes,
           metadata: { planned_turns: history.filter(function(m){ return m && m.text; }).length }
         });
+        homePlannedTurns = history.filter(function(m){ return m && m.text; }).length;
         if (ni.error) console.warn('save notes failed:', ni.error);
       }
 
@@ -4716,6 +4778,10 @@ html[data-theme="light"] .logo-l{display:initial}
   // Returns true when everything unsaved reached the database, false when the write was
   // refused. Callers must report a false — a save that silently fails looks exactly like
   // one that worked until the project is reopened and the turns are not there.
+  // How many turns the project's current plan was built from. Read back when a project
+  // loads so the rebuild threshold survives a page refresh, not just the current session.
+  var homePlannedTurns = 0;
+
   async function saveHomeConversation(){
     // Returns false for BOTH 'refused' and 'nowhere to write to'. Callers must treat any
     // false as a failure the user hears about — see the note at the call site above.
@@ -4746,12 +4812,59 @@ html[data-theme="light"] .logo-l{display:initial}
 
   // Foreman signals readiness with a fixed line. Surface Build the Plan at that moment
   // instead of making someone go find the Projects tab.
+  // How much NEW conversation has to happen before a rebuild is offered again. Matches the
+  // app's PLAN_REBUILD_MIN_NEW_TURNS. One new turn used to be enough, so "okay, thanks"
+  // could invite a rebuild producing nearly identical notes from the most expensive call
+  // POZi makes. Four entries is two full exchanges.
+  var PLAN_REBUILD_MIN_NEW_TURNS = 4;
+
+  // PLAN BUILDS ARE COUNTED IN THE OPEN, ALWAYS — same reasoning and same wording as the
+  // app. A plan build costs roughly ten messages, so the falling number is what teaches
+  // someone to add one more detail rather than rebuild to see what changes.
+  function paintPlanCtaNote(u){
+    var row = $('homePlanRow');
+    if (!row) return;
+    var existing = row.querySelector('.cta-note-wrap');
+    if (existing) existing.remove();
+    var p = u && u.plans;
+    if (!p || typeof p.remaining !== 'number') return;
+
+    var left = Math.max(p.remaining, 0);
+    var cap = (typeof p.limit === 'number') ? p.limit : null;
+
+    var box = document.createElement('div');
+    box.className = 'cta-note-wrap';
+
+    var countNote = document.createElement('div');
+    countNote.className = 'cta-note';
+    countNote.textContent = left === 0
+      ? 'No plan builds left today \u2014 they refresh 24 hours after each one.'
+      : left + ' plan build' + (left === 1 ? '' : 's') + ' left today';
+    box.appendChild(countNote);
+
+    // Kyle's wording, exactly. Cap rendered from the payload so it stays true per tier.
+    if (cap && left > 0){
+      var tip = document.createElement('div');
+      tip.className = 'cta-tip';
+      tip.textContent = 'Tip: keep talking and give Foreman more information. Each build counts against your ' + cap + '.';
+      box.appendChild(tip);
+    }
+    row.appendChild(box);
+  }
+
   function maybeShowHomePlanCta(){
     var row = $('homePlanRow');
     if (!row) return;
     var last = history.length ? history[history.length - 1] : null;
     var ready = last && last.role === 'assistant' && /tap Build the Plan/i.test(last.text || '');
-    row.classList.toggle('hidden', !(ready && homeProjectId));
+
+    // If a plan already covers this conversation, do not offer a rebuild until enough new
+    // ground has been covered to change what it would say.
+    var covered = Number(homePlannedTurns) || 0;
+    var live = history.filter(function(m){ return m && m.text; }).length;
+    var enoughNew = covered <= 0 || (live - covered) >= PLAN_REBUILD_MIN_NEW_TURNS;
+
+    row.classList.toggle('hidden', !(ready && homeProjectId && enoughNew));
   }
 
   // Loads a specific project's conversation into the home chat. Moving between projects on
