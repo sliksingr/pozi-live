@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* THEME BOOT — same key and same three values as the main site, so this page opens in
+   whatever the person already chose rather than flashing the wrong one. Runs before the
+   first paint, which is why it is inline and first in <head>. */
+(function(){
+  try{
+    var pref = localStorage.getItem('pozi_theme') || 'dark';
+    var sysLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    var resolved = pref === 'auto' ? (sysLight ? 'light' : 'dark') : pref;
+    document.documentElement.setAttribute('data-theme', resolved);
+    document.documentElement.style.colorScheme = resolved;
+  }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
+})();
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>POZi Go — Coming soon</title>
+<!--
+  pozi.live/install
+  -------------------------------------------------------------------------------
+  The phone gate's "Get POZi Go" button has always pointed at https://pozi.live/install,
+  and that page did not exist — so tapping it on a phone landed on Netlify's own 404.
+
+  "Continue on the web" is wired exactly like the gate's own gateStay button: it writes
+  the same sessionStorage key the gate uses to remember a dismissal, then goes to the site.
+  Same key, same session, so the gate does not appear again and the person lands where
+  dismissing the gate would have left them.
+
+  Theme-aware like the rest of the site. NOTE: privacy.html, confirm.html and
+  checkout-complete.html are still dark-only and have not been given this treatment.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
+<link rel="icon" type="image/png" href="/logo-dark.png">
+<style>
+:root{
+  --bg:#0f0f1a;
+  --panel:#151525;
+  --border:#2a2a45;
+  --text:#ffffff;
+  --muted:#a8a8c2;
+  --dim:#7f829e;
+  --green:#00ff88;
+  --green-rgb:0,255,136;
+  --green-deep:#00d46f;
+  --on-green:#04120b;
+  --raise-rgb:255,255,255;
+  --shadow:0 18px 44px rgba(0,0,0,.28);
+  --r:22px;
+}
+html[data-theme="light"]{
+  --bg:#f4f5fa;
+  --panel:#ffffff;
+  --border:#d9dce8;
+  --text:#0f1220;
+  --muted:#5a5f75;
+  --dim:#6c7188;
+  --green:#00a85a;
+  --green-rgb:0,150,80;
+  --green-deep:#008c4b;
+  --on-green:#ffffff;
+  --raise-rgb:15,18,32;
+  --shadow:0 18px 44px rgba(22,26,44,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center;padding:24px;min-height:100dvh;
+  background:
+    radial-gradient(900px 480px at 50% -10%, rgba(var(--green-rgb),.10), transparent 60%),
+    var(--bg)}
+
+.card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--shadow);padding:34px 28px 30px;text-align:center}
+
+.mark{width:64px;height:64px;object-fit:contain;margin:0 auto 14px;display:block}
+.logo-l{display:none}
+html[data-theme="light"] .logo-d{display:none}
+html[data-theme="light"] .logo-l{display:block}
+
+.logo-word{font-family:Syne,sans-serif;font-weight:800;font-size:27px;letter-spacing:-1px;
+  margin-bottom:6px}
+.logo-word .i{color:var(--green)}
+.logo-word .go{font-size:15px;margin-left:2px}
+.brand-tag{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+  margin-bottom:26px}
+
+h1{font-family:Syne,sans-serif;font-weight:800;font-size:27px;line-height:1.05;
+  letter-spacing:-.03em;margin-bottom:14px}
+.lead{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:14px}
+.lead + .lead{margin-bottom:24px}
+
+.btn{display:block;width:100%;padding:15px 18px;border-radius:14px;border:0;cursor:pointer;
+  font-family:Inter,sans-serif;font-size:15px;font-weight:800;
+  background:linear-gradient(135deg,var(--green-deep),var(--green));color:var(--on-green)}
+
+.note{margin-top:18px;font-size:12.5px;color:var(--dim);line-height:1.55}
+
+@media (max-width:420px){
+  .card{padding:28px 20px 24px}
+  h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+  <main class="card">
+    <img class="mark logo-d" src="/logo-dark.png" alt="POZi">
+    <img class="mark logo-l" src="/logo-light.png" alt="POZi">
+
+    <div class="logo-word">POZ<span class="i">i</span><span class="go">Go</span></div>
+    <div class="brand-tag">All in one place.</div>
+
+    <h1>POZi Go is coming soon</h1>
+    <p class="lead">The app is in beta and not on the App Store or Google Play yet. We'll have it available shortly.</p>
+    <p class="lead">Everything works on the web in the meantime — same Foreman, same projects, same photos.</p>
+
+    <button class="btn" id="continueWeb" type="button">Continue on the web</button>
+  </main>
+
+<script>
+/* Wired exactly like the phone gate's own gateStay button: write the dismissal key the
+   gate reads, then go to the site. sessionStorage is per-origin and per-tab, and this page
+   is the same origin, so the gate sees the key and stays closed — the person lands where
+   dismissing the gate would have left them instead of being asked the same question again. */
+(function(){
+  var GATE_DISMISS_KEY = 'pozi_gate_dismissed';
+  var btn = document.getElementById('continueWeb');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    try { sessionStorage.setItem(GATE_DISMISS_KEY, '1'); } catch(e){}
+    window.location.href = '/';
+  });
+})();
+</script>
+
+</body>
+</html>
