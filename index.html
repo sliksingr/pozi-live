@@ -1171,6 +1171,41 @@ html[data-theme="light"] .logo-l{display:initial}
   font-family:var(--fb);font-size:13px;font-weight:600;
   color:var(--dim);text-align:center;cursor:pointer}
 .danger-link:hover,.danger-link:active{color:var(--danger);background:rgba(var(--danger-rgb),.08)}
+
+/* ── MOBILE MENU, HYBRID LAYOUT ──────────────────────────────────────────────
+   Everything on one screen at 390px. Six full-width nav rows used to push the
+   account block and Appearance below the fold, so Delete could not be reached
+   without scrolling — which is the whole reason this changed. */
+.m-grid{width:100%;max-width:330px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.m-grid .m-nl{max-width:none;padding:13px 14px;font-size:14px;border-radius:13px}
+.m-nl.m-wide{max-width:330px}
+
+/* Continue / Open Foreman */
+.m-resume{
+  width:100%;max-width:330px;display:flex;align-items:center;gap:11px;
+  padding:12px 13px;border-radius:15px;text-align:left;
+  border:1px solid rgba(var(--green-rgb),.22);background:rgba(var(--green-rgb),.05)}
+.m-resume-ic{color:var(--green);font-size:11px;line-height:1;flex:0 0 auto}
+.m-resume-txt{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto}
+.m-resume-kick{font-family:var(--fh);font-size:8.5px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--green)}
+.m-resume-name{font-size:14.5px;font-weight:700;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-resume-arrow{color:var(--green);font-size:17px;flex:0 0 auto}
+
+/* Project tools — only rendered when a project is open */
+.m-tools{width:100%;max-width:330px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.m-tool{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  min-height:50px;padding:0 13px;border-radius:14px;
+  border:1px solid var(--border);background:rgba(var(--raise-rgb),.04);text-align:left}
+.m-tool-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.m-tool-n{font-size:11px;font-weight:700;color:var(--dim)}
+.m-tool:hover{border-color:rgba(var(--green-rgb),.22)}
+
+/* Account row — sign out and delete side by side */
+.m-acct-row{display:flex;align-items:center;gap:9px;width:100%;max-width:330px}
+.m-nl.m-signout{flex:1 1 auto;max-width:none;text-align:center;padding:13px 14px;font-size:14px}
+.danger-link.m-del{width:auto;max-width:none;margin:0;flex:0 0 auto;padding:11px 6px;font-size:12px}
 </style>
 </head>
 <body>
@@ -1184,7 +1219,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v46</span>
+    <span class="site-ver" id="siteVer">v47</span>
   </div>
 
   <div class="nav-links">
@@ -1233,14 +1268,52 @@ html[data-theme="light"] .logo-l{display:initial}
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
-  <button class="m-nl" data-page="home">Home</button>
-  <button class="m-nl" data-page="projects">Projects</button>
-  <button class="m-nl" data-page="search">Search</button>
-  <button class="m-nl" data-page="how">How It Works</button>
-  <button class="m-nl" data-page="pricing">Pricing</button>
-  <button class="m-nl" data-modal="contactModal">Contact</button>
-  <button class="m-nl" id="mAcctAuth">Sign in / Create account</button>
-  <button class="m-nl" id="mAcctPlan">My plan</button>
+
+  <!-- CONTINUE / OPEN. One tap back into the live job. With no project or no history it
+       becomes "Open Foreman", so this row is never empty and never a dead end. -->
+  <button class="m-resume" id="mResume" type="button">
+    <span class="m-resume-ic" aria-hidden="true">&#9679;</span>
+    <span class="m-resume-txt">
+      <span class="m-resume-kick" id="mResumeKick">Start here</span>
+      <span class="m-resume-name" id="mResumeName">Open Foreman</span>
+    </span>
+    <span class="m-resume-arrow" aria-hidden="true">&#8594;</span>
+  </button>
+
+  <!-- PROJECT TOOLS. Shown ONLY when a project is open — this is the section that made the
+       app-style grid workable here. Signed out, or before a first project, it is absent and
+       the nav tiles below carry the whole menu with no second layout to maintain.
+       Each tile opens the project and scrolls to that panel; the project page already holds
+       all four, so nothing new is rendered. -->
+  <div class="m-tools hidden" id="mTools">
+    <button class="m-tool" data-tool="chat" type="button">
+      <span class="m-tool-name">Chat</span><span class="m-tool-n" id="mToolChat">—</span>
+    </button>
+    <button class="m-tool" data-tool="notes" type="button">
+      <span class="m-tool-name">Notes</span><span class="m-tool-n" id="mToolNotes">—</span>
+    </button>
+    <button class="m-tool" data-tool="list" type="button">
+      <span class="m-tool-name">POZi List</span><span class="m-tool-n" id="mToolList">—</span>
+    </button>
+    <button class="m-tool" data-tool="photos" type="button">
+      <span class="m-tool-name">Photos</span><span class="m-tool-n" id="mToolPhotos">—</span>
+    </button>
+  </div>
+
+  <!-- NAV, two across. Six full-width rows was what pushed the account block and Appearance
+       below the fold on a phone, so Delete my account could not be reached without
+       scrolling. Two columns halves the height and everything lands on one screen. -->
+  <div class="m-grid">
+    <button class="m-nl" data-page="home">Home</button>
+    <button class="m-nl" data-page="projects">Projects</button>
+    <button class="m-nl" data-page="search">Search</button>
+    <button class="m-nl" data-page="how">How It Works</button>
+    <button class="m-nl" data-page="pricing">Pricing</button>
+    <button class="m-nl" data-modal="contactModal">Contact</button>
+  </div>
+
+  <button class="m-nl m-wide" id="mAcctAuth">Sign in / Create account</button>
+  <button class="m-nl m-wide" id="mAcctPlan">My plan</button>
   <button class="m-cta" data-modal="goModal">Get POZi Go</button>
 
   <!-- ACCOUNT BLOCK, at the bottom and visually separated.
@@ -1250,10 +1323,13 @@ html[data-theme="light"] .logo-l{display:initial}
        the destructive action under it, away from the navigation links. -->
   <div class="m-acct hidden" id="mAcctBlock">
     <div class="m-acct-who"><span class="m-dot"></span><span id="mAcctEmail"></span></div>
-    <button class="m-nl" id="mAcctSignOut">Sign out</button>
-    <!-- Not a peer of Sign out. Same reasoning as the app: the confirmation modal is what
-         prevents an accident, so this only has to stop looking like an everyday action. -->
-    <button class="danger-link" id="mAcctDelete">Delete my account</button>
+    <!-- Sign out and Delete share one row. Delete is still NOT a peer of Sign out — it is a
+         text link beside a button, not a second button. The confirmation modal is what
+         prevents an accident; this only has to stop looking like an everyday action. -->
+    <div class="m-acct-row">
+      <button class="m-nl m-signout" id="mAcctSignOut">Sign out</button>
+      <button class="danger-link m-del" id="mAcctDelete">Delete account</button>
+    </div>
   </div>
 
   <!-- APPEARANCE. Placed after the account block so the navigation links stay
@@ -4363,6 +4439,9 @@ html[data-theme="light"] .logo-l{display:initial}
     var open = m.classList.toggle('open');
     h.classList.toggle('open', open);
     document.body.style.overflow = open ? 'hidden' : '';
+    // Repaint on OPEN only, so the project name and counts are whatever is true at that
+    // moment rather than whatever was cached when the page loaded.
+    if (open) { try { paintMobileMenu(); } catch(e){ console.warn('menu paint failed:', e); } }
   }
 
   /* ── Modals ───────────────────────────────────────────────────────────── */
@@ -4679,6 +4758,66 @@ html[data-theme="light"] .logo-l{display:initial}
   // Shows which project the home chat is writing to. Hidden when there is nothing to say —
   // signed out, or a conversation that has not been given a home yet.
   // Keeps the launcher card honest about whether there is a conversation waiting.
+  // ── MOBILE MENU PAINT ──────────────────────────────────────────────────────
+  // Runs when the menu opens, so it reflects the project as it stands right then
+  // rather than whatever was cached at page load.
+  //
+  // Counts come from projectCountsBulk, the same helper the projects page uses — not a
+  // second query written for this menu. Chat is counted from history, which is the live
+  // conversation already in memory.
+  async function paintMobileMenu(){
+    var resumeKick = $('mResumeKick'), resumeName = $('mResumeName'), tools = $('mTools');
+    if (!resumeKick || !resumeName) return;
+
+    if (!homeProjectId){
+      resumeKick.textContent = 'Start here';
+      resumeName.textContent = 'Open Foreman';
+      if (tools) tools.classList.add('hidden');
+      return;
+    }
+
+    resumeKick.textContent = 'Continue';
+    resumeName.textContent = 'Your project';
+    if (tools) tools.classList.remove('hidden');
+
+    var chatEl = $('mToolChat');
+    if (chatEl) chatEl.textContent = String(history.filter(function(m){ return m && m.text; }).length);
+
+    try {
+      var meta = await sb.from('buildr_projects').select('name,title').eq('id', homeProjectId).maybeSingle();
+      var nm = meta && meta.data && (meta.data.name || meta.data.title);
+      if (nm) resumeName.textContent = nm;
+    } catch(e){ /* the generic label already reads fine */ }
+
+    try {
+      var c = (await projectCountsBulk([homeProjectId]))[homeProjectId] || {};
+      if ($('mToolNotes'))  $('mToolNotes').textContent  = String(c.notes  || 0);
+      if ($('mToolList'))   $('mToolList').textContent   = String(c.lists  || 0);
+      if ($('mToolPhotos')) $('mToolPhotos').textContent = String(c.photos || 0);
+    } catch(e){ console.warn('menu counts failed:', e); }
+  }
+
+  // Continue / Open Foreman, and the four tools. Each tool opens the project and scrolls to
+  // the panel that already exists on the project page — no new view is rendered for this.
+  document.addEventListener('click', async function(e){
+    var t = e.target && e.target.closest ? e.target.closest('#mResume,[data-tool]') : null;
+    if (!t) return;
+    closeMobile();
+
+    if (t.id === 'mResume'){
+      if (homeProjectId && currentUser){ showPage('projects'); await openProject(homeProjectId); }
+      else { showPage('home'); openChatSheet(); }
+      return;
+    }
+
+    if (!homeProjectId || !currentUser) { showPage('home'); return; }
+    showPage('projects');
+    await openProject(homeProjectId);
+    var map = { chat:'projChat', notes:'projNotes', list:'projItems', photos:'projPhotos' };
+    var el = $(map[t.getAttribute('data-tool')]);
+    if (el && el.scrollIntoView) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+
   function paintForemanLaunch(){
     var sub = $('foremanLaunchSub'), cta = $('foremanLaunchCta'), ttl = $('foremanLaunchTitle');
     if (!sub || !cta) return;
