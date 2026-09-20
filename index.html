@@ -1206,6 +1206,30 @@ html[data-theme="light"] .logo-l{display:initial}
 .m-acct-row{display:flex;align-items:center;gap:9px;width:100%;max-width:330px}
 .m-nl.m-signout{flex:1 1 auto;max-width:none;text-align:center;padding:13px 14px;font-size:14px}
 .danger-link.m-del{width:auto;max-width:none;margin:0;flex:0 0 auto;padding:11px 6px;font-size:12px}
+
+/* ── MENU AS A FLOATING PANEL ON WIDER SCREENS ───────────────────────────────
+   Full-bleed is right on a phone. On an iPad — or any of the larger phones — it left a
+   330px column of buttons stranded in the middle of a black field. Above 600px the menu
+   becomes a card over a blurred, dimmed page, so it reads as something opened ON TOP of
+   where you were rather than a replacement for it.
+
+   Below 600px nothing changes: the card has no surface of its own and the menu fills the
+   screen exactly as before. */
+.m-card{width:100%;max-width:330px;display:flex;flex-direction:column;align-items:center;gap:8px}
+
+@media (min-width:600px){
+  .mobile-menu{
+    background:rgba(var(--shadow-rgb),.55);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    padding:28px 24px}
+  .m-card{
+    max-width:430px;padding:24px 22px;gap:9px;
+    background:var(--sheet-panel);border:1px solid var(--border);
+    border-radius:26px;box-shadow:0 30px 80px rgba(var(--shadow-rgb),.45)}
+  .m-card > *{max-width:none}
+  .m-grid,.m-tools,.m-resume,.m-acct-row{max-width:none}
+  .m-card .m-nl,.m-card .m-cta{max-width:none}
+}
 </style>
 </head>
 <body>
@@ -1219,7 +1243,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v47</span>
+    <span class="site-ver" id="siteVer">v48</span>
   </div>
 
   <div class="nav-links">
@@ -1268,6 +1292,10 @@ html[data-theme="light"] .logo-l{display:initial}
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
+  <!-- Everything sits in a card so the menu can be a floating panel on a wide screen and
+       edge-to-edge on a phone. Below 600px the card has no surface of its own and the menu
+       fills the screen as before. -->
+  <div class="m-card">
 
   <!-- CONTINUE / OPEN. One tap back into the live job. With no project or no history it
        becomes "Open Foreman", so this row is never empty and never a dead end. -->
@@ -1342,6 +1370,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <button class="theme-opt" data-theme-set="dark">Dark</button>
       <button class="theme-opt" data-theme-set="auto">Auto</button>
     </div>
+  </div>
   </div>
 </div>
 
