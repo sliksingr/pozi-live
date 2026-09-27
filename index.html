@@ -1247,7 +1247,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v51</span>
+    <span class="site-ver" id="siteVer">v52</span>
   </div>
 
   <div class="nav-links">
@@ -2505,13 +2505,22 @@ html[data-theme="light"] .logo-l{display:initial}
     if (!m || typeof m.remaining !== 'number' || m.message_based === false){
       el.classList.add('hidden'); return;
     }
-    var left = Math.max(m.remaining, 0);
+    // Counts what is left for the DAY, the same arithmetic the app uses: whole sessions
+    // still available multiplied by the messages in each, plus what is left in this one.
+    // It used to count only the current session and tell people to "start a new one" —
+    // but sessions have been crossed automatically since v131/v42 and nobody ever sees
+    // one, so that line described plumbing and understated the real budget.
+    var per = typeof m.limit === 'number' ? m.limit : 0;
+    var sessionsLeft = typeof u.remaining === 'number' ? Math.max(u.remaining, 0) : 0;
+    if (per > 9000 || sessionsLeft > 9000 || u.tier === 'test_unlimited' || per <= 0){
+      el.classList.add('hidden'); return;
+    }
+    var left = (sessionsLeft * per) + Math.max(m.remaining, 0);
     if (left > MSG_LEFT_SHOW_AT){ el.classList.add('hidden'); return; }
     el.classList.remove('hidden');
     el.classList.toggle('warn', left <= 2);
-    el.textContent = left === 0
-      ? 'That is the last message in this session \u2014 start a new one to keep going on this project.'
-      : left + ' message' + (left === 1 ? '' : 's') + ' left in this session';
+    el.textContent = (left === 0 ? 'No messages left' : left + ' message' + (left === 1 ? '' : 's') + ' left')
+      + ' \u2014 each refreshes 24 hours after you use it.';
   }
 
   // The chip counts MESSAGES, not sessions.
@@ -2539,8 +2548,8 @@ html[data-theme="light"] .logo-l{display:initial}
     if (per <= 0) return '';
     var nowLeft = (m && typeof m.remaining === 'number') ? Math.max(m.remaining, 0) : 0;
     var total = (Math.max(u.remaining, 0) * per) + nowLeft;
-    if (total <= 0) return 'No messages left today';
-    return total + ' message' + (total === 1 ? '' : 's') + ' left today';
+    if (total <= 0) return 'No messages left';
+    return total + ' message' + (total === 1 ? '' : 's') + ' left';
   }
 
   function paintAccount(){
