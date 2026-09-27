@@ -1247,7 +1247,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v52</span>
+    <span class="site-ver" id="siteVer">v53</span>
   </div>
 
   <div class="nav-links">
@@ -2480,6 +2480,7 @@ html[data-theme="light"] .logo-l{display:initial}
         chip.textContent = planChipLabel(u);
         var lc0 = $('foremanLaunchChip'); if (lc0) lc0.textContent = chip.textContent;
       }
+      rememberReset(u);
       paintMessagesLeftWeb(u);
       paintPlanCtaNote(u);
       // A tier reported by the server outranks whatever the profile row said.
@@ -2519,8 +2520,8 @@ html[data-theme="light"] .logo-l{display:initial}
     if (left > MSG_LEFT_SHOW_AT){ el.classList.add('hidden'); return; }
     el.classList.remove('hidden');
     el.classList.toggle('warn', left <= 2);
-    el.textContent = (left === 0 ? 'No messages left' : left + ' message' + (left === 1 ? '' : 's') + ' left')
-      + ' \u2014 each refreshes 24 hours after you use it.';
+    el.textContent = withReset(left === 0 ? 'No messages left'
+      : left + ' message' + (left === 1 ? '' : 's') + ' left');
   }
 
   // The chip counts MESSAGES, not sessions.
@@ -3671,6 +3672,7 @@ html[data-theme="light"] .logo-l{display:initial}
                 chip.textContent = planChipLabel(u);
                 var lc0 = $('foremanLaunchChip'); if (lc0) lc0.textContent = chip.textContent;
               }
+              rememberReset(u);
               paintMessagesLeftWeb(u);
               paintPlanCtaNote(u);
             }
@@ -5169,6 +5171,32 @@ html[data-theme="light"] .logo-l{display:initial}
   // cap for this tier. Never a figure held in this file — that is how Contractor ended up
   // advertised at numbers the server did not enforce.
   var lastPlanUsage = null;
+  // When the current 24-hour window ends. The server sends it as UTC because it has no
+  // idea what time zone anyone is in; this is the only place it becomes a local clock time.
+  var lastResetAt = null;
+
+  // "4:12pm". Lower-cased because the counters are quiet lines, not announcements.
+  function resetClockText(){
+    if (!lastResetAt) return '';
+    var d = new Date(lastResetAt);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })
+            .replace(/\s*([AP])M/i, function(_, ap){ return ap.toLowerCase() + 'm'; });
+  }
+
+  // Every counter reads the same: how many are left, and when they all come back.
+  // The reset half is dropped when no window is open, because then nothing has been
+  // spent and there is no clock running yet.
+  function withReset(text){
+    var t = resetClockText();
+    return t ? text + ' \u00b7 resets ' + t : text;
+  }
+
+  // Called wherever a usage payload arrives, from usage-status on load and from the
+  // done event of every Foreman reply.
+  function rememberReset(u){
+    if (u && typeof u.reset_at !== 'undefined') lastResetAt = u.reset_at || null;
+  }
 
   async function saveHomeConversation(){
     // Returns false for BOTH 'refused' and 'nowhere to write to'. Callers must treat any
@@ -5216,15 +5244,15 @@ html[data-theme="light"] .logo-l{display:initial}
     return (live - covered) >= PLAN_REBUILD_MIN_NEW_TURNS;
   }
 
-  // ONE allowance, described ONE way, on both surfaces. This line used to say "left today",
-  // which contradicts the model the server actually enforces: the window is rolling, so a
-  // build comes back 24 hours after it was used, not at midnight. Someone at zero in the
-  // evening was being told to expect a reset that never came.
+  // ONE allowance, described ONE way, on both surfaces: how many are left, and the clock
+  // time they all come back. This replaced "left today" (there is no midnight) and then
+  // "each refreshes 24 hours after you use it" (true of the old rolling model, and a rule
+  // the reader had to apply themselves). A time on a clock needs no explaining.
   function planBuildsLeftLine(p){
     if (!p || typeof p.remaining !== 'number') return '';
     var left = Math.max(p.remaining, 0);
-    return (left === 0 ? 'No plan builds left' : left + ' plan build' + (left === 1 ? '' : 's') + ' left')
-      + ' \u2014 each refreshes 24 hours after you use it.';
+    return withReset(left === 0 ? 'No plan builds left'
+      : left + ' plan build' + (left === 1 ? '' : 's') + ' left');
   }
 
   // Kyle's wording. The cap comes from the server payload, so it reads 10 on Contractor,
