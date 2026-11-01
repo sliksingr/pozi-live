@@ -1247,7 +1247,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v53</span>
+    <span class="site-ver" id="siteVer">v54</span>
   </div>
 
   <div class="nav-links">
@@ -2148,20 +2148,33 @@ html[data-theme="light"] .logo-l{display:initial}
     <div class="sheet-head">
       <button class="sheet-close" data-close="goModal">×</button>
       <div class="sheet-kicker">POZi Go</div>
-      <div class="sheet-title">POZi Go lives on your phone.</div>
-      <p class="sheet-sub">Photos, projects, and Foreman travel with you to the job site. Scan the code or send yourself the link.</p>
+      <div class="sheet-title">POZi Go is in beta testing and available by invite.</div>
+      <p class="sheet-sub">Tell us which phone you use and we'll send you the link. Photos, projects, and Foreman travel with you to the job site.</p>
     </div>
     <div class="sheet-body">
-      <div class="qr-row">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fpozi.live%2Finstall" alt="QR code to install POZi Go">
-        <div>
-          <strong>Scan with your phone</strong>
-          <span>Point your camera at the code, or use the buttons below to send yourself the link.</span>
-        </div>
-      </div>
-      <div class="field-row">
-        <button class="btn btn-p" id="goOpen">Open Install Page</button>
-        <button class="btn btn-s" id="goCopy">Copy Link</button>
+      <label class="field-label" for="betaPlatform">Your phone</label>
+      <select class="field" id="betaPlatform">
+        <option value="">Choose iPhone or Android</option>
+        <option value="ios">iPhone</option>
+        <option value="android">Android</option>
+      </select>
+
+      <label class="field-label" for="betaEmail" style="margin-top:12px">Where to send it</label>
+      <input class="field" id="betaEmail" type="email" inputmode="email" autocomplete="email"
+             maxlength="160" placeholder="you@example.com">
+
+      <label class="field-label" for="betaUse" style="margin-top:12px">What would you use it for? <span style="text-transform:none;letter-spacing:0;font-weight:600">(optional)</span></label>
+      <input class="field" id="betaUse" type="text" maxlength="600"
+             placeholder="Decks, fencing, remodels — whatever you're working on">
+
+      <!-- Honeypot. Hidden from people, irresistible to bots; the function discards
+           anything that arrives with it filled in. -->
+      <input id="betaCompany" type="text" tabindex="-1" autocomplete="off"
+             aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+
+      <div class="field-row" style="margin-top:14px">
+        <button class="btn btn-p" id="betaSend">Request Invite</button>
+        <button class="btn btn-s" data-close="goModal">Not now</button>
       </div>
       <div class="form-status" id="goStatus" style="color:var(--muted);font-weight:500;font-size:12px"></div>
     </div>
@@ -4776,6 +4789,7 @@ html[data-theme="light"] .logo-l{display:initial}
   function openModal(id){
     var m = $(id);
     if (!m) return;
+    if (id === 'goModal') prepBetaRequest();
     m.classList.add('open');
     document.body.style.overflow = 'hidden';
     closeMobile();
@@ -5481,6 +5495,67 @@ html[data-theme="light"] .logo-l{display:initial}
   // only arrived if the visitor had a mail app configured, and the sheet claimed it had
   // "reached us directly" either way. This actually submits, and says so honestly when it
   // does not.
+  // ═══ BETA INVITE REQUEST ═══
+  // Posts to the beta-request function, which saves the row first and then emails
+  // through Netlify Forms. The browser deliberately does NOT write to Supabase here:
+  // that table holds other people's email addresses and stays closed to the anon key.
+  //
+  // A signed-in visitor gets their address filled in, so the whole thing is a dropdown
+  // and one tap. Nobody is asked to create an account first — these are people doing us
+  // a favour, and every extra step loses some of them.
+  function prepBetaRequest(){
+    var email = $('betaEmail');
+    if (email && !email.value && currentUser && currentUser.email) email.value = currentUser.email;
+    var btn = $('betaSend');
+    if (btn) { btn.disabled = false; btn.textContent = 'Request Invite'; }
+    var st = $('goStatus');
+    if (st) { st.textContent = ''; st.style.color = 'var(--muted)'; }
+  }
+
+  async function sendBetaRequest(){
+    var st = $('goStatus');
+    var btn = $('betaSend');
+    var platform = ($('betaPlatform') || {}).value || '';
+    var email = (($('betaEmail') || {}).value || '').trim();
+    var useCase = (($('betaUse') || {}).value || '').trim();
+    var company = (($('betaCompany') || {}).value || '').trim();
+
+    if (!platform){ st.textContent = 'Choose iPhone or Android first.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      st.textContent = "That email doesn't look right \u2014 check it and try again."; return;
+    }
+
+    var label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Sending\u2026';
+    st.style.color = 'var(--muted)'; st.textContent = '';
+
+    try {
+      var r = await fetch('/.netlify/functions/beta-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          platform: platform,
+          use_case: useCase,
+          company: company,
+          source: 'website',
+          user_id: currentUser ? currentUser.id : null
+        })
+      });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || !j.ok) throw new Error(j.error || 'Could not send that just now.');
+
+      st.style.color = 'var(--green)';
+      st.textContent = "Request sent. We'll email your invite from info@pozi.live \u2014 you'll create a free account when the app opens.";
+      btn.textContent = 'Request sent';
+      if ($('betaUse')) $('betaUse').value = '';
+    } catch(e){
+      st.style.color = 'var(--muted)';
+      st.textContent = e.message || 'Could not send that just now. Please try again in a moment.';
+      btn.disabled = false; btn.textContent = label || 'Request Invite';
+    }
+  }
+
   async function sendContact(){
     var name = $('cfName').value.trim();
     var email = $('cfEmail').value.trim();
@@ -5593,21 +5668,8 @@ html[data-theme="light"] .logo-l{display:initial}
     var cf = $('cfSend');
     if (cf) cf.addEventListener('click', sendContact);
 
-    var goOpen = $('goOpen');
-    if (goOpen) goOpen.addEventListener('click', function(){
-      window.open(APP_STORE_URL, '_blank', 'noopener');
-    });
-
-    var goCopy = $('goCopy');
-    if (goCopy) goCopy.addEventListener('click', async function(){
-      var st = $('goStatus');
-      try {
-        await navigator.clipboard.writeText(APP_STORE_URL);
-        st.textContent = 'Link copied — paste it into a text to yourself.';
-      } catch(e){
-        st.textContent = APP_STORE_URL;
-      }
-    });
+    var betaSend = $('betaSend');
+    if (betaSend) betaSend.addEventListener('click', sendBetaRequest);
 
     // Projects
     $('projBack').addEventListener('click', function(){
@@ -5898,6 +5960,20 @@ html[data-theme="light"] .logo-l{display:initial}
      Netlify emails info@pozi.live the same way the contact form does.
      Removing this silently stops signup notifications — the function keeps returning
      200 and nothing arrives. -->
+<!-- Detection form for the beta invite requests. Netlify only emails for forms it can
+     see in the deployed HTML, so this hidden copy must carry EVERY field name that
+     beta-request.js submits, or those fields arrive blank in the notification. -->
+<form name="beta-request" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="beta-request">
+  <input type="email" name="email">
+  <input type="text" name="platform">
+  <input type="text" name="use_case">
+  <input type="text" name="source">
+  <input type="text" name="requested_at">
+  <input type="text" name="summary">
+  <input type="text" name="bot-field">
+</form>
+
 <form name="new-signup" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="new-signup">
   <input type="text" name="bot-field">

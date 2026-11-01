@@ -18,12 +18,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>POZi Go — Coming soon</title>
+<title>POZi Go — Request an invite</title>
 <!--
   pozi.live/install
   -------------------------------------------------------------------------------
   The phone gate's "Get POZi Go" button has always pointed at https://pozi.live/install,
   and that page did not exist — so tapping it on a phone landed on Netlify's own 404.
+
+  CHANGE FROM THE PREVIOUS VERSION: this page used to say "coming soon" and offer nothing
+  but a way back to the site, so anyone who scanned the QR code or tapped the phone gate
+  reached a dead end. It now asks which phone they use and sends the request to
+  info@pozi.live through the beta-request function — the same form the website's
+  "Get the App" sheet posts to, so there is ONE request path, not two that can drift.
 
   "Continue on the web" is wired exactly like the gate's own gateStay button: it writes
   the same sessionStorage key the gate uses to remember a dismissal, then goes to the site.
@@ -98,6 +104,15 @@ h1{font-family:Syne,sans-serif;font-weight:800;font-size:27px;line-height:1.05;
   font-family:Inter,sans-serif;font-size:15px;font-weight:800;
   background:linear-gradient(135deg,var(--green-deep),var(--green));color:var(--on-green)}
 
+.field-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--muted);display:block;margin-bottom:6px;text-align:left}
+.field{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--border);
+  background:rgba(var(--raise-rgb),.04);color:var(--text);font-family:Inter,sans-serif;
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.field:focus{outline:none;border-color:rgba(var(--green-rgb),.32)}
+.btn.secondary{margin-top:10px;background:none;border:1px solid var(--border);color:var(--text)}
+.status{margin-top:12px;font-size:13px;font-weight:700;color:var(--muted);line-height:1.5;min-height:18px}
+
 .note{margin-top:18px;font-size:12.5px;color:var(--dim);line-height:1.55}
 
 @media (max-width:420px){
@@ -115,12 +130,83 @@ h1{font-family:Syne,sans-serif;font-weight:800;font-size:27px;line-height:1.05;
     <div class="logo-word">POZ<span class="i">i</span><span class="go">Go</span></div>
     <div class="brand-tag">All in one place.</div>
 
-    <h1>POZi Go is coming soon</h1>
-    <p class="lead">The app is in beta and not on the App Store or Google Play yet. We'll have it available shortly.</p>
+    <h1>POZi Go is in beta testing and available by invite.</h1>
+    <p class="lead">Tell us which phone you use and we'll send you the link.</p>
     <p class="lead">Everything works on the web in the meantime — same Foreman, same projects, same photos.</p>
 
-    <button class="btn" id="continueWeb" type="button">Continue on the web</button>
+    <label class="field-label" for="betaPlatform">Your phone</label>
+    <select class="field" id="betaPlatform">
+      <option value="">Choose iPhone or Android</option>
+      <option value="ios">iPhone</option>
+      <option value="android">Android</option>
+    </select>
+
+    <label class="field-label" for="betaEmail">Where to send it</label>
+    <input class="field" id="betaEmail" type="email" inputmode="email" autocomplete="email"
+           maxlength="160" placeholder="you@example.com">
+
+    <label class="field-label" for="betaUse">What would you use it for? (optional)</label>
+    <input class="field" id="betaUse" type="text" maxlength="600"
+           placeholder="Decks, fencing, remodels — whatever you're working on">
+
+    <!-- Honeypot: hidden from people, irresistible to bots. The function discards
+         anything that arrives with it filled in. -->
+    <input id="betaCompany" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"
+           style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+
+    <button class="btn" id="betaSend" type="button">Request Invite</button>
+    <div class="status" id="betaStatus"></div>
+
+    <button class="btn secondary" id="continueWeb" type="button">Continue on the web</button>
   </main>
+
+<script>
+/* THE REQUEST. Posts to the same function the website's sheet uses, so there is one
+   request path and one record. No Supabase client on this page: the table holds other
+   people's email addresses and is never readable from a browser. */
+(function(){
+  var btn = document.getElementById('betaSend');
+  var st  = document.getElementById('betaStatus');
+  if (!btn || !st) return;
+
+  btn.addEventListener('click', async function(){
+    var platform = (document.getElementById('betaPlatform') || {}).value || '';
+    var email    = ((document.getElementById('betaEmail') || {}).value || '').trim();
+    var useCase  = ((document.getElementById('betaUse') || {}).value || '').trim();
+    var company  = ((document.getElementById('betaCompany') || {}).value || '').trim();
+
+    if (!platform){ st.style.color = 'var(--muted)'; st.textContent = 'Choose iPhone or Android first.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      st.style.color = 'var(--muted)';
+      st.textContent = "That email doesn't look right \u2014 check it and try again.";
+      return;
+    }
+
+    var label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Sending\u2026';
+    st.style.color = 'var(--muted)'; st.textContent = '';
+
+    try {
+      var r = await fetch('/.netlify/functions/beta-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, platform: platform, use_case: useCase,
+                               company: company, source: 'install' })
+      });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || !j.ok) throw new Error(j.error || 'Could not send that just now.');
+
+      st.style.color = 'var(--green)';
+      st.textContent = "Request sent. We'll email your invite from info@pozi.live \u2014 you'll create a free account when the app opens.";
+      btn.textContent = 'Request sent';
+    } catch(e){
+      st.style.color = 'var(--muted)';
+      st.textContent = e.message || 'Could not send that just now. Please try again in a moment.';
+      btn.disabled = false; btn.textContent = label || 'Request Invite';
+    }
+  });
+})();
+</script>
 
 <script>
 /* Wired exactly like the phone gate's own gateStay button: write the dismissal key the
