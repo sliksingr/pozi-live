@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* THEME BOOT — same key and same three values as the main site, so this page opens in
+   whatever the person already chose rather than flashing the wrong one. Runs before the
+   first paint, which is why it is inline and first in <head>. */
+(function(){
+  try{
+    var pref = localStorage.getItem('pozi_theme') || 'dark';
+    var sysLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    var resolved = pref === 'auto' ? (sysLight ? 'light' : 'dark') : pref;
+    document.documentElement.setAttribute('data-theme', resolved);
+    document.documentElement.style.colorScheme = resolved;
+  }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
+})();
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Set a new password · POZi</title>
+
+<!--
+  WHERE THE RESET LINK LANDS.
+
+  Supabase emails a recovery link that points here. Clicking it opens this page with
+  recovery tokens in the URL fragment; supabase-js is created with detectSessionInUrl
+  so it consumes them and briefly signs the person in with a recovery session. That
+  session exists for one purpose — calling updateUser({ password }) — and this page is
+  the only place it is used.
+
+  This is a hosted page rather than a modal on the main site for a reason that applies
+  doubly to the app: the link opens in whatever browser the person's mail app hands it
+  to, which is often not the tab they started in, and for a POZi Go user is a different
+  program entirely. A page can be landed on cold. A modal cannot.
+
+  After the password is changed this signs them straight back out. The recovery session
+  came from a link in an inbox, and an inbox is not a password — leaving it alive would
+  mean anyone with that email open stays signed in to POZi.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
+<link rel="icon" type="image/png" href="/logo-dark.png">
+<style>
+:root{
+  --bg:#0f0f1a;
+  --panel:#151525;
+  --border:#2a2a45;
+  --text:#ffffff;
+  --muted:#a8a8c2;
+  --dim:#7f829e;
+  --green:#00ff88;
+  --green-rgb:0,255,136;
+  --green-deep:#00d46f;
+  --on-green:#04120b;
+  --danger:#ff6b6b;
+  --raise-rgb:255,255,255;
+  --shadow:0 18px 44px rgba(0,0,0,.28);
+  --r:22px;
+}
+html[data-theme="light"]{
+  --bg:#f4f5fa;
+  --panel:#ffffff;
+  --border:#d9dce8;
+  --text:#0f1220;
+  --muted:#5a5f75;
+  --dim:#6c7188;
+  --green:#00a85a;
+  --green-rgb:0,150,80;
+  --green-deep:#008c4b;
+  --on-green:#ffffff;
+  --danger:#c62828;
+  --raise-rgb:15,18,32;
+  --shadow:0 18px 44px rgba(22,26,44,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center;padding:24px;min-height:100dvh;
+  background:
+    radial-gradient(900px 480px at 50% -10%, rgba(var(--green-rgb),.10), transparent 60%),
+    var(--bg)}
+
+.card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--shadow);padding:34px 28px 30px;text-align:center}
+
+.mark{width:64px;height:64px;object-fit:contain;margin:0 auto 14px;display:block}
+.logo-l{display:none}
+html[data-theme="light"] .logo-d{display:none}
+html[data-theme="light"] .logo-l{display:block}
+
+.logo-word{font-family:Syne,sans-serif;font-weight:800;font-size:27px;letter-spacing:-1px;
+  margin-bottom:6px}
+.logo-word .i{color:var(--green)}
+.brand-tag{font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+  margin-bottom:26px}
+
+h1{font-family:Syne,sans-serif;font-weight:800;font-size:27px;line-height:1.05;
+  letter-spacing:-.03em;margin-bottom:14px}
+.lead{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:22px}
+
+.field-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--muted);display:block;margin-bottom:6px;text-align:left}
+.field{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--border);
+  background:rgba(var(--raise-rgb),.04);color:var(--text);font-family:Inter,sans-serif;
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.field:focus{outline:none;border-color:rgba(var(--green-rgb),.32)}
+
+.btn{display:block;width:100%;padding:15px 18px;border-radius:14px;border:0;cursor:pointer;
+  font-family:Inter,sans-serif;font-size:15px;font-weight:800;
+  background:linear-gradient(135deg,var(--green-deep),var(--green));color:var(--on-green)}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.secondary{margin-top:10px;background:none;border:1px solid var(--border);color:var(--text)}
+
+.status{margin-top:12px;font-size:13px;font-weight:700;color:var(--muted);line-height:1.5;min-height:18px}
+.note{margin-top:18px;font-size:12.5px;color:var(--dim);line-height:1.55}
+.hidden{display:none !important}
+
+@media (max-width:420px){
+  .card{padding:28px 20px 24px}
+  h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+  <main class="card">
+    <img class="mark logo-d" src="/logo-dark.png" alt="POZi">
+    <img class="mark logo-l" src="/logo-light.png" alt="POZi">
+
+    <div class="logo-word">POZ<span class="i">i</span></div>
+    <div class="brand-tag">All in one place.</div>
+
+    <!-- THREE STATES, one card. Checking the link, the form, and the result. They are
+         separate blocks rather than rewritten text so that nothing from one state is
+         left on screen during another. -->
+
+    <div id="checking">
+      <h1>Checking your link…</h1>
+      <p class="lead">One moment.</p>
+    </div>
+
+    <div id="form" class="hidden">
+      <h1>Set a new password</h1>
+      <p class="lead">Choose a new password for your POZi account. It works on the website and in the POZi Go app.</p>
+
+      <label class="field-label" for="pw1">New password</label>
+      <input class="field" id="pw1" type="password" autocomplete="new-password"
+             placeholder="At least 6 characters">
+
+      <label class="field-label" for="pw2">Re-enter password</label>
+      <input class="field" id="pw2" type="password" autocomplete="new-password"
+             placeholder="Type it again">
+
+      <button class="btn" id="save" type="button">Save New Password</button>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div id="done" class="hidden">
+      <h1>Password changed.</h1>
+      <p class="lead" id="doneLead">You can sign in now with your new password — on the website or in the POZi Go app.</p>
+      <a class="btn" href="/" style="text-decoration:none;line-height:1.2">Go to POZi</a>
+    </div>
+
+    <div id="bad" class="hidden">
+      <h1>This link has expired.</h1>
+      <p class="lead">Reset links are good for one hour and can only be used once. Request a fresh one and it'll arrive in a minute.</p>
+      <a class="btn" href="/" style="text-decoration:none;line-height:1.2">Back to POZi</a>
+    </div>
+
+    <p class="note">Didn't ask for this? Your password hasn't changed and nobody got into your account — you can ignore the email.</p>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var SUPABASE_URL = 'https://eaagnkwtflsxiclpcaok.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE';
+
+  var $ = function(id){ return document.getElementById(id); };
+  function show(which){
+    ['checking','form','done','bad'].forEach(function(id){
+      $(id).classList.toggle('hidden', id !== which);
+    });
+  }
+
+  if (!(window.supabase && window.supabase.createClient)) { show('bad'); return; }
+
+  // detectSessionInUrl is what consumes the recovery tokens in the fragment. Without it
+  // this page would load, find no session, and tell everyone their link had expired.
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth:{ persistSession:true, autoRefreshToken:false, detectSessionInUrl:true }
+  });
+
+  // An error comes back in the fragment too — an expired or already-used link arrives as
+  // error=access_denied rather than as tokens. Read it before waiting on a session that
+  // is never going to appear.
+  var frag = (window.location.hash || '').replace(/^#/, '');
+  if (/error=/.test(frag)) { show('bad'); return; }
+
+  // supabase-js parses the fragment asynchronously, so the session is not there on the
+  // first tick. Poll briefly rather than guessing at a fixed delay: a fast connection
+  // gets the form immediately, a slow one still gets it.
+  var waited = 0;
+  (function waitForSession(){
+    sb.auth.getSession().then(function(res){
+      var session = res && res.data && res.data.session;
+      if (session) { show('form'); return; }
+      waited += 150;
+      if (waited >= 4000) { show('bad'); return; }
+      setTimeout(waitForSession, 150);
+    }).catch(function(){ show('bad'); });
+  })();
+
+  $('save').addEventListener('click', async function(){
+    var st = $('status');
+    var a = $('pw1').value, b = $('pw2').value;
+    st.style.color = 'var(--danger)';
+    if (!a) { st.textContent = 'Choose a new password.'; return; }
+    if (a.length < 6) { st.textContent = 'Password must be at least 6 characters.'; return; }
+    if (a !== b) { st.textContent = "Passwords don't match. Check both fields."; return; }
+
+    var btn = $('save');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      var out = await sb.auth.updateUser({ password: a });
+      if (out.error) throw out.error;
+
+      // Sign out immediately. The session that authorised this came from a link sitting
+      // in an inbox, not from someone typing a password — it should not outlive the one
+      // job it was issued for.
+      try { await sb.auth.signOut(); } catch(e){}
+      show('done');
+    } catch(e){
+      btn.disabled = false; btn.textContent = 'Save New Password';
+      st.style.color = 'var(--danger)';
+      st.textContent = (e && e.message) || "Couldn't save that. Request a new link and try again.";
+    }
+  });
+})();
+</script>
+</body>
+</html>

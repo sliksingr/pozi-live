@@ -1,0 +1,24 @@
+# pozi.live
+#
+# Everything on the site is open to search engines except the pages below, which are
+# either one-time destinations reached from an email link or dead ends with no value in
+# a search result. They already carry a noindex meta tag; this says the same thing to a
+# crawler before it bothers fetching them.
+
+User-agent: *
+Allow: /
+
+# Reached only by clicking a link in an email. Indexing them would put "Set a new
+# password" and "Confirm your email" into search results for people who never asked.
+Disallow: /confirm.html
+Disallow: /reset.html
+Disallow: /checkout-complete.html
+
+# The beta invite page. Not secret, but it describes a closed beta — it should be reached
+# from the site, not found cold in a search a year from now when the beta is over.
+Disallow: /install.html
+
+# Serverless endpoints. Nothing here renders.
+Disallow: /.netlify/
+
+Sitemap: https://pozi.live/sitemap.xml

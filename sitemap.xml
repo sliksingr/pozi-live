@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Only the pages worth finding in a search result.
+
+  The confirmation, password reset, checkout and install pages are deliberately absent:
+  they are destinations you arrive at from an email or from inside the site, never pages
+  anyone should land on cold from Google. robots.txt blocks them too.
+
+  lastmod matters more than it looks. Update the date on "/" whenever you ship a website
+  version with real content changes — Google uses it to decide how often to come back.
+  Leaving it stale tells it nothing ever changes here.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://pozi.live/</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://pozi.live/privacy.html</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>
