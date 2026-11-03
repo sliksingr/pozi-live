@@ -46,6 +46,75 @@
 <link rel="apple-touch-icon" href="/logo-dark.png">
 <meta name="theme-color" content="#0f0f1a" id="metaTheme">
 
+<!--
+  STRUCTURED DATA — what the meta description cannot say.
+
+  The description is a sentence for a human reading a search result. This is the same
+  information as machine-readable facts: that POZi is a web application, what category
+  it is in, that there is a free tier and what the paid ones cost. Google uses it to
+  decide what the page IS, not just what words are on it, and it is what can earn a
+  richer result than a plain blue link.
+
+  Deliberately NOT claiming ratings, review counts or an aggregate score. Those are the
+  fields that produce star ratings in results, and inventing them is both a lie and a
+  manual-action risk. They go in when there are real reviews to point at.
+
+  Prices here must stay in step with the pricing section below. If a tier changes, change
+  it in both places — a mismatch between structured data and the visible page is exactly
+  what Google penalises.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://pozi.live/#organization",
+      "name": "POZi",
+      "url": "https://pozi.live/",
+      "logo": "https://pozi.live/logo-dark.png",
+      "email": "info@pozi.live",
+      "slogan": "Plan it. Price it. Build it."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://pozi.live/#website",
+      "url": "https://pozi.live/",
+      "name": "POZi",
+      "publisher": { "@id": "https://pozi.live/#organization" },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://pozi.live/#app",
+      "name": "POZi",
+      "url": "https://pozi.live/",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "Construction project planning and material sourcing",
+      "operatingSystem": "Web, iOS, Android",
+      "publisher": { "@id": "https://pozi.live/#organization" },
+      "description": "POZi Foreman plans your construction or home project and works out real quantities and cut lists. POZi keeps the job together — conversation, Build Notes, item list and photos in one place — and sources the materials from retailers near you.",
+      "featureList": [
+        "Plan a project in conversation with POZi Foreman",
+        "Real quantities and cut lists, not estimates",
+        "Material sourcing from retailers near you",
+        "Build Notes, item lists and photos kept with the job",
+        "Photo analysis — show Foreman the job and ask"
+      ],
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "Plan projects and source materials with daily limits."
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap">
 
@@ -1247,7 +1316,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v55</span>
+    <span class="site-ver" id="siteVer">v57</span>
   </div>
 
   <div class="nav-links">
@@ -1585,7 +1654,7 @@ html[data-theme="light"] .logo-l{display:initial}
     <div class="work-head">
       <div>
         <div class="eyebrow">Projects</div>
-        <h1 class="h-lg" id="projHeading">Your jobs</h1>
+        <h2 class="h-lg" id="projHeading">Your jobs</h2>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-p" id="projNew">+ New Project</button>
@@ -1670,7 +1739,7 @@ html[data-theme="light"] .logo-l{display:initial}
   <div class="wrap">
     <div style="margin-bottom:22px">
       <div class="eyebrow">POZi Search</div>
-      <h1 class="h-lg">Find the materials.</h1>
+      <h2 class="h-lg">Find the materials.</h2>
       <p class="lead" style="margin-top:14px">
         Search any product, material, or tool. POZi checks approved retailers and targets
         results to your area — quick links first, then product cards with prices.
@@ -1705,7 +1774,7 @@ html[data-theme="light"] .logo-l{display:initial}
   <div class="hero-bg"></div>
   <div class="wrap center">
     <div class="hero-badge"><i></i> How it works</div>
-    <h1 class="h-lg">From an idea<br><span class="grad">to a loaded truck.</span></h1>
+    <h2 class="h-lg">From an idea<br><span class="grad">to a loaded truck.</span></h2>
     <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:18px">
       POZi turns a project you're describing out loud into an organized plan,
       a checked material list, and a path to buy it nearby.
@@ -1816,7 +1885,7 @@ html[data-theme="light"] .logo-l{display:initial}
   <div class="hero-bg"></div>
   <div class="wrap center">
     <div class="hero-badge"><i></i> Pricing</div>
-    <h1 class="h-lg" id="pricingHeadline">Start free.<br><span class="grad">Upgrade when it pays for itself.</span></h1>
+    <h2 class="h-lg" id="pricingHeadline">Start free.<br><span class="grad">Upgrade when it pays for itself.</span></h2>
     <p class="lead center" style="max-width:620px;margin-left:auto;margin-right:auto;text-align:center;margin-top:18px">
 <span id="pricingSub">A session is one project conversation. Every plan includes the full Build Notes
       and item list — the tiers differ in how much you can run in a day.</span>
@@ -1995,7 +2064,7 @@ html[data-theme="light"] .logo-l{display:initial}
     <img class="mark logo-d" src="logo-dark.png" alt="POZi">
     <img class="mark logo-l" src="logo-light.png" alt="POZi">
     <div class="hero-badge"><i></i> POZi Go</div>
-    <h1>POZi is better<br><span class="grad">on the app.</span></h1>
+    <h2>POZi is better<br><span class="grad">on the app.</span></h2>
     <p id="gateCopy">
       Foreman, your projects, photos, and material lists are built for your phone —
       right there with you on the job.
@@ -2034,6 +2103,13 @@ html[data-theme="light"] .logo-l{display:initial}
       <button class="btn btn-s" id="authGoSignUp" style="width:100%">Create Account</button>
       <button class="btn btn-p hidden" id="authDoSignUp" style="width:100%">Create My Account</button>
       <button class="btn btn-s hidden" id="authBackSignIn" style="width:100%">Already have an account? Sign in</button>
+      <button class="btn btn-p hidden" id="authDoReset" style="width:100%">Send Reset Link</button>
+      <button class="btn btn-s hidden" id="authBackFromReset" style="width:100%">Back to sign in</button>
+      <!-- Deliberately quiet and last. Someone who knows their password should never
+           have their eye pulled here, but someone locked out must be able to find it
+           without being told where to look. -->
+      <button type="button" id="authForgot"
+        style="width:100%;background:none;border:0;padding:10px 0 0;font:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px">Forgot your password?</button>
     </div>
   </div>
 </div>
@@ -2351,6 +2427,11 @@ html[data-theme="light"] .logo-l{display:initial}
   var SUPABASE_URL = 'https://eaagnkwtflsxiclpcaok.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWdua3d0ZmxzeGljbHBjYW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTIwNjIsImV4cCI6MjA4OTM4ODA2Mn0.SMbN6FiLg-kYMsOYihJTbcDFptT8EB5dM_TJtiMIJnE';
   var DELETE_ENDPOINT = '/.netlify/functions/delete-account';
+  // Where Supabase sends someone after they tap the reset link in their email. It has to
+  // be a real hosted page, not a modal here: the link opens in whatever browser their
+  // mail app uses, which may not be the tab they started in — and in the app's case is a
+  // different program entirely.
+  var RESET_REDIRECT = 'https://pozi.live/reset.html';
 
   var sb = (window.supabase && window.supabase.createClient)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -2430,20 +2511,37 @@ html[data-theme="light"] .logo-l{display:initial}
     m.setAttribute('aria-hidden', open ? 'false' : 'true');
   }
 
+  // Three modes now: 'signin', 'signup', 'reset'. Written as three explicit flags rather
+  // than "creating / not creating", because a two-state toggle silently put the reset
+  // view into whichever branch it wasn't.
   function setAuthMode(mode){
     authMode = mode;
-    var creating = mode === 'signup';
+    var creating  = mode === 'signup';
+    var resetting = mode === 'reset';
+    var signing   = mode === 'signin';
+
+    // The reset flow needs the address and nothing else — asking for a password on the
+    // way to replacing it is the kind of thing that makes people think it failed.
+    $('authPw').classList.toggle('hidden', resetting);
     $('authPw2').classList.toggle('hidden', !creating);
+
+    $('authSignIn').classList.toggle('hidden', !signing);
+    $('authGoSignUp').classList.toggle('hidden', !signing);
+    $('authForgot').classList.toggle('hidden', !signing);
     $('authDoSignUp').classList.toggle('hidden', !creating);
     $('authBackSignIn').classList.toggle('hidden', !creating);
-    $('authSignIn').classList.toggle('hidden', creating);
-    $('authGoSignUp').classList.toggle('hidden', creating);
+    $('authDoReset').classList.toggle('hidden', !resetting);
+    $('authBackFromReset').classList.toggle('hidden', !resetting);
+
     $('authPw').setAttribute('autocomplete', creating ? 'new-password' : 'current-password');
     $('authPw').placeholder = creating ? 'Create a password' : 'Password';
-    $('authTitle').textContent = creating ? 'Create your POZi account' : 'Sign in to POZi';
-    $('authSub').textContent = creating
-      ? "You'll confirm your email, then sign in. The same account works in the app."
-      : 'One account works on the website and in the POZi Go app.';
+
+    $('authTitle').textContent = creating  ? 'Create your POZi account'
+                               : resetting ? 'Reset your password'
+                               :             'Sign in to POZi';
+    $('authSub').textContent = creating  ? "You'll confirm your email, then sign in. The same account works in the app."
+                             : resetting ? "Enter your email and we'll send you a link to set a new one."
+                             :             'One account works on the website and in the POZi Go app.';
     $('authHint').textContent = '';
   }
 
@@ -2686,6 +2784,29 @@ html[data-theme="light"] .logo-l{display:initial}
     } catch(e){
       hint.style.color='var(--danger)'; hint.textContent = e.message || 'Could not sign in.';
     } finally { btn.disabled = false; btn.textContent = 'Sign In'; }
+  }
+
+  // SAME MESSAGE WHETHER OR NOT THE ACCOUNT EXISTS, on purpose. "No account with that
+  // email" would turn this box into a way to find out who has a POZi account, so the
+  // wording never confirms or denies — it says what was sent, not who it went to.
+  // Supabase behaves the same way and does not error on an unknown address.
+  async function doResetRequest(){
+    var hint = $('authHint');
+    var email = $('authEmail').value.trim();
+    hint.style.color = 'var(--danger)';
+    if (!email){ hint.textContent = 'Enter your email address.'; return; }
+    if (!sb){ hint.textContent = 'Accounts are unavailable right now.'; return; }
+
+    var btn = $('authDoReset'); btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      var out = await sb.auth.resetPasswordForEmail(email, { redirectTo: RESET_REDIRECT });
+      if (out.error) throw out.error;
+      hint.style.color = 'var(--green)';
+      hint.textContent = "Check your email. If there's a POZi account for that address, a link to set a new password is on its way — it expires in an hour.";
+    } catch(e){
+      hint.style.color = 'var(--danger)';
+      hint.textContent = e.message || "Couldn't send that right now. Try again in a moment.";
+    } finally { btn.disabled = false; btn.textContent = 'Send Reset Link'; }
   }
 
   async function doSignUp(){
@@ -5841,6 +5962,9 @@ html[data-theme="light"] .logo-l{display:initial}
     $('authGoSignUp').addEventListener('click', function(){ setAuthMode('signup'); });
     $('authBackSignIn').addEventListener('click', function(){ setAuthMode('signin'); });
     $('authDoSignUp').addEventListener('click', doSignUp);
+    $('authForgot').addEventListener('click', function(){ setAuthMode('reset'); });
+    $('authBackFromReset').addEventListener('click', function(){ setAuthMode('signin'); });
+    $('authDoReset').addEventListener('click', doResetRequest);
     $('authPw').addEventListener('input', checkPwMatch);
     $('authPw2').addEventListener('input', checkPwMatch);
 
