@@ -1085,6 +1085,26 @@ body.sheet-locked{overflow:hidden}
 .panel-body{font-size:13.5px;line-height:1.68;color:var(--muted)}
 .panel-scroll{max-height:400px;overflow-y:auto;padding-right:4px}
 .note-block{padding:16px 0;border-bottom:1px solid var(--border)}
+
+/* The revision history above the Build Notes. Collapsed by default, because the current
+   state of the job is what you open the notes for — the history is for the one time
+   somebody asks why a decision went the way it did. Same markup and class names as the
+   app, so the two surfaces look like one product. */
+.rev-wrap{margin:0 0 14px;border:1px solid var(--border);border-radius:14px;
+  background:rgba(var(--raise-rgb),.03);overflow:hidden}
+.rev-head{cursor:pointer;padding:11px 14px;font-size:12.5px;font-weight:800;color:var(--muted);
+  letter-spacing:.02em;list-style:none}
+.rev-head::-webkit-details-marker{display:none}
+.rev-head::before{content:"\25B8 ";color:var(--green);font-size:11px}
+.rev-wrap[open] .rev-head::before{content:"\25BE "}
+.rev-item{border-top:1px solid var(--border)}
+.rev-item summary{cursor:pointer;padding:10px 14px;display:flex;justify-content:space-between;
+  gap:10px;align-items:baseline;list-style:none}
+.rev-item summary::-webkit-details-marker{display:none}
+.rev-label{font-size:12.5px;font-weight:700;color:var(--text)}
+.rev-when{font-size:11.5px;color:var(--muted)}
+.rev-lines{margin:0;padding:0 14px 12px 30px;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.rev-lines li{margin-bottom:4px}
 .note-block:last-child{border-bottom:none}
 .note-block .nh{
   font-family:var(--fb);font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;
@@ -1316,7 +1336,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v57</span>
+    <span class="site-ver" id="siteVer">v58</span>
   </div>
 
   <div class="nav-links">
@@ -3643,8 +3663,9 @@ html[data-theme="light"] .logo-l{display:initial}
       maybeShowHomePlanCta();
 
       $('projNoteCount').textContent = nrows.length ? nrows.length + ' notes' : '';
+      var revs = (nrows[0] && nrows[0].metadata && nrows[0].metadata.revisions) || [];
       $('projNotes').innerHTML = nrows.length
-        ? nrows.map(function(n){
+        ? revisionsHtml(revs) + nrows.map(function(n){
             var head = n.title ? '<div class="nh">' + escapeHtml(n.title) + '</div>' : '';
             return '<div class="note-block">' + head + renderForemanHtml(n.body || n.content || '') + '</div>';
           }).join('')
@@ -3892,12 +3913,113 @@ html[data-theme="light"] .logo-l{display:initial}
       var line = raw.replace(/\*\*/g, '').replace(/^\s*([-*•]|\d+[.)])\s*/, '').trim();
       if (!line) continue;
       if (/your item list is ready/i.test(line) || /source my items/i.test(line)) break;
+      // An UPDATE adds a third section after the item list. Without this the change
+      // lines would be read as things to buy, and "Joist spacing 16 in to 12 in" would
+      // be sent to a retailer product search.
+      if (/^what\s*changed/i.test(line)) break;
       if (/^po[sz]i\s*item\s*list/i.test(line)) continue;
       if (!m && !isBullet) continue;
       out.push(line);
       if (out.length >= 40) break;
     }
     return out;
+  }
+
+  // The third section an UPDATE returns. Each line is one change, already written as
+  // "what and why" by Foreman. Absent on a first build, which has nothing to compare to.
+  function extractWhatChanged(text){
+    var src = String(text || '');
+    var m = src.match(/what\s*changed\s*:?/i);
+    if (!m) return [];
+    var region = src.slice(m.index + m[0].length);
+    var stop = region.search(/your item list is ready/i);
+    if (stop >= 0) region = region.slice(0, stop);
+    var out = [];
+    var lines = region.split('\n');
+    for (var i = 0; i < lines.length; i++){
+      var line = lines[i].replace(/\*\*/g, '').replace(/^\s*([-*•]|\d+[.)])\s*/, '').trim();
+      if (!line) continue;
+      if (/^nothing material changed/i.test(line)) continue;
+      out.push(line);
+      if (out.length >= 6) break;
+    }
+    return out;
+  }
+
+  // The history of what changed, collapsed, above the notes rather than inside them —
+  // the current state of the job is what you open the notes for, and the history is for
+  // the one time somebody asks why a decision went the way it did.
+  function revisionsHtml(revisions){
+    var list = (revisions || []).filter(function(r){
+      return r && (typeof r === 'string' || (Array.isArray(r.lines) && r.lines.length));
+    });
+    if (list.length < 2) return '';   // a lone "First plan built." is not a history
+
+    var entries = list.slice().reverse().map(function(r){
+      var lines = typeof r === 'string' ? [r] : r.lines;
+      var when = (typeof r === 'object' && r.at)
+        ? new Date(r.at).toLocaleDateString(undefined, { month:'short', day:'numeric' }) : '';
+      var label = (typeof r === 'object' && r.n) ? ('Version ' + r.n) : 'Update';
+      return '<details class="rev-item"><summary>' +
+               '<span class="rev-label">' + escapeHtml(label) + '</span>' +
+               (when ? '<span class="rev-when">' + escapeHtml(when) + '</span>' : '') +
+             '</summary><ul class="rev-lines">' +
+               lines.map(function(l){ return '<li>' + escapeHtml(String(l)) + '</li>'; }).join('') +
+             '</ul></details>';
+    }).join('');
+
+    return '<details class="rev-wrap"><summary class="rev-head">What changed &middot; ' +
+           list.length + ' versions</summary>' + entries + '</details>';
+  }
+
+  // Revisions are stored as objects so a sheet can show them one by one with their
+  // dates. Foreman wants plain lines. Tolerates the older string form.
+  function revisionsForPrompt(revisions){
+    return (revisions || []).map(function(r){
+      if (!r) return '';
+      if (typeof r === 'string') return r;
+      var lines = Array.isArray(r.lines) ? r.lines.join('; ') : '';
+      if (!lines) return '';
+      return r.n ? ('Rev ' + r.n + ': ' + lines) : lines;
+    }).filter(Boolean);
+  }
+
+  // ── WHAT AN UPDATE CARRIES FORWARD ──────────────────────────────────────
+  // Reads the plan as it stands: Foreman's notes, the revision history, and when the
+  // notes were written. Returns null when there is nothing to build on — a first build,
+  // or a project whose notes predate this — and both take the original path.
+  async function readPlanContext(pid){
+    if (!sb || !pid) return null;
+    try {
+      var r = await sb.from('buildr_project_notes')
+        .select('body,metadata,created_at')
+        .eq('project_id', pid).eq('author', 'foreman')
+        .order('created_at', { ascending:false }).limit(1);
+      if (r.error || !r.data || !r.data[0]) return null;
+      var row = r.data[0];
+      var notes = String(row.body || '').trim();
+      if (!notes) return null;
+      var meta = row.metadata || {};
+      var plannedAt = meta.planned_at || row.created_at || null;
+      if (!plannedAt) return null;
+      return { notes: notes, revisions: Array.isArray(meta.revisions) ? meta.revisions : [], plannedAt: plannedAt };
+    } catch(e){ console.warn('could not read the current plan:', e); return null; }
+  }
+
+  // The turns said SINCE the notes were written, read from the database rather than off
+  // the rendered chat. The chat panel holds only what was loaded into it, which on a long
+  // job is not the whole conversation — created_at cannot drift that way.
+  async function readTurnsSince(pid, plannedAt){
+    if (!sb || !pid || !plannedAt) return null;
+    try {
+      var r = await sb.from('buildr_project_messages')
+        .select('role,content,created_at')
+        .eq('project_id', pid).gt('created_at', plannedAt)
+        .order('created_at', { ascending:true }).limit(120);
+      if (r.error) return null;
+      return (r.data || []).filter(function(m){ return m && m.content; })
+        .map(function(m){ return { role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content) }; });
+    } catch(e){ console.warn('could not read new turns:', e); return null; }
   }
 
   var planBusy = false;
@@ -3927,13 +4049,27 @@ html[data-theme="light"] .logo-l{display:initial}
       return;
     }
 
+    // AN UPDATE SENDS THE NOTES, NOT THE CONVERSATION.
+    //
+    // Once a plan exists the notes are the memory of the job, and only what has been said
+    // since they were written is news. The request then stays a constant size however long
+    // the job runs. Every condition falls back to the whole conversation rather than
+    // failing, so a first build or an older project behaves exactly as it always did.
+    var prior = await readPlanContext(activeProject);
+    var freshTurns = prior ? await readTurnsSince(activeProject, prior.plannedAt) : null;
+    var isUpdate = Boolean(prior && freshTurns && freshTurns.length);
+    if (isUpdate) turns = freshTurns.slice();
+
     // The trigger turn goes last so it is the final thing the model reads, and it
     // keeps this a single-shot deliverable request rather than another chat reply.
-    turns.push({ role:'user', content:'Build the plan for what we settled on above.' });
+    turns.push({ role:'user', content: isUpdate
+      ? 'Bring the plan up to date for what we have settled since those notes.'
+      : 'Build the plan for what we settled on above.' });
 
     planBusy = true;
-    btn.disabled = true; btn.textContent = 'Working out your quantities…';
-    status.textContent = 'Reading the whole conversation…';
+    btn.disabled = true;
+    btn.textContent = isUpdate ? 'Bringing your plan up to date…' : 'Working out your quantities…';
+    status.textContent = isUpdate ? 'Reading your notes and what has changed since…' : 'Reading the whole conversation…';
     status.className = 'chat-status';
 
     var full = '';
@@ -3946,7 +4082,10 @@ html[data-theme="light"] .logo-l{display:initial}
         headers: token
           ? { 'Content-Type':'application/json', Authorization:'Bearer ' + token }
           : { 'Content-Type':'application/json' },
-        body: JSON.stringify({ mode:'plan', messages: turns, session_id: 'proj_' + activeProject })
+        body: JSON.stringify(isUpdate
+          ? { mode:'plan', messages: turns, session_id: 'proj_' + activeProject,
+              previous_notes: prior.notes, revisions: revisionsForPrompt(prior.revisions) }
+          : { mode:'plan', messages: turns, session_id: 'proj_' + activeProject })
       });
       if (!res.ok || !res.body){
         var ed = await res.json().catch(function(){ return {}; });
@@ -3994,9 +4133,20 @@ html[data-theme="light"] .logo-l{display:initial}
       // plan at all, having already destroyed the one that worked.
       var priorNoteIds = [];
       var priorListIds = [];
+      var priorRevisions = [];
       try {
-        var pn = await sb.from('buildr_project_notes').select('id').eq('project_id', activeProject);
+        // FOREMAN'S NOTES ONLY. This query decides what gets deleted below, and a note the
+        // user typed must never be in it — otherwise the first version that lets someone
+        // write their own note is also the version that silently eats it.
+        var pn = await sb.from('buildr_project_notes')
+          .select('id,metadata').eq('project_id', activeProject).eq('author', 'foreman');
         priorNoteIds = ((pn && pn.data) || []).map(function(n){ return n.id; });
+        // The revision history lives on the row being replaced, so read it before it goes
+        // or every update restarts the history at one.
+        ((pn && pn.data) || []).forEach(function(row){
+          var revs = row && row.metadata && row.metadata.revisions;
+          if (Array.isArray(revs) && revs.length > priorRevisions.length) priorRevisions = revs;
+        });
         var pl = await sb.from('buildr_project_item_lists').select('id').eq('project_id', activeProject);
         priorListIds = ((pl && pl.data) || []).map(function(l){ return l.id; });
       } catch(e){ console.warn('could not read the previous plan:', e); }
@@ -4010,10 +4160,30 @@ html[data-theme="light"] .logo-l{display:initial}
         // meant a plan built on the website opened on the phone as though no conversation
         // had been covered, and immediately invited an identical rebuild — the most
         // expensive call POZi makes.
+        // THE REVISION HISTORY. Each update appends what changed; the first build starts
+        // it. Stored as structured entries rather than inside the notes text so exactly
+        // ten travel back to Foreman next time — an unbounded history in the prompt is the
+        // problem this whole change removes.
+        var changedLines = extractWhatChanged(full);
+        var revisions = priorRevisions.slice();
+        if (!revisions.length){
+          revisions.push({ n: 1, at: new Date().toISOString(), lines: ['First plan built.'] });
+        }
+        if (changedLines.length){
+          revisions.push({ n: revisions.length + 1, at: new Date().toISOString(), lines: changedLines });
+        }
+
         var ni = await sb.from('buildr_project_notes').insert({
           project_id: activeProject, user_id: currentUser.id,
-          title: 'Build Notes', body: notes,
-          metadata: { planned_turns: history.filter(function(m){ return m && m.text; }).length }
+          title: 'Build Notes', body: notes, author: 'foreman',
+          // planned_at is what the NEXT update slices the conversation on. A timestamp
+          // rather than a turn count, because neither surface holds the whole
+          // conversation in memory on a long job.
+          metadata: {
+            planned_turns: history.filter(function(m){ return m && m.text; }).length,
+            planned_at: new Date().toISOString(),
+            revisions: revisions.slice(-60)
+          }
         });
         homePlannedTurns = history.filter(function(m){ return m && m.text; }).length;
         if (ni.error) console.warn('save notes failed:', ni.error);
@@ -5410,7 +5580,7 @@ html[data-theme="light"] .logo-l{display:initial}
   // 5 on DIY and 2 on free. With no payload yet the line is left off rather than reworded.
   function planRebuildCostLine(){
     var cap = lastPlanUsage && typeof lastPlanUsage.limit === 'number' ? lastPlanUsage.limit : null;
-    return cap ? 'Every rebuild uses one of your ' + cap + '.' : '';
+    return cap ? 'Every update uses one of your ' + cap + '.' : '';
   }
 
   // PLAN BUILDS ARE COUNTED IN THE OPEN, ALWAYS — same reasoning and same wording as the
@@ -5461,11 +5631,11 @@ html[data-theme="light"] .logo-l{display:initial}
       // inert until they have actually added something.
       var unlocked = planRebuildUnlocked();
       btn.className = 'btn btn-s plan-rebuild';
-      btn.textContent = 'Rebuild the plan';
+      btn.textContent = 'Update the plan';
       btn.disabled = !unlocked;
       hint.textContent = unlocked
         ? planRebuildCostLine()
-        : 'Add something new and you can rebuild at any time';
+        : 'Add something new and you can update at any time';
       row.classList.toggle('hidden', !homeProjectId);
     } else {
       // First build only, and only once Foreman says it has what it needs.
@@ -5489,11 +5659,11 @@ html[data-theme="light"] .logo-l{display:initial}
       var unlocked = planRebuildUnlocked();
       btn.className = 'btn btn-s plan-rebuild';
       btn.style.width = '100%';
-      btn.textContent = 'Rebuild the plan';
+      btn.textContent = 'Update the plan';
       btn.disabled = !unlocked;
       hint.textContent = unlocked
         ? planRebuildCostLine()
-        : 'Add something new and you can rebuild at any time';
+        : 'Add something new and you can update at any time';
     } else {
       btn.className = 'btn btn-p';
       btn.style.width = '100%';
