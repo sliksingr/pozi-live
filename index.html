@@ -1336,7 +1336,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v58</span>
+    <span class="site-ver" id="siteVer">v59</span>
   </div>
 
   <div class="nav-links">
@@ -4390,6 +4390,33 @@ html[data-theme="light"] .logo-l{display:initial}
       '</a>';
   }
 
+  /* ── UNUSABLE ROWS ──────────────────────────────────────────────────────
+     Google now throttles its own redirect links. When a result's destination has not
+     been resolved back to the retailer, what arrives is a google.com/goto URL instead
+     of lowes.com or homedepot.com — and tapping it lands on Google's "Verifying your
+     request" page with a Continue button that stays greyed out for up to half a minute.
+
+     The row still DESCRIBES real lumber at a real store. It just cannot take anyone
+     there. Four results that work beat six with two traps in them, so these are dropped.
+
+     Also drops titles containing "undefined", which is what the same broken rows look
+     like when Google's own title template fails to fill in: "Pressure Treated Lumber
+     available at , undefined".
+
+     This is a safety net, not the retailer policy — that lives in the backend
+     allow-list. Written identically in the app so the two cannot disagree about what
+     counts as a usable result.                                                        */
+  function isUsableResult(r){
+    var url = String((r && r.url) || '');
+    if (!url) return false;
+    var host = '';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch(e){ host = ''; }
+    if (host === 'google.com' || host === 'google.co.uk') return false;
+    if (url.indexOf('/goto?') > -1 || url.indexOf('/url?') > -1) return false;
+    if (/\bundefined\b/i.test(String((r && r.title) || ''))) return false;
+    return true;
+  }
+
   function normalizeRows(data, kind){
     var arr = data.results || data.items || data.products || data.organic ||
       (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0] && data.tasks[0].result[0].items) || [];
@@ -4404,7 +4431,7 @@ html[data-theme="light"] .logo-l{display:initial}
         price: typeof r.price === 'string' ? r.price : (r.price && r.price.displayed) || '',
         source: kind
       };
-    }).filter(function(r){ return r.title && r.url; }).slice(0, 16);
+    }).filter(function(r){ return r.title && r.url && isUsableResult(r); }).slice(0, 16);
   }
 
   async function poziFetch(endpoint, payload){
