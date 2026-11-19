@@ -906,7 +906,7 @@ footer{border-top:1px solid var(--border);background:var(--bg-deep);padding:34px
 
 @media(max-width:1024px){
   .foreman-launch{
-    display:flex;flex-direction:column;gap:8px;width:100%;text-align:left;cursor:pointer;
+    display:flex;flex-direction:column;gap:8px;width:100%;text-align:left;
     padding:20px;border-radius:20px;border:1px solid var(--border);
     background:linear-gradient(180deg,rgba(var(--green-rgb),.06),rgba(var(--raise-rgb),.02));
     font-family:inherit;color:var(--text)
@@ -917,7 +917,26 @@ footer{border-top:1px solid var(--border);background:var(--bg-deep);padding:34px
     color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:3px 9px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%;flex:0 1 auto}
   .fl-sub{color:var(--muted);font-size:14px;line-height:1.5}
-  .fl-cta{color:var(--green);font-weight:800;font-size:14px;margin-top:2px}
+
+  /* CONTINUE — the job you were already on. Bordered rather than filled so the primary
+     action below it stays the brightest thing in the card for someone starting fresh. */
+  .fl-continue{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;
+    cursor:pointer;font-family:inherit;color:var(--text);margin-top:2px;
+    padding:13px 15px;border-radius:14px;
+    border:1px solid rgba(var(--green-rgb),.34);
+    background:rgba(var(--green-rgb),.07)}
+  .fl-continue-kick{font-size:10px;font-weight:800;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--green)}
+  .fl-continue-name{font-weight:800;font-size:15.5px;line-height:1.25}
+  .fl-continue-sub{color:var(--muted);font-size:13px;line-height:1.45}
+
+  .fl-btn{width:100%;padding:15px 18px;border-radius:14px;border:0;cursor:pointer;
+    font-family:inherit;font-size:15px;font-weight:800}
+  .fl-btn-p{background:linear-gradient(135deg,var(--green-deep),var(--green));color:var(--on-green)}
+  .fl-btn-s{background:none;border:1px solid var(--border);color:var(--text)}
+  .fl-or{text-align:center;font-size:11px;font-weight:800;letter-spacing:.14em;
+    color:var(--muted);margin:-2px 0}
+  .fl-photo-sub{text-align:center;color:var(--muted);font-size:12.5px;line-height:1.45;margin:-2px 0 0}
 
   /* Closed by default at this width — the launcher is the way in. */
   .foreman-shell{display:none}
@@ -1336,7 +1355,7 @@ html[data-theme="light"] .logo-l{display:initial}
       <div class="logo-word">POZ<span class="pozi-i"><span class="stem">ı</span><span class="dot"></span><span class="beam"></span></span><span class="go">Go</span></div>
       <div class="nav-tag"><span class="aiop">All in one place.</span></div>
     </div>
-    <span class="site-ver" id="siteVer">v59</span>
+    <span class="site-ver" id="siteVer">v61</span>
   </div>
 
   <div class="nav-links">
@@ -1508,19 +1527,37 @@ html[data-theme="light"] .logo-l{display:initial}
          the same swipe, and before anyone types it is a large dead rectangle pushing the
          plan card off the screen. This is a single tap target instead; the conversation
          itself opens as a full-screen sheet, the way the app does it. -->
-    <button type="button" class="foreman-launch" id="foremanLaunch">
-      <span class="fl-top">
+    <!-- THE SAME THREE CHOICES THE APP OFFERS, in the same order.
+         This used to be one button that was both "continue" and "start". Once a
+         conversation existed it read "Continue →" and there was no way to begin a new
+         project from here at all — you had to go find the projects sheet. Continuing and
+         starting are different intentions and both belong on the first screen. -->
+    <div class="foreman-launch" id="foremanLaunch">
+      <div class="fl-top">
         <span class="fl-title" id="foremanLaunchTitle">POZi Foreman</span>
         <span class="fl-chip" id="foremanLaunchChip">Guest session</span>
-      </span>
-      <!-- Reflects state, the way the app's resume card does.
-           Nothing started: the greeting, verbatim, because this is the invitation.
-           Conversation in progress: the project and the last thing Foreman said, so tapping
-           it reads as returning to a job rather than starting over — and the greeting is not
-           shown twice, once here and again in the sheet. -->
-      <span class="fl-sub" id="foremanLaunchSub">Tell me what you're building, fixing, or figuring out. Bring measurements if you have them — if not, we'll work them out together.</span>
-      <span class="fl-cta" id="foremanLaunchCta">Open Foreman →</span>
-    </button>
+      </div>
+
+      <!-- CONTINUE. Present only when there is something to continue, so this is never an
+           empty rectangle on a first visit. -->
+      <button type="button" class="fl-continue hidden" id="foremanContinue">
+        <span class="fl-continue-kick">Continue</span>
+        <span class="fl-continue-name" id="foremanContinueName"></span>
+        <span class="fl-continue-sub" id="foremanContinueSub"></span>
+      </button>
+
+      <!-- The greeting is the invitation, so it shows only when there is nothing to
+           continue. Otherwise it would sit above the job you are trying to get back to. -->
+      <p class="fl-sub" id="foremanLaunchSub">Tell me what you're building, fixing, or figuring out. Bring measurements if you have them — if not, we'll work them out together.</p>
+
+      <button type="button" class="fl-btn fl-btn-p" id="foremanStartNew">Start a new project</button>
+      <div class="fl-or">OR</div>
+      <!-- Label and sub-line are set by paintForemanLaunch from gateDevice(): a phone or
+           tablet can take the picture, a desktop can only choose a file, and the button
+           should not promise a camera that is not there. -->
+      <button type="button" class="fl-btn fl-btn-s" id="foremanStartPhoto">Start with a photo</button>
+      <p class="fl-photo-sub" id="foremanPhotoSub">Take a picture and Foreman will analyze it.</p>
+    </div>
 
     <div class="foreman-shell" id="foremanShell">
       <div class="foreman-head">
@@ -2284,7 +2321,7 @@ html[data-theme="light"] .logo-l{display:initial}
     <div class="sheet-head">
       <button class="sheet-close" data-close="nameProjModal">×</button>
       <div class="sheet-kicker">New Project</div>
-      <div class="sheet-title">Name your project</div>
+      <div class="sheet-title">Name this project</div>
       <p class="sheet-sub">Something you'll recognise later — "Back deck", "Shower drain", "Fence line".</p>
     </div>
     <div class="sheet-body">
@@ -3043,6 +3080,30 @@ html[data-theme="light"] .logo-l{display:initial}
   var pendingAfterProject = null;   // run once the project exists
   var pendingCancelResolve = null;  // lets a waiting caller continue if naming is cancelled
 
+  // PROJECT NAMES. There is no in-memory project list on this page — the projects grid is
+  // rendered straight from a query and nothing is kept. Two painters read a `projects`
+  // array anyway, a variable that is not declared anywhere in this file, so the moment a
+  // conversation was attached to a project they threw a ReferenceError: the card's project
+  // name and the project row above the chat both silently stopped updating. They now read
+  // the name from here, the same way the mobile menu already does.
+  var projectNameCache = {};
+
+  function cachedProjectName(id){
+    return (id && projectNameCache[id]) ? projectNameCache[id] : '';
+  }
+
+  // Fire-and-forget: the painters stay synchronous and fill the real name in when it lands.
+  async function fetchProjectName(id){
+    if (!id || !sb || !currentUser) return '';
+    if (projectNameCache[id]) return projectNameCache[id];
+    try {
+      var r = await sb.from('buildr_projects').select('name,title').eq('id', id).maybeSingle();
+      var nm = r && r.data && (r.data.name || r.data.title);
+      if (nm) projectNameCache[id] = nm;
+      return nm || '';
+    } catch(e){ return ''; }
+  }
+
   function requireAccountForProjects(){
     if (currentUser) return true;
     // Not a dead end: the conversation stays open, they just cannot keep it yet.
@@ -3094,6 +3155,7 @@ html[data-theme="light"] .logo-l{display:initial}
       if (r.error || !r.data) throw new Error(r.error ? r.error.message : 'Could not create the project.');
 
       closeModal('nameProjModal');
+      projectNameCache[r.data.id] = name;   // no round trip to show a name we just typed
       activeProject = r.data.id;
       await bindHomeChatToProject(r.data.id);
       var next = pendingAfterProject;
@@ -3577,6 +3639,9 @@ html[data-theme="light"] .logo-l{display:initial}
         .order('updated_at', { ascending:false })
         .limit(60);
       var rows = (r && r.data) || [];
+      rows.forEach(function(p){
+        if (p && p.id) projectNameCache[p.id] = p.name || p.title || 'Untitled project';
+      });
       var grid = $('projGrid');
       $('projEmpty').classList.toggle('hidden', rows.length > 0);
 
@@ -5297,35 +5362,94 @@ html[data-theme="light"] .logo-l{display:initial}
     if (el && el.scrollIntoView) el.scrollIntoView({ behavior:'smooth', block:'center' });
   });
 
+  // Rewritten for the three-choice card. The old version moved one button between two
+  // meanings; this one shows or hides the Continue block and leaves the two start
+  // buttons alone, so "begin something new" is always reachable.
   function paintForemanLaunch(){
-    var sub = $('foremanLaunchSub'), cta = $('foremanLaunchCta'), ttl = $('foremanLaunchTitle');
-    if (!sub || !cta) return;
+    var sub = $('foremanLaunchSub'), ttl = $('foremanLaunchTitle');
+    var cont = $('foremanContinue'), contName = $('foremanContinueName'), contSub = $('foremanContinueSub');
+    var photoBtn = $('foremanStartPhoto'), photoSub = $('foremanPhotoSub');
+    if (!sub || !cont) return;
+
+    // A desktop file picker cannot take a picture, so the button must not offer to.
+    var device = (typeof gateDevice === 'function') ? gateDevice() : '';
+    var canShoot = device === 'phone' || device === 'tablet';
+    if (photoBtn) photoBtn.textContent = canShoot ? 'Start with a photo' : 'Upload a photo';
+    if (photoSub) photoSub.textContent = canShoot
+      ? 'Take a picture and Foreman will analyze it.'
+      : 'Upload a photo and Foreman will analyze it.';
+
     var lastBot = null;
     for (var i = history.length - 1; i >= 0; i--) {
       if (history[i] && history[i].role === 'assistant' && history[i].content) { lastBot = history[i]; break; }
     }
-    var proj = homeProjectId ? (projects || []).find(function(p){ return p.id === homeProjectId; }) : null;
+    if (ttl) ttl.textContent = 'POZi Foreman';
 
-    if (!history.length) {
-      if (ttl) ttl.textContent = 'POZi Foreman';
+    if (!history.length){
+      cont.classList.add('hidden');
+      sub.classList.remove('hidden');
       sub.textContent = "Tell me what you're building, fixing, or figuring out. Bring measurements if you have them — if not, we'll work them out together.";
-      cta.textContent = 'Open Foreman →';
       return;
     }
-    if (ttl) ttl.textContent = proj ? proj.name : 'Your Foreman conversation';
-    sub.textContent = lastBot
-      ? String(lastBot.content).replace(/\*\*/g, '').slice(0, 150)
+
+    cont.classList.remove('hidden');
+    sub.classList.add('hidden');     // the greeting would push the live job down the card
+    var pid = homeProjectId;
+    if (contName){
+      contName.textContent = cachedProjectName(pid) || 'Your Foreman conversation';
+      if (pid && !cachedProjectName(pid)){
+        fetchProjectName(pid).then(function(nm){
+          // Only if the conversation is still on the same project — a slow query must not
+          // relabel the card after the user has moved on.
+          if (nm && homeProjectId === pid && $('foremanContinueName')) $('foremanContinueName').textContent = nm;
+        });
+      }
+    }
+    if (contSub) contSub.textContent = lastBot
+      ? String(lastBot.content).replace(/\*\*/g, '').slice(0, 120)
       : 'Pick up where you left off.';
-    cta.textContent = 'Continue →';
+  }
+
+  // ── STARTING FROM THE CARD ────────────────────────────────────────────────
+  // Both buttons name the project FIRST, which is what the app does and what keeps a
+  // new job from being filed into whichever project happened to be open. Guests are
+  // sent to sign-up by openNameProject, since a project needs an owner.
+
+  // Named, then straight into the conversation. createProjectFromModal has already set
+  // activeProject and called bindHomeChatToProject, which clears the previous project's
+  // turns, so the sheet opens on an empty conversation bound to the new project.
+  function startNewProjectFromCard(){
+    openNameProject(function(pid){
+      paintForemanLaunch();
+      openChatSheet();
+    });
+  }
+
+  // Named, opened, then straight to the picker in analyze mode — the same path the
+  // Analyze button inside the project uses, so there is one photo pipeline, not two.
+  // On a phone or tablet the OS sheet offers camera or library; on a desktop it is a
+  // file browser. That difference is the operating system's, not ours, which is why
+  // nothing here sets a `capture` attribute.
+  function startPhotoProjectFromCard(){
+    openNameProject(async function(pid){
+      await openProject(pid);
+      photoMode = 'analyze';
+      var input = $('photoFile');
+      if (input){ input.value = ''; input.click(); }
+    });
   }
 
   function paintForemanProjRow(){
     var row = $('foremanProjRow');
     if (!row) return;
-    var proj = homeProjectId ? (projects || []).find(function(p){ return p.id === homeProjectId; }) : null;
-    if (!currentUser || !proj){ row.classList.add('hidden'); return; }
+    if (!currentUser || !homeProjectId){ row.classList.add('hidden'); return; }
     row.classList.remove('hidden');
-    $('foremanProjName').textContent = proj.name || 'Untitled project';
+    var pid = homeProjectId;
+    var nm = cachedProjectName(pid);
+    $('foremanProjName').textContent = nm || 'Untitled project';
+    if (!nm) fetchProjectName(pid).then(function(n){
+      if (n && homeProjectId === pid && $('foremanProjName')) $('foremanProjName').textContent = n;
+    });
   }
 
   // Cut the chat loose from its project so the next message starts a fresh one.
@@ -5955,18 +6079,26 @@ html[data-theme="light"] .logo-l{display:initial}
     if (h) h.addEventListener('click', toggleMobile);
 
     var send = $('chatSend');
-    var fl = $('foremanLaunch');
-    if (fl) fl.addEventListener('click', openChatSheet);
+    // The card is no longer one big button. Tapping the card itself does nothing now —
+    // each of the three choices is its own control, so "continue" can never be hit by
+    // someone reaching for "start a new project".
+    var flC = $('foremanContinue');
+    if (flC) flC.addEventListener('click', openChatSheet);
+    var flN = $('foremanStartNew');
+    if (flN) flN.addEventListener('click', startNewProjectFromCard);
+    var flP = $('foremanStartPhoto');
+    if (flP) flP.addEventListener('click', startPhotoProjectFromCard);
     var sx = $('chatSheetClose');
     if (sx) sx.addEventListener('click', closeChatSheet);
     var cb = $('chatCloseBottom');
     if (cb) cb.addEventListener('click', closeChatSheet);
     var cam = $('chatPhotoBtn');
     if (cam) cam.addEventListener('click', function(){
-      // Photos belong to a project on this surface. Without one there is nowhere for the
-      // result to live, so say that rather than opening a picker that leads nowhere.
+      // Photos belong to a project on this surface. This used to refuse when there wasn't
+      // one, which on a desktop — where the card above is hidden — left no way in at all.
+      // Now a missing project is named rather than reported.
       if (!currentUser || !homeProjectId){
-        setStatus('Start a project first — then photos have somewhere to live.', 'err');
+        startPhotoProjectFromCard();
         return;
       }
       closeChatSheet();
